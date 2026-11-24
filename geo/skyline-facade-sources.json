@@ -7,7 +7,7 @@
     "occupiedStories": 27,
     "lobbyHeightMeters": 10.668,
     "crownHeightMeters": 12.192,
-    "facadeType": "Reflective curtain wall with fine vertical framing",
+    "facadeType": "Reflective curtain wall with physically projecting vertical rods above the lobby",
     "sources": [
       {
         "url": "https://www.kendall-heaton.com/projects/499-sheridan/",
@@ -34,9 +34,19 @@
     "reconstruction": {
       "officeFloorsAboveLobby": 26,
       "officeFloorPitchMeters": 4.197692307692307,
+      "verticalRods": {
+        "pitchMeters": 1.2,
+        "widthMeters": 0.08,
+        "projectionMeters": 0.12,
+        "bottomMeters": 10.668,
+        "topMeters": 132,
+        "cornerClearanceMeters": 0.25,
+        "basis": "Architect describes vertical curtain-wall rods. Spacing follows the existing 14.4-meter facade tile divided into 12 panes; dimensions and exact endpoints are an authored reconstruction, not measured construction details."
+      },
       "method": "The 35-foot lobby and 40-foot crown bound 26 equally spaced reconstructed office floors inside the retained 132-meter mapped height.",
       "limitations": [
         "Intermediate floor elevations and pane spacing are not surveyed.",
+        "The vertical rods are modeled as narrow rectangular fins; exact rod section, projection, connections and spacing are not surveyed.",
         "Coating reflectance is a visual approximation, not measured product data.",
         "Office lighting is procedural occupancy, not a survey of tenants.",
         "The crown is not artificially illuminated by this material."

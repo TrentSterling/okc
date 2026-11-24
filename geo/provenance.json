@@ -15,7 +15,7 @@
       35.477
     ],
     "dataEditUTC": "2022-10-03",
-    "countRendered": 1300
+    "countRendered": 1323
   },
   "streetsAndContext": {
     "source": "\u00a9 OpenStreetMap contributors",
@@ -45,10 +45,15 @@
     "Estimated canopy height; OSM identifies an open-sided carousel": 1,
     "Estimated low-rise context height (not inferred from area)": 1231,
     "Estimated single-story garden service structure height": 1,
-    "OSM floors \u00d7 estimated floor pitch": 56,
-    "OSM height": 2,
+    "OSM floors \u00d7 estimated floor pitch": 70,
+    "OSM height": 11,
     "OSM height; skyline height reference": 1,
     "Skyline height reference": 8
+  },
+  "mappedMassing": {
+    "groups": 8,
+    "addedPartRecords": 23,
+    "details": "geo/mapped-massing-sources.json"
   },
   "footprintCorrections": [
     {

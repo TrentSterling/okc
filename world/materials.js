@@ -12,10 +12,7 @@ export function createCityMaterials({ group, dynamicLights, seed = 42 }) {
   });
   const concrete = surface('Warm weathered concrete', textures.concrete, .008);
   const pavement = surface('Jointed concrete paving', textures.pavement, .009);
-  const curb = new THREE.MeshStandardMaterial({
-    name: 'Pale concrete edging', color: 0xc0bbac, roughness: 1,
-    roughnessMap: textures.concrete.detail, bumpMap: textures.concrete.detail, bumpScale: .007,
-  });
+  const curb = surface('Cast concrete curb and exposed riser', textures.concrete, .004);
   const steel = new THREE.MeshStandardMaterial({ color: 0x657479, metalness: .64, roughness: .46 });
   const darkSteel = new THREE.MeshStandardMaterial({ color: 0x303a3e, metalness: .45, roughness: .55 });
   const white = new THREE.MeshStandardMaterial({ color: 0xe0dccd, roughness: .94 });
@@ -31,8 +28,8 @@ export function createCityMaterials({ group, dynamicLights, seed = 42 }) {
   const roofMat = surface('Weathered mineral roof', textures.roof, .012);
   const lampMat = new THREE.MeshStandardMaterial({ color: 0xffe7bf, emissive: 0xffd69b, emissiveIntensity: .05 });
   dynamicLights.push({ mat: lampMat, min: .03, max: 2.5 });
-  const asphalt = surface('Repaired charcoal asphalt', textures.asphalt, .012);
-  const lotMat = surface('Sun-aged parking asphalt', textures.parking, .012);
+  const asphalt = surface('Fine aggregate asphalt', textures.asphalt, .003);
+  const lotMat = surface('Sun-aged parking asphalt', textures.parking, .003);
   textures.earth.map.repeat.set(250, 250);
   const ground = new THREE.Mesh(new THREE.PlaneGeometry(16000, 16000),
     new THREE.MeshStandardMaterial({ name: 'Prairie ground', map: textures.earth.map, roughness: 1 }));
@@ -40,7 +37,7 @@ export function createCityMaterials({ group, dynamicLights, seed = 42 }) {
   const grass = surface('Varied garden turf', textures.lawn, .012);
   const water = new THREE.MeshPhysicalMaterial({ color: 0x294d4e, metalness: .16, roughness: .15,
     clearcoat: .8, clearcoatRoughness: .06, envMapIntensity: 1.2 });
-  const surfaceMaterials = { road: asphalt, path: pavement, water, curb, parking: lotMat, paving: pavement, grass };
+  const surfaceMaterials = { road: asphalt, path: pavement, water, curb, sidewalk: pavement, parking: lotMat, paving: pavement, grass };
   const masonry = ['limestone', 'brick', 'sandstone', 'brownstone'].map(style =>
     createFacadeMaterial({ seed, id: style, style, dynamicLights }));
   const facades = Object.fromEntries(['glass', 'bok', 'banded', 'parking', 'deco'].map(style =>
@@ -62,7 +59,7 @@ export function createCityMaterials({ group, dynamicLights, seed = 42 }) {
     bakedMaterials['building.lowrise.' + i] = lowrise[i];
   }
   for (const [name, material] of Object.entries(facades)) bakedMaterials['building.' + name] = material;
-  Object.assign(bakedMaterials, { 'detail.roof': roofMat, 'detail.concrete': concrete,
+  Object.assign(bakedMaterials, { 'detail.roof': roofMat, 'detail.concrete': concrete, 'detail.coping': concrete,
     'detail.steel': steel, 'detail.darkSteel': darkSteel, 'detail.glass': shopGlass });
   return { concrete, pavement, curb, steel, darkSteel, white, roadPaint, yellow, paintGeometry,
     roofMat, lampMat, masonry, gold, shopGlass, wood, bakedMaterials };

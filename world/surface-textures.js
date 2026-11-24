@@ -3,24 +3,16 @@ import { texturePair, tileNoise, fillPixels, dataColor } from './material-textur
 
 function asphalt(seed, parking = false) {
   const random = rngFor(seed, parking ? 'surface/parking' : 'surface/asphalt');
-  const broad = tileNoise(random, 5), medium = tileNoise(random, 23);
-  const patches = Array.from({ length: parking ? 4 : 3 }, () => ({
-    x: .18 + random() * .64, y: .18 + random() * .64,
-    w: .065 + random() * .09, h: .025 + random() * .08,
-    tone: 7 + random() * 6,
-  }));
-  const base = parking ? [94, 95, 90] : [78, 82, 83];
+  const broad = tileNoise(random, 5), medium = tileNoise(random, 31);
+  const base = parking ? [101, 102, 97] : [86, 89, 90];
   return texturePair(512, 512, (color, data, width, height) => {
     fillPixels(color, data, width, height, (u, v) => {
       const age = broad(u, v), grain = random() - .5;
-      let patch = 0;
-      for (const p of patches) {
-        const edge = Math.min(p.w - Math.abs(u - p.x), p.h - Math.abs(v - p.y));
-        patch = Math.max(patch, Math.max(0, Math.min(1, edge * 512)) * p.tone);
-      }
-      const shade = (age - .5) * 10 + (medium(u, v) - .5) * 4 + grain * 7 - patch;
-      // Resurfaced rectangles are a little smoother, without reading as puddles.
-      return [...base.map(value => value + shade), .5 + grain * .13, .95 - patch * .006 + grain * .025];
+      // Four metres per tile puts aggregate at centimetre scale. Broad repair
+      // rectangles formerly repeated every16m, reading as floating dark tiles
+      // across every lane. Restrained seamless wear has no recognisable motif.
+      const shade = (age - .5) * 5 + (medium(u, v) - .5) * 3 + grain * 9;
+      return [...base.map(value => value + shade), .5 + grain * .08, .94 + grain * .025];
     });
   });
 }

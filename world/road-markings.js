@@ -4,6 +4,20 @@ import { ROAD_PAINT_HEIGHT } from './route.js';
 const CELL = 64;
 const CORE = [-900, -650, 650, 700];
 const MAX_MARKS = 8000;
+const PAINT_CELL = 16;
+function paintOverlaps(a,b) {
+  // Separating-axis test of the complete rectangles, not just their centers.
+  // Touching lane segments are valid; positive-area coplanar overlaps are not.
+  const axes=[a.ux,a.uz,-a.uz,a.ux,b.ux,b.uz,-b.uz,b.ux];
+  const dx=b.x-a.x,dz=b.z-a.z;
+  for(let i=0;i<axes.length;i+=2){
+    const x=axes[i],z=axes[i+1];
+    const reach=box=>Math.abs(x*box.ux+z*box.uz)*box.length*.5+
+      Math.abs(-x*box.uz+z*box.ux)*box.width*.5;
+    if(Math.abs(dx*x+dz*z)>=reach(a)+reach(b)-.0001)return false;
+  }
+  return true;
+}
 const distanceToSegment = (x, z, s) => {
   const t = Math.max(0, Math.min(1, ((x-s.ax)*s.dx+(z-s.az)*s.dz)/(s.length*s.length)));
   return Math.hypot(x-s.ax-s.dx*t, z-s.az-s.dz*t);
@@ -13,7 +27,7 @@ const distanceToSegment = (x, z, s) => {
 // are illustrative, not a surveyed traffic-control plan. Keep intersections
 // open and omit service roads, short links and the separately authored Reno.
 export function buildRoadMarkings(roads, bounds = CORE) {
-  const segments = [], grid = new Map(), marks = [];
+  const segments = [], grid = new Map(), marks = [], paintGrid = new Map();
   const [left, north, right, south] = bounds;
   for (const road of [...roads].sort((a,b)=>String(a.id).localeCompare(String(b.id)))) {
     for (let i=1;i<road.p.length;i++) {
@@ -42,6 +56,18 @@ export function buildRoadMarkings(roads, bounds = CORE) {
     if(x<left||x>right||z<north||z>south||marks.length>=MAX_MARKS)return;
     // Check both ends: a center-only test can leave paint crossing a junction.
     for(const t of [-length*.5,0,length*.5])if(!junctionClear(x+s.ux*t,z+s.uz*t,s))return;
+    const rectangle={x,z,length,width,ux:s.ux,uz:s.uz};
+    const ex=(Math.abs(s.ux)*length+Math.abs(s.uz)*width)*.5,
+      ez=(Math.abs(s.uz)*length+Math.abs(s.ux)*width)*.5;
+    const keys=[],nearby=new Set();
+    for(let ix=Math.floor((x-ex)/PAINT_CELL);ix<=Math.floor((x+ex)/PAINT_CELL);ix++){
+      for(let iz=Math.floor((z-ez)/PAINT_CELL);iz<=Math.floor((z+ez)/PAINT_CELL);iz++){
+        const key=ix+':'+iz;keys.push(key);
+        for(const prior of paintGrid.get(key)||[])nearby.add(prior);
+      }
+    }
+    if([...nearby].some(prior=>paintOverlaps(rectangle,prior)))return;
+    for(const key of keys){if(!paintGrid.has(key))paintGrid.set(key,[]);paintGrid.get(key).push(rectangle);}
     marks.push({roadId:s.road.id,x,z,length,width,rotation:-Math.atan2(s.dz,s.dx),color});
   }
   for(const s of segments) {

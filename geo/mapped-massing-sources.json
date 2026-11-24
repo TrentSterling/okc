@@ -1,0 +1,284 @@
+{
+  "version": 1,
+  "snapshot": "scripts/data/okc-map.osm.gz",
+  "schemaReference": "https://wiki.openstreetmap.org/wiki/Simple_3D_Buildings",
+  "originalRecords": 1300,
+  "addedPartRecords": [
+    1427733205,
+    1427733206,
+    1427733207,
+    1427733208,
+    1427612925,
+    1427612926,
+    1427612927,
+    1427612921,
+    1427612922,
+    1427612923,
+    1427612924,
+    248416130,
+    248416132,
+    248416133,
+    249481983,
+    249481988,
+    1336564418,
+    1361173437,
+    1361173438,
+    1336564415,
+    1336564416,
+    1336564417,
+    1361174520
+  ],
+  "groups": [
+    {
+      "osmParent": 113737426,
+      "name": "Corporate Tower",
+      "outlineAreaM2": 2161.8199,
+      "missingPartCoverageM2": 0.0,
+      "excessPartCoverageM2": 0.0053,
+      "maskedLegacyRecords": [],
+      "parts": [
+        {
+          "osmWay": 1427733204,
+          "heightMeters": 58.0,
+          "heightSource": "OSM height",
+          "source": "https://www.openstreetmap.org/way/1427733204"
+        },
+        {
+          "osmWay": 1427733205,
+          "heightMeters": 7.3,
+          "heightSource": "OSM floors \u00d7 estimated floor pitch",
+          "source": "https://www.openstreetmap.org/way/1427733205"
+        },
+        {
+          "osmWay": 1427733206,
+          "heightMeters": 14.6,
+          "heightSource": "OSM floors \u00d7 estimated floor pitch",
+          "source": "https://www.openstreetmap.org/way/1427733206"
+        },
+        {
+          "osmWay": 1427733207,
+          "heightMeters": 21.9,
+          "heightSource": "OSM floors \u00d7 estimated floor pitch",
+          "source": "https://www.openstreetmap.org/way/1427733207"
+        },
+        {
+          "osmWay": 1427733208,
+          "heightMeters": 29.2,
+          "heightSource": "OSM floors \u00d7 estimated floor pitch",
+          "source": "https://www.openstreetmap.org/way/1427733208"
+        }
+      ]
+    },
+    {
+      "osmParent": 158962133,
+      "name": "Hampton Inn & Suites",
+      "outlineAreaM2": 1719.7614,
+      "missingPartCoverageM2": 0.0,
+      "excessPartCoverageM2": 0.0,
+      "maskedLegacyRecords": [],
+      "parts": [
+        {
+          "osmWay": 1427612925,
+          "heightMeters": 3.65,
+          "heightSource": "OSM floors \u00d7 estimated floor pitch",
+          "source": "https://www.openstreetmap.org/way/1427612925"
+        },
+        {
+          "osmWay": 1427612926,
+          "heightMeters": 32.85,
+          "heightSource": "OSM floors \u00d7 estimated floor pitch",
+          "source": "https://www.openstreetmap.org/way/1427612926"
+        }
+      ]
+    },
+    {
+      "osmParent": 158962144,
+      "name": "Power Alley Garage",
+      "outlineAreaM2": 2483.2535,
+      "missingPartCoverageM2": 0.0,
+      "excessPartCoverageM2": 0.0,
+      "maskedLegacyRecords": [],
+      "parts": [
+        {
+          "osmWay": 1427612927,
+          "heightMeters": 25.55,
+          "heightSource": "OSM floors \u00d7 estimated floor pitch",
+          "source": "https://www.openstreetmap.org/way/1427612927"
+        }
+      ]
+    },
+    {
+      "osmParent": 159172858,
+      "name": "Hilton Garden Inn Oklahoma City \u2013 Bricktown",
+      "outlineAreaM2": 3067.9223,
+      "missingPartCoverageM2": 0.0,
+      "excessPartCoverageM2": 0.0,
+      "maskedLegacyRecords": [],
+      "parts": [
+        {
+          "osmWay": 1427612920,
+          "heightMeters": 40.15,
+          "heightSource": "OSM floors \u00d7 estimated floor pitch",
+          "source": "https://www.openstreetmap.org/way/1427612920"
+        },
+        {
+          "osmWay": 1427612921,
+          "heightMeters": 14.6,
+          "heightSource": "OSM floors \u00d7 estimated floor pitch",
+          "source": "https://www.openstreetmap.org/way/1427612921"
+        },
+        {
+          "osmWay": 1427612922,
+          "heightMeters": 7.3,
+          "heightSource": "OSM floors \u00d7 estimated floor pitch",
+          "source": "https://www.openstreetmap.org/way/1427612922"
+        },
+        {
+          "osmWay": 1427612923,
+          "heightMeters": 3.65,
+          "heightSource": "OSM floors \u00d7 estimated floor pitch",
+          "source": "https://www.openstreetmap.org/way/1427612923"
+        },
+        {
+          "osmWay": 1427612924,
+          "heightMeters": 3.65,
+          "heightSource": "OSM floors \u00d7 estimated floor pitch",
+          "source": "https://www.openstreetmap.org/way/1427612924"
+        }
+      ]
+    },
+    {
+      "osmParent": 248416129,
+      "name": "Mapped building east of the arena",
+      "outlineAreaM2": 2315.4718,
+      "missingPartCoverageM2": 0.0,
+      "excessPartCoverageM2": 0.0,
+      "maskedLegacyRecords": [],
+      "parts": [
+        {
+          "osmWay": 248416130,
+          "heightMeters": 5.5,
+          "heightSource": "OSM height",
+          "source": "https://www.openstreetmap.org/way/248416130"
+        },
+        {
+          "osmWay": 248416132,
+          "heightMeters": 32.0,
+          "heightSource": "OSM height",
+          "source": "https://www.openstreetmap.org/way/248416132"
+        },
+        {
+          "osmWay": 248416133,
+          "heightMeters": 3.65,
+          "heightSource": "OSM floors \u00d7 estimated floor pitch",
+          "source": "https://www.openstreetmap.org/way/248416133"
+        }
+      ]
+    },
+    {
+      "osmParent": 249481973,
+      "name": "Mapped Reno Avenue commercial building",
+      "outlineAreaM2": 305.8139,
+      "missingPartCoverageM2": 0.0,
+      "excessPartCoverageM2": 0.0,
+      "maskedLegacyRecords": [
+        {
+          "id": 205662,
+          "areaM2": 282.9426
+        }
+      ],
+      "parts": [
+        {
+          "osmWay": 249481983,
+          "heightMeters": 7.3,
+          "heightSource": "OSM floors \u00d7 estimated floor pitch",
+          "source": "https://www.openstreetmap.org/way/249481983"
+        },
+        {
+          "osmWay": 249481988,
+          "heightMeters": 3.65,
+          "heightSource": "OSM floors \u00d7 estimated floor pitch",
+          "source": "https://www.openstreetmap.org/way/249481988"
+        }
+      ]
+    },
+    {
+      "osmParent": 938769876,
+      "name": "Omni Hotel",
+      "outlineAreaM2": 10498.3748,
+      "missingPartCoverageM2": 0.0,
+      "excessPartCoverageM2": 0.0,
+      "maskedLegacyRecords": [
+        {
+          "id": 172921,
+          "areaM2": 383.5442
+        }
+      ],
+      "parts": [
+        {
+          "osmWay": 1336564418,
+          "heightMeters": 63.0,
+          "heightSource": "OSM height",
+          "source": "https://www.openstreetmap.org/way/1336564418"
+        },
+        {
+          "osmWay": 1361173437,
+          "heightMeters": 20.0,
+          "heightSource": "OSM height",
+          "source": "https://www.openstreetmap.org/way/1361173437"
+        },
+        {
+          "osmWay": 1361173438,
+          "heightMeters": 17.0,
+          "heightSource": "OSM height",
+          "source": "https://www.openstreetmap.org/way/1361173438"
+        }
+      ]
+    },
+    {
+      "osmParent": 938771500,
+      "name": "Oklahoma City Convention Center",
+      "outlineAreaM2": 31055.0853,
+      "missingPartCoverageM2": 0.0,
+      "excessPartCoverageM2": 0.0,
+      "maskedLegacyRecords": [
+        {
+          "id": 154487,
+          "areaM2": 447.6104
+        }
+      ],
+      "parts": [
+        {
+          "osmWay": 1336564415,
+          "heightMeters": 25.0,
+          "heightSource": "OSM height",
+          "source": "https://www.openstreetmap.org/way/1336564415"
+        },
+        {
+          "osmWay": 1336564416,
+          "heightMeters": 31.0,
+          "heightSource": "OSM height",
+          "source": "https://www.openstreetmap.org/way/1336564416"
+        },
+        {
+          "osmWay": 1336564417,
+          "heightMeters": 24.0,
+          "heightSource": "OSM height",
+          "source": "https://www.openstreetmap.org/way/1336564417"
+        },
+        {
+          "osmWay": 1361174520,
+          "heightMeters": 16.0,
+          "heightSource": "OSM height",
+          "source": "https://www.openstreetmap.org/way/1361174520"
+        }
+      ]
+    }
+  ],
+  "limits": [
+    "OSM tags are not a new survey.",
+    "Floor-count-only heights use the existing estimated3.65m floor pitch.",
+    "Only the eight explicitly listed complete complexes are repaired.",
+    "Unrelated unknown building heights remain unchanged. Original GIS records survive outside mapped masks."
+  ]
+}

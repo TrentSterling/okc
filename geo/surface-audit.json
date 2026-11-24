@@ -1,24 +1,26 @@
 {
-  "sourceBuildingEntries": 1300,
+  "sourceBuildingEntries": 1323,
   "sourceRoadSegments": 1710,
   "sourceFootways": 140,
-  "groundLayers": 7,
-  "compiledGroundPolygons": 2031,
-  "compiledGroundHoles": 1267,
+  "groundLayers": 8,
+  "compiledGroundPolygons": 3246,
+  "compiledGroundHoles": 954,
   "removedDuplicateCoverageM2": {
     "road": 83229.3169,
+    "curb": 0.0,
+    "sidewalk": 0.0,
     "path": 656.325,
     "water": 0.0,
-    "curb": 195958.5012,
     "parking": 924.3667,
     "paving": 0.0,
     "grass": 51907.2801
   },
   "clippedBeyondMapApronM2": {
     "road": 126745.3019,
+    "curb": -0.0,
+    "sidewalk": -0.0,
     "path": 0.0,
     "water": 0.0,
-    "curb": 192158.0279,
     "parking": 1277.419,
     "paving": 0.0,
     "grass": 11393.3651
@@ -26,8 +28,41 @@
   "remainingGroundLayerOverlapM2": 0.0,
   "ownershipClearanceMeters": 0.001,
   "collinearityCleanupMeters": 0.0005,
+  "streets": {
+    "curbRevealMeters": 0.14999999999999997,
+    "curbCapWidthMeters": 0.18,
+    "sidewalkWidthsMeters": {
+      "primary": 2.4,
+      "secondary": 2.2,
+      "tertiary": 2.0,
+      "residential": 1.8,
+      "Reno": 2.5
+    },
+    "serviceAndLinkSidewalks": 0,
+    "raisedWalkAreaM2": 321775.491,
+    "ramps": 59,
+    "rampSources": {
+      "Reno crosswalk": 52,
+      "Mapped footway connection": 7
+    },
+    "rampAreaM2": 509.762,
+    "RenoJunctions": 16,
+    "verticalEdges": 17090,
+    "paintRectangles": 7921,
+    "rampFaces": 118
+  },
   "buildings": {
     "sourceOverlapPairs": [
+      {
+        "a": 154487,
+        "b": 1361174520,
+        "area": 447.6107
+      },
+      {
+        "a": 172921,
+        "b": 1361173438,
+        "area": 383.5443
+      },
       {
         "a": 165142,
         "b": 249662894,
@@ -52,6 +87,16 @@
         "a": 155014,
         "b": 248164222,
         "area": 1088.5636
+      },
+      {
+        "a": 205662,
+        "b": 249481988,
+        "area": 115.4807
+      },
+      {
+        "a": 205662,
+        "b": 249481983,
+        "area": 167.4617
       },
       {
         "a": 154744,
@@ -79,20 +124,52 @@
         "area": 864.3455
       }
     ],
-    "sourceOverlapAreaM2": 11197.2201,
-    "compiledVolumes": 1307,
-    "exposedRoofPolygons": 1309,
-    "exposedWallSegments": 17180,
-    "hiddenRoofAreaRemovedM2": 19460.3632,
-    "hiddenWallAreaRemovedM2": 159708.2606,
+    "sourceOverlapAreaM2": 12311.3175,
+    "compiledVolumes": 1330,
+    "exposedRoofPolygons": 1333,
+    "exposedWallSegments": 17288,
+    "hiddenRoofAreaRemovedM2": 19461.5978,
+    "hiddenWallAreaRemovedM2": 194176.1829,
     "remainingEqualHeightRoofOverlapM2": 0.0,
     "remainingRoofsInsideHigherVolumesM2": 0.0,
     "remainingWallsInsideOtherVolumesM2": 0.0,
     "customLandmarkExclusions": [],
     "customLandmarkCount": 8,
-    "actualFacadeOpenings": 3466,
-    "recessedEntrances": 1095,
-    "collisionPolygons": 1291,
+    "mappedMassingExclusions": [
+      {
+        "id": 154487,
+        "removedArea": 447.6106
+      },
+      {
+        "id": 172921,
+        "removedArea": 383.5436
+      },
+      {
+        "id": 205662,
+        "removedArea": 282.9424
+      }
+    ],
+    "actualFacadeOpenings": 18726,
+    "recessedEntrances": 1154,
+    "facadeArticulation": {
+      "joinedCoplanarSegments": 57,
+      "detailedStreetFrontages": 2868,
+      "wholeWindowBays": 14102,
+      "upperFloorOpenings": 4955,
+      "clerestoryOpenings": 3470,
+      "facadeDetailBands": 13649,
+      "entryCanopies": 560,
+      "layoutBuildings": 1170
+    },
+    "roofArticulation": {
+      "recessedRoofDecks": 1198,
+      "roofDeckAreaM2": 882046.865885,
+      "parapetCopingAreaM2": 36481.19266,
+      "copingTriangles": 31005,
+      "parapetInnerWallMeters": 128875.109518,
+      "roofEnvelopeCoverageErrorM2": 0.0
+    },
+    "collisionPolygons": 1293,
     "drivingBounds": {
       "minX": -1600,
       "maxX": 1600,
@@ -104,12 +181,13 @@
     1427733210
   ],
   "equalHeightRoofOverlapsAfter": 0.0,
-  "removedInternalWallAreaM2": 159708.2606,
+  "removedInternalWallAreaM2": 194176.1829,
   "elevationsMeters": {
     "road": 0.14,
+    "curb": 0.29,
+    "sidewalk": 0.29,
     "path": 0.105,
     "water": 0.075,
-    "curb": 0.06,
     "parking": 0.04,
     "paving": 0.04,
     "grass": 0.025
