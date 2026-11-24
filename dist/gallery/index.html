@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#10151f">
+  <meta name="description" content="Prairie Prism development captures. Compare Devon Tower from different angles and times of day, inspect material studies, and revisit earlier builds.">
+  <title>Prairie Prism / Capture gallery</title>
+  <link rel="stylesheet" href="./gallery.css">
+</head>
+<body>
+  <a class="skip-link" href="#captures">Skip to captures</a>
+  <header class="site-header wrap">
+    <a class="brand" href="../">Prairie Prism</a>
+    <nav aria-label="Gallery navigation">
+      <a class="quiet-link" href="../">Back to drive</a>
+      <a class="button" href="./prairie-prism-v02-captures.zip" download>Download this pass</a>
+    </nav>
+  </header>
+
+  <main class="wrap">
+    <div class="page-intro">
+      <div><p class="eyebrow">Oklahoma City · Development views</p><h1>Capture gallery</h1></div>
+      <p class="intro-copy">Mapped Reno Avenue, a rebuilt Devon, and the downtown skyline. Compare the new daylight and dusk views, then look back at the earlier passes.</p>
+    </div>
+
+    <p id="loadStatus" class="status" role="status">Loading captures…</p>
+
+    <section id="hero" class="hero" aria-label="Featured capture" hidden>
+      <button id="heroOpen" class="image-button hero-image" type="button" aria-label="Enlarge featured capture">
+        <img id="heroImage" alt="" fetchpriority="high" decoding="async">
+        <span class="image-action">View full capture</span>
+      </button>
+      <div class="hero-copy">
+        <p class="eyebrow">From the current build</p>
+        <h2 id="heroTitle"></h2>
+        <p id="heroDescription"></p>
+        <dl id="heroMeta" class="shot-meta"></dl>
+        <a id="heroLive" class="button cream" href="../">Open this view</a>
+        <p class="small-note">Saved images open without WebGL. Live views return to the interactive scene.</p>
+      </div>
+    </section>
+
+    <section id="captures" class="capture-section" aria-labelledby="captureTitle" hidden>
+      <div class="section-heading"><div><p class="eyebrow">Browse the captures</p><h2 id="captureTitle">Views & studies</h2></div><p id="captureCount" class="count" aria-live="polite"></p></div>
+      <div id="filters" class="filters" role="group" aria-label="Filter captures by study"></div>
+      <div id="captureGrid" class="capture-grid"></div>
+      <p id="emptyState" class="status" hidden>No captures in this view.</p>
+    </section>
+
+    <section id="compareSection" class="compare-section" aria-labelledby="compareTitle" hidden>
+      <div class="section-heading"><div><p class="eyebrow">Look side by side</p><h2 id="compareTitle">Compare two captures</h2></div><p class="section-note">Match a camera angle to see what the light changes.</p></div>
+      <div class="compare-grid">
+        <figure class="compare-item"><label for="compareA">First capture</label><div class="select-wrap"><select id="compareA"></select></div><button id="compareOpenA" class="image-button" type="button"><img id="compareImageA" alt="" loading="lazy"><span class="image-action">Enlarge</span></button><figcaption id="compareCaptionA"></figcaption></figure>
+        <figure class="compare-item"><label for="compareB">Second capture</label><div class="select-wrap"><select id="compareB"></select></div><button id="compareOpenB" class="image-button" type="button"><img id="compareImageB" alt="" loading="lazy"><span class="image-action">Enlarge</span></button><figcaption id="compareCaptionB"></figcaption></figure>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer wrap"><p>Prairie Prism · A sunset drive inspired by Reno Avenue.</p><p><a href="./prairie-prism-captures.zip" download>Download the first prototype captures</a></p><p id="buildNote"></p></footer>
+
+  <dialog id="lightbox" aria-labelledby="lightboxTitle">
+    <div class="lightbox-shell">
+      <div class="lightbox-top"><p id="lightboxPosition" class="eyebrow"></p><button id="closeLightbox" class="button" type="button" autofocus>Close</button></div>
+      <div class="lightbox-stage"><img id="lightboxImage" alt=""></div>
+      <div class="lightbox-bottom">
+        <div class="lightbox-info"><p id="lightboxCategory" class="eyebrow"></p><h2 id="lightboxTitle"></h2><p id="lightboxDescription"></p><dl id="lightboxMeta" class="shot-meta"></dl></div>
+        <div class="lightbox-actions"><div class="previous-next"><button id="previousShot" class="button" type="button" aria-label="Previous capture">Previous</button><button id="nextShot" class="button" type="button" aria-label="Next capture">Next</button></div><a id="downloadShot" class="button" download>Download PNG</a><a id="openLive" class="button cream">Open this view</a><p class="small-note">Use left / right keys to browse. Escape closes.</p></div>
+      </div>
+    </div>
+  </dialog>
+  <script type="module" src="./gallery.js"></script>
+</body>
+</html>

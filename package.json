@@ -1,0 +1,14 @@
+{
+  "name": "okc-prairie-prism",
+  "version": "0.2.1",
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "three": "0.180.0"
+  },
+  "homepage": "https://tront.xyz/okc/",
+  "scripts": {
+    "build:downloads": "python3 scripts/build-downloads.py",
+    "check": "node scripts/check-static.mjs"
+  }
+}
