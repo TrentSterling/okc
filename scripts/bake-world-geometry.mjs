@@ -8,6 +8,8 @@ import {fileURLToPath,pathToFileURL} from 'node:url';
 import {createHash} from 'node:crypto';
 import * as THREE from '../public/vendor/three.module.js';
 import { skylineFacadeProfile } from '../src/world/skyline-profiles.js';
+import { bakeStreetDetails } from './bake-street-details.mjs';
+import { bakeFacadeBand,bakeSimpleFrame,bakeRoofAssembly,bakeLandmarkFins } from './bake-facade-details.mjs';
 
 const ROOT=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..');
 const OUTPUT=path.resolve(process.env.OKC_BUILD_OUTPUT||path.join(ROOT,'dist'));
@@ -47,7 +49,7 @@ function triangle(a,b,c,material,cast){
     function vertex(v){
       const value=v.slice();value[0]-=chunk.origin[0];value[2]-=chunk.origin[2];
       const floats=value.map(x=>Math.fround(x));
-      if(groundUvScale[material]){
+      if(groundUvScale[material]&&Math.abs(floats[4])>.5){
         // Keep repeating UVs close to zero in each chunk. Integer period
         // shifts preserve continuity while avoiding Float32 collapse where
         // a clipped road triangle is only micrometers wide at a cell edge.
@@ -124,6 +126,7 @@ function facadeMaterial(s){
   return 'building.'+(['lowrise','retail'].includes(s.kind)?'lowrise.':'masonry.')+(Math.abs(s.id)%4);
 }
 for(const layer of WORLD_SURFACES.layers)for(const p of layer.polygons)polygon(p,layer.y,'ground.'+layer.kind,false,layer.uvScale);
+bakeStreetDetails(WORLD_SURFACES,{quad,triangle},stats);
 for(const shell of WORLD_SURFACES.buildingShells){
   const material=facadeMaterial(shell),lowrise=['lowrise','retail'].includes(shell.kind);
   const profile=skylineFacadeProfile(CITY_DATA.buildings[shell.sourceIndex]);
@@ -149,8 +152,14 @@ for(const shell of WORLD_SURFACES.buildingShells){
       quad([wallPoint(wall,a,lo),wallPoint(wall,a,hi),wallPoint(wall,a,hi,-depth),wallPoint(wall,a,lo,-depth)],tangent,'detail.concrete');
       quad([wallPoint(wall,b,lo),wallPoint(wall,b,hi),wallPoint(wall,b,hi,-depth),wallPoint(wall,b,lo,-depth)],tangent.map(v=>-v),'detail.concrete');
       quad([wallPoint(wall,a,hi),wallPoint(wall,b,hi),wallPoint(wall,b,hi,-depth),wallPoint(wall,a,hi,-depth)],[0,-1,0],'detail.concrete');
-      quad([wallPoint(wall,a,lo),wallPoint(wall,b,lo),wallPoint(wall,b,lo,-depth),wallPoint(wall,a,lo,-depth)],[0,1,0],'detail.concrete');
+      // The sill/threshold below is the only bottom surface. The old bottom
+      // reveal and sill top shared exactly this plane with different UVs.
       quad([wallPoint(wall,a,lo,-depth),wallPoint(wall,b,lo,-depth),wallPoint(wall,b,hi,-depth),wallPoint(wall,a,hi,-depth)],normal,'detail.glass',[[0,0],[1,0],[1,1],[0,1]]);
+      if(o.framing==='simple'){
+        bakeSimpleFrame(wall,o,{wallPoint,quad});
+        wallBox(wall,a-.035,b+.035,lo-.055,lo,.12,depth+.14,'detail.concrete');
+        continue;
+      }
       const trim=.07;
       wallBox(wall,a,a+trim,lo,hi,.035,.12,'detail.darkSteel');
       wallBox(wall,b-trim,b,lo,hi,.035,.12,'detail.darkSteel');
@@ -161,20 +170,22 @@ for(const shell of WORLD_SURFACES.buildingShells){
         const handle=b-.22;
         wallBox(wall,handle-.025,handle+.025,1.02,1.45,-depth+.08,.055,'detail.steel');
         wallBox(wall,a+trim,b-trim,hi-.43,hi-.37,-depth+.025,.055,'detail.darkSteel');
-        wallBox(wall,a-.035,b+.035,lo-.045,lo,.12,.50,'detail.concrete');
+        wallBox(wall,a-.035,b+.035,lo-.045,lo,.12,depth+.14,'detail.concrete');
       }else{
         wallBox(wall,(a+b)/2-.025,(a+b)/2+.025,lo+trim,hi-trim,-depth+.025,.055,'detail.darkSteel');
-        wallBox(wall,a-.045,b+.045,lo-.075,lo,.12,.35,'detail.concrete');
+        wallBox(wall,a-.045,b+.045,lo-.075,lo,.12,depth+.14,'detail.concrete');
       }
     }
     // Cornice only follows a genuinely exposed wall. It cannot trace the
     // hidden parent footprint across the face of a neighboring tower.
-    if(length>1.0&&wall.top>3){
+    if(length>1.0&&wall.top>3&&!shell.roofAssembly){
       wallBox(wall,.11,length-.11,wall.top-.22,wall.top+.06,.11,.20,
               shell.kind==='glass'?'detail.steel':'detail.concrete');
     }
+    for(const band of wall.detailBands||[])bakeFacadeBand(wall,band,{wallPoint,quad});
+    bakeLandmarkFins(wall,profile,{wallPoint,quad});
   }
-  for(const roof of shell.roofs)polygon(roof,shell.height,'detail.roof',true,18);
+  bakeRoofAssembly(shell,{polygon,quad,wallPoint});
   for(const unit of shell.rooftop){
     instanceBox([unit.x,unit.y+unit.h/2,unit.z],[unit.w,unit.h,unit.d],0,'detail.roof');
     instanceBox([unit.x,unit.y+unit.h+.06,unit.z],[unit.w*.86,.12,unit.d*.86],0,'detail.steel');

@@ -1,5 +1,16 @@
 # Prairie Prism handoff
 
+## Active street geometry and building massing correction (v0.6)
+
+- Work branch: `refactor/street-massing-20261124`, checkout `/workspace/okc-modular`.
+- Preserved production baseline: `0aa810f316e7f808f6d75355d07c10aa045afba5`, remote `backup/pre-street-massing-20261124-0aa810f`, separate checkout/build `/workspace/okc-v05-baseline`.
+- User's actual v0.5 screenshot exposed flat below-road curb strips, blank building frontages, generic block massing, and remaining surface flicker.
+- Confirmed coplanarity defect: bottom window/door reveal quads shared a plane with the top of the sill/threshold box and different UVs. Baker now gives that surface one owner. The old app already corrected reversed-depth offset signs; do NOT claim that was a missing v0.5 fix. The same behavior is now an idempotent tested helper.
+- Implemented: raised sidewalks and180mm curb caps, actual risers and59 ramps, compiled contained/nonoverlapping crossing/lot paint, complete metric facade bays, upper rows and parapet roof wells, and eight complete saved OSM part groups restoring23 omitted parts. Generic unknown heights remain unchanged. BOK receives referenced vertical fins with explicitly reconstructed dimensions.
+- Initial coordinated build succeeds. Independent compiled geometry gates pass; actual roof-buffer area and coplanarity checks plus before/after native geometry diagnostics are in progress. Do not publish until those pass and exact branch CI succeeds.
+- Native diagnostic graphics use actual production mesh transforms and texture pixels with simple depth-tested shading. They are not browser/PBR screenshots and do not measure FPS. Browser WebGL2 was unavailable in the preceding baseline checks.
+- Source snapshots, existing29 images/capture ZIPs, sunset shader and zero-emission Devon contracts remain preserved. Do not overwrite `main` or delete any backup to resolve a failure.
+
 ## Active Devon reflection and skyline correction
 
 - Work branch: `refactor/devon-sunset-20261124` in `/workspace/okc-modular`.

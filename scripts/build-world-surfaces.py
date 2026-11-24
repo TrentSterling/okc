@@ -18,6 +18,7 @@ from shapely.geometry import GeometryCollection, LineString, Point, Polygon, box
 from shapely.ops import unary_union
 from shapely.strtree import STRtree
 from city_shells import compile_buildings
+from street_surfaces import compile_sidewalks, compile_edges, compile_street_paint
 
 ROOT = Path(__file__).resolve().parents[1]
 OUTPUT = Path(os.environ.get('OKC_BUILD_OUTPUT', ROOT / 'dist'))
@@ -83,23 +84,38 @@ def build():
         if 'Reno Avenue' in road['name']:
             continue
         raw['road'].append(ribbon(road['p'], road['w']))
-        raw['curb'].append(ribbon(road['p'], road['w'] + 4.4))
     raw['road'].append(ribbon(d['route'], 21))
-    raw['curb'].append(ribbon(d['route'], 25))
     for path in d.get('paths', []):
         raw['path'].append(ribbon(path['p'], path['width']))
 
     # A planar area belongs to exactly one visible layer. Road junctions are a
     # single union at the same elevation as Reno, not competing ribbon quads.
-    specs = [('road', .14, 16), ('path', .105, 18), ('water', .075, 14),
-             ('curb', .06, 18), ('parking', .04, 14), ('paving', .04, 14), ('grass', .025, 24)]
+    specs = [('road', .14, 4), ('curb', .29, 4), ('sidewalk', .29, 18),
+             ('path', .105, 18), ('water', .075, 14), ('parking', .04, 4),
+             ('paving', .04, 14), ('grass', .025, 24)]
     bounds=d.get('drivingBounds')
     # OSM returns complete ways even when they run well outside the requested
     # map. Keep a small camera apron around the mapped driving area instead of
     # baking isolated road strips several kilometers past its coverage.
     clip=box(bounds['minX']-50,bounds['minZ']-50,bounds['maxX']+50,bounds['maxZ']+50) if bounds else None
+    if clip is None:
+        clip = box(-8000, -8000, 8000, 8000)
+    custom_path = OUTPUT / 'geo/custom-landmark-volumes.json'
+    custom = json.loads(custom_path.read_text())['volumes'] if custom_path.exists() else []
+    building_masks = [clean(Polygon(b['p'])) for b in d['buildings']]
+    building_masks += [clean(Polygon(v['polygon']['outer'], v['polygon'].get('holes', [])))
+                       for v in custom if v.get('bottom', 0) <= .29]
+    building_masks += [clean(Polygon(f['p'])) for f in d['features']
+                       if f['name'] in ['Paycom Center', 'Crystal Bridge Tropical Conservatory']]
+    blocked = merge(building_masks)
+    road_union = clean(merge(raw['road']).intersection(clip))
+    street = compile_sidewalks(d, road_union, blocked, merge(raw['water']), clip)
+    raw['curb'] = [street['curb']]
+    raw['sidewalk'] = [street['sidewalk']]
     outside_map={}
-    occupied = GeometryCollection()
+    # Sloped curb cuts own their complete plan before any horizontal surface.
+    # They touch the roadway boundary but cannot create a second road owner.
+    occupied = street['rampMask']
     layers, geometries, overlaps = [], {}, {}
     for kind, y, uv in specs:
         union = merge(raw[kind])
@@ -122,7 +138,10 @@ def build():
     # Compile the outer shell of all intersecting height volumes. This also
     # owns true facade holes and the collision footprint consumed by driving.
     buildings = d['buildings']
-    building_payload, building_stats = compile_buildings(d, OUTPUT / 'geo/custom-landmark-volumes.json')
+    building_payload, building_stats = compile_buildings(d, custom_path)
+    elevations = {kind: y for kind, y, _ in specs}
+    street_edges = compile_edges(street, geometries, elevations, blocked)
+    street_paint = compile_street_paint(d, street, geometries, blocked)
 
     remaining = []
     overlap_total = 0.
@@ -145,16 +164,20 @@ def build():
         'remainingGroundLayerOverlapM2': round(overlap_total, 9),
         'ownershipClearanceMeters': .001,
         'collinearityCleanupMeters': .0005,
+        'streets': street['stats'] | {'verticalEdges': len(street_edges), 'paintRectangles': len(street_paint),
+                                    'rampFaces': len(street['rampFaces'])},
         'buildings': building_stats,
         'redundantBuildingIds': building_payload['redundantBuildingIds'],
         'equalHeightRoofOverlapsAfter': building_stats['remainingEqualHeightRoofOverlapM2'],
         'removedInternalWallAreaM2': building_stats['hiddenWallAreaRemovedM2'],
-        'elevationsMeters': {kind: y for kind, y, _ in specs},
+        'elevationsMeters': elevations,
         'note': 'Geometric ownership audit, not a claim of surveyed surface elevations. Base terrain underlies these surfaces at a separate height.'
     }
-    payload = {'version': 2, 'cityDataSha256': hashlib.sha256(source.read_bytes()).hexdigest(),
+    payload = {'version': 3, 'cityDataSha256': hashlib.sha256(source.read_bytes()).hexdigest(),
                'customLandmarkSha256': hashlib.sha256((OUTPUT / 'geo/custom-landmark-volumes.json').read_bytes()).hexdigest(),
-               'layers': layers, **building_payload}
+               'layers': layers, 'streetEdges': street_edges, 'streetRamps': street['ramps'],
+               'streetRampFaces': street['rampFaces'], 'streetCrossings': street['crossings'],
+               'streetPaint': street_paint, **building_payload}
     return payload, stats
 
 

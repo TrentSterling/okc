@@ -11,7 +11,7 @@ import {bindControls} from './app/controls.js';
 import {createRoadAudio} from './app/audio.js';
 import {defaults,createSetupIO} from './app/setup.js';
 import {createCaptureController} from './app/captures.js';
-import {createRenderer} from './app/renderer.js';
+import {createRenderer,configureDepthOffsets} from './app/renderer.js';
 
 const clamp=THREE.MathUtils.clamp;
 let state={...defaults};
@@ -53,15 +53,7 @@ async function init(){
  player=createCar('sedan',0xc79956);scene.add(player);
  cameraRig=createCameraRig({camera,world,player,atmosphere,drivingWorld});cockpit=cameraRig.cockpit;
  atmosphere.bindSunlight(scene);
- // Reverse depth reverses the sign of a decal's depth bias too. Keep only
- // intentional paint/screen overlays biased; building shells are separated
- // geometrically by the offline compiler.
- if(reversedDepth){const seen=new Set();scene.traverse(object=>{
-   for(const material of (Array.isArray(object.material)?object.material:[object.material])){
-     if(!material||seen.has(material))continue;seen.add(material);
-     if(material.polygonOffset){material.polygonOffsetFactor*=-1;material.polygonOffsetUnits*=-1;}
-   }
- });}
+ configureDepthOffsets(scene,reversedDepth);
  localReflectionOptions={glass,exclude:[devon.group,legends.group,player,cockpit],position:new THREE.Vector3(0,105,0),boxMin:new THREE.Vector3(-650,0,-700),boxMax:new THREE.Vector3(650,350,500),size:256,strength:.85};
  ui=createInterface({getState:()=>state,legends,glass,renderer,clearDrivingInputs});
  captures=createCaptureController({renderer,scene,camera,getState:()=>state,applyCapturePreset,snapshot:snapshotView,updateCamera,invalidateCamera:()=>{cameraRig.view.firstCamera=true;},resize});

@@ -14,11 +14,27 @@ function addVolume(p,top,bottom=0){
  const xs=p.outer.map(p=>p[0]),zs=p.outer.map(p=>p[1]),v={p,top,bottom};
  visitCells(Math.min(...xs),Math.max(...xs),Math.min(...zs),Math.max(...zs),key=>{if(!volumeGrid.has(key))volumeGrid.set(key,[]);volumeGrid.get(key).push(v);});
 }
-for(const s of source.buildingShells)for(const p of s.footprint)addVolume(p,s.height);
+for(const s of source.buildingShells){
+ const well=s.roofAssembly;
+ // A recessed deck removes the upper .42 m of its own building solid.
+ // Keeping the old full prism here would incorrectly call a real roof well
+ // hidden. Coping remains solid to the original mapped outer height.
+ for(const p of s.footprint)addVolume(p,well?well.deckY:s.height);
+ if(well)for(const p of well.coping)addVolume(p,s.height,well.deckY);
+}
 for(const s of source.customLandmarkFootprints)for(const p of s.polygons)addVolume(p,s.height,s.bottom||0);
-const stats={chunks:baked.chunks.length,triangles:0,vertices:0,facadeTriangles:0,roofArea:0,expectedRoofArea:0,hiddenFacadeTriangles:0,hiddenRoofTriangles:0,openings:0,blockedOpeningCenters:0,entrances:0,boxInstances:0};
+const stats={chunks:baked.chunks.length,triangles:0,vertices:0,facadeTriangles:0,roofArea:0,expectedRoofArea:0,copingTriangles:0,recessedDecks:0,hiddenFacadeTriangles:0,hiddenRoofTriangles:0,openings:0,blockedOpeningCenters:0,entrances:0,boxInstances:0};
 const roofAreas=new Map(),expectedAreas=new Map();
-for(const s of source.buildingShells)for(const p of s.roofs){const a=area(p.outer)-p.holes.reduce((n,h)=>n+area(h),0);stats.expectedRoofArea+=a;expectedAreas.set(s.height,(expectedAreas.get(s.height)||0)+a);}
+for(const s of source.buildingShells){
+ for(const p of s.roofs)stats.expectedRoofArea+=area(p.outer)-p.holes.reduce((n,h)=>n+area(h),0);
+ const well=s.roofAssembly;
+ const groups=well?[[well.deck,well.deckY],[well.coping,s.height]]:[[s.roofs,s.height]];
+ if(well){stats.recessedDecks++;assert.equal(Number((s.height-well.deckY).toFixed(4)),.42);}
+ for(const [polygons,height]of groups)for(const p of polygons){
+  const a=area(p.outer)-p.holes.reduce((n,h)=>n+area(h),0);
+  expectedAreas.set(height,(expectedAreas.get(height)||0)+a);
+ }
+}
 const decode=(str,Type)=>{const b=Buffer.from(str,'base64');return new Type(b.buffer.slice(b.byteOffset,b.byteOffset+b.byteLength));};
 for(const chunk of baked.chunks){
  const values=decode(chunk.v,Float32Array),indices=decode(chunk.i,chunk.indexType===32?Uint32Array:Uint16Array);
@@ -34,13 +50,17 @@ for(const chunk of baked.chunks){
   const normal=[values[ids[0]*8+3],values[ids[0]*8+4],values[ids[0]*8+5]],cr=cross(...p),twice=Math.hypot(...cr);
   assert.ok(twice>1e-9,'Collapsed baked triangle');stats.triangles++;
   const center=[0,1,2].map(k=>(p[0][k]+p[1][k]+p[2][k])/3);
-  const material=chunk.material,isFacade=material.startsWith('building.'),isRoof=material==='detail.roof';
+  const material=chunk.material,isFacade=material.startsWith('building.'),isRoof=material==='detail.roof'||material==='detail.coping';
   if(isFacade){
    stats.facadeTriangles++;
    const face={p,normal};
    visitCells(Math.min(...p.map(p=>p[0]))-.01,Math.max(...p.map(p=>p[0]))+.01,Math.min(...p.map(p=>p[2]))-.01,Math.max(...p.map(p=>p[2]))+.01,key=>{if(!faceGrid.has(key))faceGrid.set(key,[]);faceGrid.get(key).push(face);});
   }
-  if(isRoof){const a=Math.abs(cr[1])/2;stats.roofArea+=a;const y=Number(center[1].toFixed(4));roofAreas.set(y,(roofAreas.get(y)||0)+a);}
+  if(isRoof){
+   assert.ok(normal[1]>.999,'Roof decks and coping must face upward');
+   if(material==='detail.coping')stats.copingTriangles++;
+   const a=Math.abs(cr[1])/2;stats.roofArea+=a;const y=Number(center[1].toFixed(4));roofAreas.set(y,(roofAreas.get(y)||0)+a);
+  }
   if(isFacade||isRoof){
    const outside=center.map((v,k)=>v+normal[k]*.004),key=`${Math.floor(outside[0]/CELL)}:${Math.floor(outside[2]/CELL)}`;
    const hidden=(volumeGrid.get(key)||[]).some(v=>outside[1]>v.bottom+.001&&outside[1]<v.top-.001&&inPolygon(outside[0],outside[2],v.p));
@@ -75,6 +95,8 @@ assert.equal(stats.hiddenFacadeTriangles,0,'An exterior facade triangle points i
 assert.equal(stats.hiddenRoofTriangles,0,'A visible roof triangle is inside a higher volume');
 assert.equal(stats.blockedOpeningCenters,0,'A door/window is still covered by a closed facade');
 assert.ok(Math.abs(stats.roofArea-stats.expectedRoofArea)<=Math.max(.05,stats.expectedRoofArea*2e-6),'Baked roof coverage differs from the height-envelope polygons');
+assert.equal(roofAreas.size,expectedAreas.size,'Missing or extra roof deck elevation');
+for(const[y,expected]of expectedAreas)assert.ok(Math.abs((roofAreas.get(y)||0)-expected)<=Math.max(.05,expected*2e-6),`Roof coverage at ${y} m differs from the physical deck/coping partition`);
 assert.ok(stats.entrances>500,'Mapped city must retain its street-facing entrances');
 assert.ok(source.drivingSolids.length>500&&source.drivingBounds.minX<0&&source.drivingBounds.maxX>0);
 console.log(JSON.stringify({...stats,roofAreaDifference:stats.roofArea-stats.expectedRoofArea,scope:'Finished baked buffers, ownership, real facade holes, chunks, collision data; no GPU rendering claim.'},null,2));

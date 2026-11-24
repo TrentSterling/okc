@@ -5,6 +5,7 @@ needed. Heights from OSM tags/CTBUH overrides are distinguished from estimates.
 """
 from pathlib import Path
 import gzip, json, math, os, re, xml.etree.ElementTree as ET
+from mapped_massing import apply_mapped_massing
 
 ROOT = Path(__file__).resolve().parents[1]
 OUTPUT = Path(os.environ.get('OKC_BUILD_OUTPUT', ROOT / 'dist'))
@@ -126,6 +127,8 @@ for w in building_ways:
     if w['id'] in [142407294,273612773] and not any(b['osm']==w['id'] for b in buildings):
         buildings.append({'id':w['id'],'osm':w['id'],'name':w['tags'].get('name',''),'p':w['p'],'h':number(w['tags'].get('building:levels'))*3.65,'kind':'parking','heightSource':'OSM floors × estimated floor pitch'})
 
+massing_report = apply_mapped_massing(buildings, building_ways, HEIGHTS, OUTPUT)
+
 roads=[];surfaces=[];renosegments=[];paths=[]
 for w in ways:
     t=w['tags'];p=w['p'];name=t.get('name','');hw=t.get('highway')
@@ -175,6 +178,8 @@ provenance={
  'scale':{'worldUnit':'meter','projection':'Local equirectangular projection at Devon Tower latitude','metersPerLongitudeDegree':MX,'metersPerLatitudeDegree':MZ,'ground':'Flat local datum; source elevations are not available'},
  'heightReference':'https://www.skyscrapercenter.com/city/oklahoma-city',
  'heightSourceCounts':{key:sum(b['heightSource']==key for b in buildings) for key in sorted({b['heightSource'] for b in buildings})},
+ 'mappedMassing':{'groups':len(massing_report['groups']), 'addedPartRecords':len(massing_report['addedPartRecords']),
+                 'details':'geo/mapped-massing-sources.json'},
  'footprintCorrections':[{'osmWay':key,'name':item['name'],
      'replacedGISObjects':sorted(set(replaced_footprints[key])),
      'outlineSource':'https://www.openstreetmap.org/way/'+str(key),

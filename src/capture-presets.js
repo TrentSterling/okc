@@ -149,6 +149,22 @@ export const REFLECTION_SHOT_PRESETS = [
     'Reflection study', 'Last direct sunlight',
     { camera: 'orbit', progress: .63, exposure: 1.08 }, reno),
 ];
+// Live street studies have no archived image attached. Fixed daylight makes
+// curb sections, facade relief and supporting roof forms easy to inspect.
+export const STREET_SHOT_PRESETS = [
+  shot('v06-reno-street', 'Reno at street level',
+    'A paused eye-level view of reconstructed street frontages, raised sidewalks and the downtown skyline.',
+    'Street study', 'Daylight', {camera:'orbit',progress:.10,exposure:.95},
+    framed([-555,2.1,299],[-210,20,255],54)),
+  shot('v06-walker-corner', 'The Walker corner',
+    'A close daylight view of curb cuts, pedestrian crossings, recessed windows and storefront scale.',
+    'Street study', 'Daylight', {camera:'orbit',progress:.10,exposure:.95},
+    framed([-354,2.1,300],[-293,4.5,268],58)),
+  shot('v06-block-massing', 'Reno block forms',
+    'An elevated view of parapet roof wells and mapped supporting-building forms. Unmeasured heights remain estimates.',
+    'Street study', 'Daylight', {camera:'orbit',progress:.10,exposure:.95},
+    framed([-430,65,365],[-325,0,250],53)),
+];
 export const SHOT_PRESETS = [
   shot('v02-opening-view', 'The rebuilt opening view',
     'The default chase camera on mapped Reno Avenue, with Devon and the real downtown arrangement at dusk.',
@@ -181,4 +197,4 @@ export const SHOT_PRESETS = [
     'The driver view on the mapped at-grade corridor, with two through lanes in each direction and a glance toward Devon.',
     'Reconstruction pass', 'Golden hour', { camera: 'driver', route: .392, progress: .18, exposure: 1 }, { lookYaw: .35, lookPitch: .10, fov: 56 })
 ];
-export const SHOT_BY_ID = new Map([...ARCHIVED_SHOT_PRESETS, ...SHOT_PRESETS, ...REFLECTION_SHOT_PRESETS].map(preset => [preset.id, preset]));
+export const SHOT_BY_ID = new Map([...ARCHIVED_SHOT_PRESETS, ...SHOT_PRESETS, ...REFLECTION_SHOT_PRESETS, ...STREET_SHOT_PRESETS].map(preset => [preset.id, preset]));

@@ -1,5 +1,25 @@
 import * as THREE from 'three';
 
+const authoredOffsets=new WeakMap();
+
+// Material offsets are authored for the ordinary LESS depth comparison.
+// Three r180 forwards polygonOffset unchanged even with reversed depth, so a
+// negative pull-forward bias becomes a push-behind bias under GREATER.
+// Apply once per distinct material, preserving the authored intent and making
+// repeated binding / a later depth-mode change safe.
+export function configureDepthOffsets(root,reversedDepth){
+ const seen=new Set();let count=0;
+ root.traverse(object=>{
+  for(const material of [].concat(object.material||[])){
+   if(seen.has(material)||!material.polygonOffset)continue;seen.add(material);
+   if(!authoredOffsets.has(material))authoredOffsets.set(material,[material.polygonOffsetFactor,material.polygonOffsetUnits]);
+   const [factor,units]=authoredOffsets.get(material),sign=reversedDepth?-1:1;
+   material.polygonOffsetFactor=factor*sign;material.polygonOffsetUnits=units*sign;count++;
+  }
+ });
+ return count;
+}
+
 // Keep the existing depth fallback and output color pipeline in one place.
 export function createRenderer(canvas,exposure){
  const contextOptions={antialias:true,alpha:false,depth:true,stencil:false,powerPreference:'high-performance',preserveDrawingBuffer:false};

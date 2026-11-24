@@ -14,6 +14,8 @@ from shapely.geometry import GeometryCollection, LineString, Point, Polygon, box
 from shapely.geometry.polygon import orient
 from shapely.ops import nearest_points, unary_union
 from shapely.strtree import STRtree
+from city_facades import articulate_facades
+from city_roof_details import add_roof_wells
 
 GRID = .0001
 EPS = .00001
@@ -57,7 +59,7 @@ def compile_buildings(data, custom_path):
                              'height': 33 if f['name'] == 'Paycom Center' else 21.5,'bottom':0,
                              'p': clean(Polygon(f['p']))})
     reserved_union = union([v['p'] for v in reserved])
-    volumes, originals, excluded = [], [], []
+    volumes, originals, excluded, massing_excluded = [], [], [], []
     for index, b in enumerate(data['buildings']):
         original = clean(Polygon(b['p']))
         originals.append(original)
@@ -69,6 +71,13 @@ def compile_buildings(data, custom_path):
         removed = max(0., original.area - p.area)
         if removed > .001:
             excluded.append({'id': b['id'], 'removedArea': round(removed, 4)})
+        if b.get('massingMasks'):
+            mask = union([Polygon(q['outer'], q.get('holes', [])) for q in b['massingMasks']])
+            masked = clean(p.difference(mask))
+            removed = max(0., p.area-masked.area)
+            if removed > .001:
+                massing_excluded.append({'id': b['id'], 'removedArea': round(removed, 4)})
+            p = masked
         if p.is_empty:
             continue
         height = 3.6 if b['id'] == 433827 else b['h']
@@ -159,61 +168,20 @@ def compile_buildings(data, custom_path):
         shells.append({k:value for k,value in v.items() if k != 'p'} |
                       {'footprint': encode(p), 'roofs': encode(roof), 'walls': walls, 'rooftop': []})
 
-    # Openings face a nearby street. Choose one readable human-scale entry per
-    # building and cut windows from the wall, with deep reveals behind it.
-    roads = [LineString(r['p']) for r in data['roads'] if len(r['p']) > 1 and r['kind'] != 'service']
-    road_tree = STRtree(roads)
-    opening_count = entrance_count = 0
-    for shell in shells:
-        if shell['stage'] or shell['kind'] not in ('lowrise', 'retail', 'masonry', 'parking'):
-            continue
-        candidates = []
-        for wall in shell['walls']:
-            a,b=wall['a'],wall['b'];dx,dz=b[0]-a[0],b[1]-a[1];length=math.hypot(dx,dz)
-            if length < 5.5 or wall['base'] > .001 or wall['top'] < 3.1:
-                continue
-            nx,nz=dz/length,-dx/length;mid=Point((a[0]+b[0])/2,(a[1]+b[1])/2)
-            nearest=roads[int(road_tree.nearest(mid))]
-            target=nearest_points(mid,nearest)[1];vx,vz=target.x-mid.x,target.y-mid.y;dist=math.hypot(vx,vz)
-            facing=(nx*vx+nz*vz)/max(.001,dist)
-            if dist > 55 or facing < .45:
-                continue
-            wall['streetFacing']=True
-            candidates.append((dist/max(.45,facing), wall, length))
-        if not candidates:
-            continue
-        _,entry,entry_length=min(candidates,key=lambda item:item[0])
-        door_width=1.4 if shell['kind']=='retail' else 1.2
-        at=entry_length*.5
-        entry['openings'].append({'kind':'door','start':round(at-door_width/2,4),'end':round(at+door_width/2,4),
-                                  'bottom':.16,'top':2.5,'depth':.32})
-        entrance_count+=1
-        # Street windows stay at human scale. Office upper floors remain a
-        # texture module; these physical openings belong to the ground floor.
-        if shell['kind']!='parking':
-            # Detail the main frontage (two for shops), not every side of a
-            # warehouse merely because a distant road exists in that direction.
-            frontages=sorted(candidates,key=lambda item:item[0])[:2 if shell['kind']=='retail' else 1]
-            for _,wall,length in frontages:
-                width=2.25 if shell['kind']=='retail' else 1.35
-                pitch=3.6 if shell['kind']=='retail' else 4.2
-                slots=min(8,max(1,int((length-2.4)/pitch)))
-                for n in range(slots):
-                    at=(n+.5)*length/slots
-                    start,end=at-width/2,at+width/2
-                    if start<.8 or end>length-.8 or any(start<o['end']+.42 and end>o['start']-.42 for o in wall['openings']):
-                        continue
-                    wall['openings'].append({'kind':'window','start':round(start,4),'end':round(end,4),
-                                             'bottom':.55 if shell['kind']=='retail' else 1.05,
-                                             'top':2.7 if shell['kind']=='retail' else 2.4,'depth':.24})
-        opening_count+=sum(len(w['openings']) for w in shell['walls'])
+    # Resolve metric whole-bay street facades after clipping the mapped
+    # height envelope. Recessed roof wells preserve its outer height/plan.
+    facade_stats = articulate_facades(shells, data)
+    roof_detail_stats = add_roof_wells(shells)
+    opening_count = sum(len(w['openings']) for s in shells for w in s['walls'])
+    entrance_count = sum(o['kind'] == 'door' for s in shells for w in s['walls'] for o in w['openings'])
 
     # Place plant only where the *exposed* roof can contain it. A parent podium
     # center can be inside its child tower and must not grow another roof box.
     for shell in shells:
         if shell['stage'] or shell['height']<4.5:
             continue
-        roof=union([Polygon(p['outer'],p['holes']) for p in shell['roofs']])
+        assembly = shell.get('roofAssembly')
+        roof=union([Polygon(p['outer'],p['holes']) for p in (assembly['deck'] if assembly else shell['roofs'])])
         if roof.area<120:
             continue
         safe=roof.buffer(-1.4,join_style='mitre')
@@ -224,7 +192,7 @@ def compile_buildings(data, custom_path):
         for _ in range(4):
             plan=box(c.x-width/2,c.y-width*.36,c.x+width/2,c.y+width*.36)
             if safe.covers(plan):
-                shell['rooftop'].append({'x':round(c.x,4),'z':round(c.y,4),'y':shell['height'],
+                shell['rooftop'].append({'x':round(c.x,4),'z':round(c.y,4),'y':assembly['deckY'] if assembly else shell['height'],
                                          'w':round(width,4),'d':round(width*.72,4),'h':1.1 if shell['height']<22 else 1.7})
                 break
             width*=.7
@@ -275,7 +243,9 @@ def compile_buildings(data, custom_path):
            'remainingRoofsInsideHigherVolumesM2':round(hidden_roof_after,8),
            'remainingWallsInsideOtherVolumesM2':round(hidden_wall_after,8),
            'customLandmarkExclusions':excluded,'customLandmarkCount':len(reserved),
+           'mappedMassingExclusions':massing_excluded,
            'actualFacadeOpenings':opening_count,'recessedEntrances':entrance_count,
+           'facadeArticulation':facade_stats, 'roofArticulation':roof_detail_stats,
            'collisionPolygons':len(collision),'drivingBounds':bounds}
     return {'buildingShells':shells,'drivingSolids':collision,'drivingBounds':bounds,
             'customLandmarkFootprints':[{'id':v['id'],'name':v['name'],'height':v['height'],'bottom':v['bottom'],'polygons':encode(v['p'])}for v in reserved],

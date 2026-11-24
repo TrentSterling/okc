@@ -11,6 +11,13 @@ export const BOK_FACADE = Object.freeze({
   crownHeight: 12.192,
   width: 14.4,
   columns: 12,
+  // Architect documents vertical curtain-wall rods. Their cross-section and
+  // regular 1.2 m spacing are a reconstruction; they are not surveyed shop
+  // drawings. Leave the independently anchored 35 ft lobby unobstructed.
+  fins: Object.freeze({
+    pitch: 1.2, width: .08, projection: .12, bottom: 10.668, top: 132,
+    cornerClearance: .25, material: 'detail.steel',
+  }),
 });
 
 export function skylineFacadeProfile(building) {
