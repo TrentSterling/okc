@@ -42,6 +42,8 @@ The Node geometry tests resolve bare `three` imports through `scripts/lib/regist
 
 For a geometry-budget comparison against an older commit with tracked deployment output, run `node scripts/profile-world.mjs --baseline <commit>`. For a newer source-only commit, build it in a separate checkout and pass its output using `--baseline-dir /absolute/path/to/dist`. Profiling reports scene submission estimates, not measured GPU time.
 
+For behavior-preserving refactors, compare the current build with a separate baseline using `node scripts/check-world-parity.mjs --baseline-dir /absolute/path/to/baseline/dist` and `node --experimental-vm-modules scripts/check-app-parity.mjs --baseline-dir /absolute/path/to/baseline/dist`. The first compares production world/landmark state; the second isolates app orchestration with mocked rendering dependencies. See `docs/validation/modularization-2026-11-24.md` for recorded results and their limits.
+
 ## Publishing
 
 Push a work branch under `refactor/` or open a pull request for CI validation without publication. A validated `main` push runs two jobs:

@@ -29,6 +29,7 @@ Use Node 22 or newer, Python 3.10 or newer, and the exact dependency in `require
 - `npm run check:build-safety` checks that a failed compiler preserves the previous build.
 - Use `OKC_PYTHON` to select a Python executable for the complete build and build-safety check.
 - Geometry and driving checks do not establish GPU visual correctness or an FPS improvement. State any browser verification limit plainly.
+- For structural refactors, use `scripts/check-world-parity.mjs` and `scripts/check-app-parity.mjs` with an explicitly chosen, separately built baseline; see `docs/architecture.md` for commands and test scope.
 
 ## Keep large payloads out of conversations
 

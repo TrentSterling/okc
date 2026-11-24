@@ -1,42 +1,36 @@
-# OKC Prairie Prism release handoff
+# Prairie Prism handoff
 
-## Modular source checkpoint, November 24, 2026
-
-The worktree for this pass is `/workspace/okc-modular`, branch `refactor/modular-source-20261124`. The untouched `/workspace/okc` checkout and remote branch `backup/pre-modular-20261124-5c832b1` preserve the released v0.3 baseline at `5c832b1f71ac71eed9a984a99aef49d726cd3829`.
-
-Authored code now lives in `src/`; static assets, captures, vendor files and references live in `public/`. App, world, and tower entrypoints retain their public APIs and delegate to focused modules. `dist/` is ignored and is rebuilt offline from those inputs and the original compressed map snapshots. Read `AGENTS.md` and `docs/architecture.md` before continuing.
-
-The new build stages all output before replacing an existing `dist/`, with an automated failed-build preservation test. Source guards reject large encoded payloads and tracked build output. Build and syntax failure logs are bounded. Node validation now supports the complete ES module graph using the same vendored Three.js version as the browser.
-
-Verified during implementation: generated city data, compiled surfaces, baked meshes, provenance/audits, original capture assets and both capture ZIPs match v0.3 byte for byte. World/tower comparisons matched geometry, materials, transforms, canvas drawing operations, route outputs and animation for seeds 42 and 1907. A separate app comparison matched 21 interaction/state snapshots, 24 named preset operations and 534 render/environment events. These are CPU/state comparisons, not GPU screenshot verification.
-
-Next integration step: complete the combined build/check gates, push the source checkpoint to the refactor branch, verify its CI result, then fast-forward `main` and verify the Pages workflow. The current preview service reports an existing active preview but its local URL could not be reached; browser QA is not yet established for this refactor.
-
-The new workflow validates refactor branches and PRs without publishing. On `main`, it publishes the exact validated artifact and verifies every deployed runtime module and capture ZIP with SHA-256.
-
-## Project
+## Project and recovery
 
 - Source: https://github.com/TrentSterling/okc
 - Production: https://tront.xyz/okc/
-- Working checkout used for the November 24, 2026 recovery: `/workspace/okc`.
-- Release: v0.3.0, recovered intact after the previous conversation stopped during upload preparation.
+- Working checkout for the November 24, 2026 modularization: `/workspace/okc-modular`.
+- Work branch: `refactor/modular-source-20261124`.
+- Preserved v0.3 baseline: `backup/pre-modular-20261124-5c832b1`, commit `5c832b1f71ac71eed9a984a99aef49d726cd3829`.
+- The untouched local baseline is `/workspace/okc`. Its generated files and original captures were used for byte comparisons.
 
-## Recovered release
+The first complete modular source checkpoint is `43dd2eff198dbf9efd7cc3b67634f572d1e4efb8`. Its clean-checkout GitHub validation succeeded: https://github.com/TrentSterling/okc/actions/runs/45447469873. Final documentation and reusable comparison scripts follow that checkpoint. Check the current remote head and its workflow status before making claims about the latest deployment.
 
-Free driving includes steering, reverse, handbrake, recovery, touch controls, and building/map-boundary collision. The modeled area is 3.20 by 2.26 km, with 1,301 building records and 1,710 road segments. City geometry is baked into material batches; building shells retain exposed surfaces and include recessed facade openings. Devon's reconstruction uses the references recorded in `dist/geo/devon-architecture-sources.json`.
+## Current layout
 
-`npm run check` passed on November 24, 2026. It covers static asset references, Devon surface ownership and crown closure, road surfaces, exposed building shells, driving, and reproducibility of the baked geometry. The recovered checks reported 5,950 road samples with no misses; 4,437 crown rays with no misses; no buried facade or roof triangles; 1,095 entrances; and driving checks at 30, 60, and 144 Hz.
+Read `AGENTS.md` and `docs/architecture.md` before editing. Authored JavaScript is in `src/`; original static assets, captures, vendor files and references are in `public/`. Focused modules implement app controls/cameras/setup, world construction/traffic, and landmark geometry. The public app/world/tower exports and saved setup format remain compatible.
 
-The validation documents distinguish geometry budgets and shader compilation from measured GPU frame rate. v0.3 has not completed a GPU visual/interaction review in the recovery environment, whose previous preview browser reported WebGL disabled. The gallery labels its older captures; do not describe them as v0.3 screenshots.
+`dist/` is generated, ignored output. The offline build uses the preserved compressed geographic snapshots in `scripts/data/`. Do not edit or commit generated city modules. The build stages all output and keeps the previous local build if a compiler fails. Diagnostics are bounded, and source guards reject large encoded payloads and tracked build output.
 
-## Build and publication
+## Verification recorded for this pass
 
-1. Run `npm run build:downloads` if capture ZIPs are absent.
-2. Run `npm run check`.
-3. Commit and push source to GitHub. Push an incremental recovery branch before lengthy additional work.
-4. Push validated releases to `main`. `.github/workflows/pages.yml` validates, publishes `dist/` to `gh-pages`, requests native Pages deployment, and compares the public release bytes.
-5. Check the source workflow and native Pages deployment. A source commit alone is not proof that production was updated.
+The full local build and check suite passed. Generated geographic data, compiled surfaces, baked meshes, provenance/audits, original capture assets and both ZIPs match v0.3 byte for byte. World/tower comparisons matched geometry, materials, textures' drawing operations, scene order, transforms, route results and animation for seeds 42 and 1907. App comparisons matched 21 interaction/state snapshots, 24 preset operations and 534 render/environment events.
 
-The generated `dist/world-meshes.js` is about 16 MB. Use a direct Git push when available. If transferring through the GitHub connector, pass file contents programmatically and verify blob hashes; never print large assets into the conversation.
+The release still contains the 7.232 km² map, 1,301 building records, 1,710 road segments, free driving and collision, 1,095 recessed entrances, the improved Devon model, and all 29 original captures. The existing road, crown, building-shell and 30/60/144 Hz driving gates pass. Detailed evidence and repeatable commands are in `docs/validation/modularization-2026-11-24.md`.
 
-Future work should preserve recoverable source checkpoints on GitHub throughout the task. Keep source, geographic snapshots, reference provenance, validation scripts, and the original 29 captures together.
+GPU visual/interaction QA is unverified in this pass: the managed preview service reported another active preview, while its local URL was unreachable. State/geometry equivalence and static module checks do not establish rendered image correctness or measured FPS. The gallery continues to identify its older captures; do not relabel them as new screenshots.
+
+## Build and publish
+
+1. Use Node 22+ and Python 3.10+. Install `requirements-build.txt`; set `OKC_PYTHON` if needed.
+2. Run `npm run build`, then `npm run check`.
+3. Push recoverable source checkpoints to a work branch. `refactor/**` branches and PRs validate without publishing.
+4. Update `main` after validation. CI publishes the exact tested artifact through the existing `gh-pages` branch, then compares every deployed runtime module and capture ZIP by SHA-256.
+5. Verify the workflow's final result. A source commit alone does not prove that production updated.
+
+Never print the compiled mesh, complete geographic arrays, base64, vendor bundles or image bytes into conversation output. Use ordinary authenticated Git when available. If only the connector is authorized, pass small source changes programmatically and reuse existing Git object hashes for moved assets. Never expose credentials to work around a transport limitation.
