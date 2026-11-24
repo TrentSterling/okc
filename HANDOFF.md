@@ -1,5 +1,19 @@
 # OKC Prairie Prism release handoff
 
+## Modular source checkpoint, November 24, 2026
+
+The worktree for this pass is `/workspace/okc-modular`, branch `refactor/modular-source-20261124`. The untouched `/workspace/okc` checkout and remote branch `backup/pre-modular-20261124-5c832b1` preserve the released v0.3 baseline at `5c832b1f71ac71eed9a984a99aef49d726cd3829`.
+
+Authored code now lives in `src/`; static assets, captures, vendor files and references live in `public/`. App, world, and tower entrypoints retain their public APIs and delegate to focused modules. `dist/` is ignored and is rebuilt offline from those inputs and the original compressed map snapshots. Read `AGENTS.md` and `docs/architecture.md` before continuing.
+
+The new build stages all output before replacing an existing `dist/`, with an automated failed-build preservation test. Source guards reject large encoded payloads and tracked build output. Build and syntax failure logs are bounded. Node validation now supports the complete ES module graph using the same vendored Three.js version as the browser.
+
+Verified during implementation: generated city data, compiled surfaces, baked meshes, provenance/audits, original capture assets and both capture ZIPs match v0.3 byte for byte. World/tower comparisons matched geometry, materials, transforms, canvas drawing operations, route outputs and animation for seeds 42 and 1907. A separate app comparison matched 21 interaction/state snapshots, 24 named preset operations and 534 render/environment events. These are CPU/state comparisons, not GPU screenshot verification.
+
+Next integration step: complete the combined build/check gates, push the source checkpoint to the refactor branch, verify its CI result, then fast-forward `main` and verify the Pages workflow. The current preview service reports an existing active preview but its local URL could not be reached; browser QA is not yet established for this refactor.
+
+The new workflow validates refactor branches and PRs without publishing. On `main`, it publishes the exact validated artifact and verifies every deployed runtime module and capture ZIP with SHA-256.
+
 ## Project
 
 - Source: https://github.com/TrentSterling/okc

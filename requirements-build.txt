@@ -1,0 +1,2 @@
+# Build-time GIS only. The shipped site has no Python or network dependency.
+shapely==2.1.2

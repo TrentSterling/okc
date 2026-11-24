@@ -10,6 +10,7 @@ import argparse
 from copy import deepcopy
 from datetime import datetime, timezone
 import json
+import os
 from pathlib import Path, PurePosixPath
 import re
 import struct
@@ -18,7 +19,8 @@ import zipfile
 import zlib
 
 ROOT = Path(__file__).resolve().parents[1]
-GALLERY = ROOT / "dist" / "gallery"
+OUTPUT = Path(os.environ.get('OKC_BUILD_OUTPUT', ROOT / 'dist'))
+GALLERY = OUTPUT / "gallery"
 PUBLIC_URL = "https://tront.xyz/okc/"
 PACKS = (
     ("prairie-prism-v02-captures.zip", "Reconstruction captures", True, 10),
@@ -108,7 +110,7 @@ def prepare_pack(manifest, title, current, count):
         "Gallery: " + PUBLIC_URL + "gallery/\n"
         "Repository: https://github.com/TrentSterling/okc\n"
     )
-    notice = (ROOT / "dist" / "geo" / "NOTICE.txt").read_text(encoding="utf-8")
+    notice = (OUTPUT / "geo" / "NOTICE.txt").read_text(encoding="utf-8")
     entries = {
         "README.txt": readme.encode("utf-8"),
         "shots.json": json_text(metadata).encode("utf-8"),

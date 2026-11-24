@@ -8,6 +8,16 @@ An Oklahoma City sunset drive for Trent. Geographically grounded reconstruction,
 
 Static Three.js application. No sign-in or service credentials are required to run it.
 
+## Source and build workflow
+
+Editable JavaScript is in `src/`, with focused modules for app controls/cameras/setup, city construction, traffic, and landmark geometry. Original static assets and references are in `public/`. The generated `dist/` directory is ignored by Git and rebuilt from the preserved map inputs.
+
+Install the pinned Python compiler with `python -m pip install -r requirements-build.txt`, then run `npm run build` and `npm run check` using Node 22 or newer. Set `OKC_PYTHON` to select your Python interpreter. A failed build preserves the previous `dist/` output. No live map service or npm package download is required for the build.
+
+GitHub Actions validates work branches under `refactor/` and pull requests. Updates to `main` publish the exact validated artifact and compare every deployed runtime module and capture ZIP with that build. The pre-refactor release is retained at `backup/pre-modular-20261124-5c832b1`.
+
+See [Architecture and release process](docs/architecture.md) for module ownership, local development, validation, and recovery. Read [AGENTS.md](AGENTS.md) before automated edits.
+
 ## v0.3: a larger city you can drive
 
 Choose **Drive yourself** to steer freely, or keep the original **Scenic cruise**. The car has acceleration, braking, reverse, a handbrake, building collision and recovery to a nearby road. The chase camera follows the car heading and shortens before solid walls. Touch steering and pedals are available on small/touch screens.

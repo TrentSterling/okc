@@ -5,12 +5,13 @@ import fs from 'node:fs';
 import assert from 'node:assert/strict';
 import {fileURLToPath, pathToFileURL} from 'node:url';
 import path from 'node:path';
+import {registerThree} from './lib/register-three.mjs';
 
 const root=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..');
+registerThree(root);
 const threeURL=pathToFileURL(path.join(root,'dist/vendor/three.module.js')).href;
 const THREE=await import(threeURL);
-const code=fs.readFileSync(path.join(root,'dist/tower.js'),'utf8').replace("from 'three'",`from '${threeURL}'`);
-const {createDevon,createLegends,DEVON_DIMENSIONS}=await import('data:text/javascript;base64,'+Buffer.from(code).toString('base64'));
+const {createDevon,createLegends,DEVON_DIMENSIONS}=await import(pathToFileURL(path.join(root,'dist/tower.js')).href);
 const devon=createDevon(),legends=createLegends();
 const planes=[],matrix=new THREE.Matrix4(),point=new THREE.Vector3();
 let meshCount=0,badValues=0,duplicateInstances=0,removedWallArea=0;

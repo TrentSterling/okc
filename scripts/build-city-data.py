@@ -4,9 +4,10 @@ Source snapshots preserve public geographic data; no runtime network service is
 needed. Heights from OSM tags/CTBUH overrides are distinguished from estimates.
 """
 from pathlib import Path
-import gzip, json, math, re, xml.etree.ElementTree as ET
+import gzip, json, math, os, re, xml.etree.ElementTree as ET
 
 ROOT = Path(__file__).resolve().parents[1]
+OUTPUT = Path(os.environ.get('OKC_BUILD_OUTPUT', ROOT / 'dist'))
 ORIGIN = [-97.51758985376695, 35.466887450817715]
 MX = 111320 * math.cos(math.radians(ORIGIN[1]))
 MZ = 111132
@@ -145,7 +146,7 @@ for w in ways:
         features.append({'name':w['tags']['name'],'p':w['p'],'center':centroid(w['p'])})
 
 data={'origin':ORIGIN,'axis':'x east, z south; meters','drivingBounds':SCENE_BOUNDS,'route':route,'roads':roads,'buildings':buildings,'surfaces':surfaces,'paths':paths,'trees':trees,'features':features}
-(ROOT/'dist/city-data.js').write_text('// Generated geographic snapshot; see geo/provenance.json.\nexport const CITY_DATA='+json.dumps(data,separators=(',',':'))+';\n')
+(OUTPUT/'city-data.js').write_text('// Generated geographic snapshot; see geo/provenance.json.\nexport const CITY_DATA='+json.dumps(data,separators=(',',':'))+';\n', encoding='utf-8', newline='\n')
 provenance={
  'origin':ORIGIN,'originMethod':'Centroid of OpenStreetMap Devon Energy Tower building:part way156035399',
  'retrievedUTC':'2026-11-24','footprints':{'source':'City of Oklahoma City / Esri Community Maps contributors','url':'https://services6.arcgis.com/Do88DoK2xjTUCXd1/ArcGIS/rest/services/Oklahoma_City_OK_Buildings/FeatureServer/0','bbox':[-97.535,35.457,-97.500,35.477],'dataEditUTC':'2022-10-03','countRendered':len(buildings)},
@@ -156,5 +157,5 @@ provenance={
  'nightLighting':'Eight non-shadowing point lights at modeled lamp locations illuminate the western approach. More distant lamps use soft ground-only light-pool overlays. Intensities are visual approximations, not a photometric survey.',
  'limits':['Geographic footprint/street placement is mapped; supporting heights without tags are estimates.','Road widths are reconstructed from OSM lane counts; turning pockets and traffic signal timing are simplified.','Ground elevation is flattened; this is not a surveyed terrain model.','Landmark crowns and facades are visual reconstructions, not original construction models.','Garden paths follow mapped ways; supplementary park planting is illustrative and not a surveyed tree inventory.'],
  'route':{'start':route[0],'end':route[-1],'lengthApproxMeters':2550,'laneBase':5.25,'laneSpacing':3.5,'laneLimit':1.75}}
-(ROOT/'dist/geo/provenance.json').write_text(json.dumps(provenance,indent=2)+'\n')
-print(json.dumps({'buildings':len(buildings),'roads':len(roads),'surfaces':len(surfaces),'trees':len(trees),'routeStart':route[0],'routeEnd':route[-1],'bytes':(ROOT/'dist/city-data.js').stat().st_size}))
+(OUTPUT/'geo/provenance.json').write_text(json.dumps(provenance,indent=2)+'\n', encoding='utf-8', newline='\n')
+print(json.dumps({'buildings':len(buildings),'roads':len(roads),'surfaces':len(surfaces),'trees':len(trees),'routeStart':route[0],'routeEnd':route[-1],'bytes':(OUTPUT/'city-data.js').stat().st_size}))

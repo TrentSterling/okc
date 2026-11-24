@@ -1,6 +1,7 @@
 node_modules/
 .openai/
 qa/
-dist/server/
-dist/gallery/*.zip
+# Generated deployment output. Edit src/, public/, or map build inputs.
+/dist/
+/.build-*/
 __pycache__/

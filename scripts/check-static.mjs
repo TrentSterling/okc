@@ -80,8 +80,11 @@ for (const file of files) {
               'Private Site URL in deployed asset: ' + relative(file));
   }
   if (extension === '.js' || extension === '.mjs') {
-    const result = spawnSync(process.execPath, ['--check', file], {encoding: 'utf8'});
-    assert.equal(result.status, 0, 'JavaScript syntax failed: ' + relative(file) + '\n' + result.stderr);
+    const result = spawnSync(process.execPath, ['--check', file], {encoding: 'utf8', maxBuffer: 32 * 1024});
+    const diagnostic = result.error?.code === 'ENOBUFS'
+      ? 'Syntax diagnostic exceeded 32 KiB; generated asset contents were omitted.'
+      : String(result.stderr || result.error?.message || '').slice(-2000);
+    assert.equal(result.status, 0, 'JavaScript syntax failed: ' + relative(file) + '\n' + diagnostic);
   }
   if (extension === '.css') {
     for (const match of text(file).matchAll(/url\(\s*(['"]?)([^'")]+)\1\s*\)/g)) {

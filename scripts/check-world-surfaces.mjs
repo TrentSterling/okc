@@ -5,7 +5,9 @@ import fs from 'node:fs';
 import path from 'node:path';
 import assert from 'node:assert/strict';
 import {fileURLToPath,pathToFileURL} from 'node:url';
+import {registerThree} from './lib/register-three.mjs';
 const root=process.argv[2]?path.resolve(process.argv[2]):path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..');
+registerThree(root);
 const moduleURL=name=>pathToFileURL(path.join(root,'dist',name)).href;
 const THREE=await import(moduleURL('vendor/three.module.js'));
 const {WORLD_SURFACES}=await import(moduleURL('world-surfaces.js'));
@@ -14,9 +16,7 @@ const {CITY_DATA}=await import(moduleURL('city-data.js'));
 // generator calls, while retaining real Three materials, geometry and meshes.
 const context=new Proxy({createImageData:(w,h)=>({data:new Uint8ClampedArray(w*h*4)}),createRadialGradient:()=>({addColorStop(){}}),measureText:()=>({width:1})},{get:(o,k)=>k in o?o[k]:(()=>{}),set:(o,k,v)=>(o[k]=v,true)});
 globalThis.document={createElement:()=>({width:1,height:1,getContext:()=>context})};
-let code=fs.readFileSync(path.join(root,'dist/world.js'),'utf8');
-for(const [from,to] of [["'three'",'vendor/three.module.js'],["'./city-data.js'",'city-data.js'],["'./world-surfaces.js'",'world-surfaces.js'],["'./world-meshes.js'",'world-meshes.js']])code=code.replace('from '+from,'from '+JSON.stringify(moduleURL(to)));
-const {createWorld}=await import('data:text/javascript;base64,'+Buffer.from(code).toString('base64'));
+const {createWorld}=await import(moduleURL('world.js'));
 const world=createWorld({scene:new THREE.Scene(),glassMaterial:new THREE.MeshPhysicalMaterial()});
 // Regression gate: depthWrite:false paint left in the opaque queue can be
 // erased by a later road draw. Inspect constructed batches, not source strings.

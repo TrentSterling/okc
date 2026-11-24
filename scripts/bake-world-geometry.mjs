@@ -4,12 +4,13 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import assert from 'node:assert/strict';
-import {fileURLToPath} from 'node:url';
+import {fileURLToPath,pathToFileURL} from 'node:url';
 import {createHash} from 'node:crypto';
-import * as THREE from '../dist/vendor/three.module.js';
-import {WORLD_SURFACES} from '../dist/world-surfaces.js';
+import * as THREE from '../public/vendor/three.module.js';
 
 const ROOT=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..');
+const OUTPUT=path.resolve(process.env.OKC_BUILD_OUTPUT||path.join(ROOT,'dist'));
+const {WORLD_SURFACES}=await import(pathToFileURL(path.join(OUTPUT,'world-surfaces.js')).href);
 const CELL=Number(process.argv.find(v=>v.startsWith('--cell='))?.split('=')[1]||1024), chunks=new Map(), instanceChunks=new Map();
 const groundUvScale=Object.fromEntries(WORLD_SURFACES.layers.map(l=>['ground.'+l.kind,l.uvScale]));
 const stats={sourceTriangles:0,triangles:0,vertices:0,chunks:0,instanceChunks:0,boxInstances:0,openings:0,entrances:0,rooftopUnits:0};
@@ -188,12 +189,16 @@ const instances=[...instanceChunks.values()].sort((a,b)=>a.key.localeCompare(b.k
   min:c.min,max:c.max,m:Buffer.from(new Float32Array(c.matrices).buffer).toString('base64')}));
 stats.instanceChunks=instances.length;
 assert.equal(stats.openings,WORLD_SURFACES.buildingShells.reduce((n,s)=>n+s.walls.reduce((n,w)=>n+w.openings.length,0),0));
-const payload={version:1,chunkSize:CELL,worldSurfacesSha256:createHash('sha256').update(fs.readFileSync(path.join(ROOT,'dist/world-surfaces.js'))).digest('hex'),stats,chunks:output,instances};
+const payload={version:1,chunkSize:CELL,worldSurfacesSha256:createHash('sha256').update(fs.readFileSync(path.join(OUTPUT,'world-surfaces.js'))).digest('hex'),stats,chunks:output,instances};
 const text='// Generated offline by scripts/bake-world-geometry.mjs. Do not hand-edit.\nexport const BAKED_WORLD='+JSON.stringify(payload)+';\n';
-const target=path.join(ROOT,'dist/world-meshes.js');
-if(process.argv.includes('--check'))assert.equal(fs.readFileSync(target,'utf8'),text,'Baked world meshes are stale');
+const target=path.join(OUTPUT,'world-meshes.js');
+if(process.argv.includes('--check')){
+  const actual=createHash('sha256').update(fs.readFileSync(target)).digest('hex');
+  const expected=createHash('sha256').update(text).digest('hex');
+  assert.equal(actual,expected,'Baked world meshes are stale; run npm run build');
+}
 else{
   fs.writeFileSync(target,text);
-  fs.writeFileSync(path.join(ROOT,'dist/geo/world-mesh-audit.json'),JSON.stringify({...stats,chunkSize:CELL,bytes:Buffer.byteLength(text),worldSurfacesSha256:payload.worldSurfacesSha256},null,2)+'\n');
+  fs.writeFileSync(path.join(OUTPUT,'geo/world-mesh-audit.json'),JSON.stringify({...stats,chunkSize:CELL,bytes:Buffer.byteLength(text),worldSurfacesSha256:payload.worldSurfacesSha256},null,2)+'\n');
 }
 console.log(JSON.stringify({...stats,bytes:Buffer.byteLength(text),chunkSize:CELL},null,2));

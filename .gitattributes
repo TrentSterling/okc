@@ -1,0 +1,15 @@
+# Preserve deterministic source/generated hashes across Windows and Linux.
+* text=auto
+*.js text eol=lf
+*.mjs text eol=lf
+*.py text eol=lf
+*.json text eol=lf
+*.html text eol=lf
+*.css text eol=lf
+*.md text eol=lf
+*.yml text eol=lf
+*.txt text eol=lf
+*.gz binary
+*.png binary
+*.webp binary
+*.zip binary

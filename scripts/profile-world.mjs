@@ -1,16 +1,19 @@
 #!/usr/bin/env node
 // Offline main-view geometry budget using actual Three.js world matrices and
 // Frustum.intersectsObject. This is a draw-submission estimate, not GPU timing.
-// Usage: node scripts/profile-world.mjs [--baseline COMMIT] [--output FILE]
+// Usage: node scripts/profile-world.mjs [--baseline COMMIT | --baseline-dir DIST] [--output FILE]
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import {execFileSync} from 'node:child_process';
 import {fileURLToPath,pathToFileURL} from 'node:url';
+import {registerThree} from './lib/register-three.mjs';
 
 const root=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..');
 const args=process.argv.slice(2),option=name=>args.includes(name)?args[args.indexOf(name)+1]:null;
 const baseline=option('--baseline')||'064b664';
+const baselineDirectory=option('--baseline-dir');
+registerThree(root);
 const THREE=await import(pathToFileURL(path.join(root,'dist/vendor/three.module.js')).href);
 const context=new Proxy({createImageData:(w,h)=>({data:new Uint8ClampedArray(w*h*4)}),createRadialGradient:()=>({addColorStop(){}}),createLinearGradient:()=>({addColorStop(){}}),measureText:()=>({width:1})},{get:(o,k)=>k in o?o[k]:(()=>{}),set:(o,k,v)=>(o[k]=v,true)});
 globalThis.document={createElement:()=>({width:1,height:1,getContext:()=>context})};
@@ -65,16 +68,7 @@ function profile(scene,view){
   return {...view,aspect:16/9,near:.5,far:7500,submittedMeshObjects:submitted.length,estimatedMainPassCalls:calls,submittedTriangles:triangles,submittedInstances:instanceCount,referencedGeometryAndInstanceBytes:bytes(submitted),contributors:[...parts.values()].sort((a,b)=>b.calls-a.calls)};
 }
 async function build(directory,label){
-  const mapping={three:pathToFileURL(path.join(root,'dist/vendor/three.module.js')).href};
-  async function sourceModule(name){
-    let source=fs.readFileSync(path.join(directory,name),'utf8');
-    source=source.replace(/(from\s*['"])([^'"]+)(['"])/g,(all,start,specifier,end)=>{
-      if(mapping[specifier])return start+mapping[specifier]+end;
-      if(specifier.startsWith('.'))return start+pathToFileURL(path.resolve(directory,specifier)).href+end;
-      return all;
-    });
-    return import('data:text/javascript;base64,'+Buffer.from(source).toString('base64'));
-  }
+  const sourceModule=name=>import(pathToFileURL(path.join(directory,name)).href);
   const [worldModule,towerModule,skyModule]=await Promise.all([sourceModule('world.js'),sourceModule('tower.js'),sourceModule('sky.js')]);
   const scene=new THREE.Scene(),glass=skyModule.createGlassMaterial();
   const world=worldModule.createWorld({scene,glassMaterial:glass.material,seed:1907});world.group.userData.profileCategory='city';
@@ -88,9 +82,21 @@ async function build(directory,label){
 }
 const snapshot=fs.mkdtempSync(path.join(os.tmpdir(),'okc-profile-'));
 try{
-  for(const name of ['world.js','tower.js','sky.js','city-data.js','world-surfaces.js'])fs.writeFileSync(path.join(snapshot,name),execFileSync('git',['show',baseline+':dist/'+name],{cwd:root,maxBuffer:100*1024*1024}));
-  fs.writeFileSync(path.join(snapshot,'package.json'),'{"type":"module"}');
-  const before=await build(snapshot,baseline),after=await build(path.join(root,'dist'),'working tree');
+  let beforeDirectory;
+  if(baselineDirectory){
+    beforeDirectory=path.resolve(baselineDirectory);
+  }else{
+    const paths=execFileSync('git',['ls-tree','-r','--name-only',baseline,'--','dist'],{cwd:root,encoding:'utf8'}).trim().split('\n').filter(name=>name.endsWith('.js'));
+    if(!paths.includes('dist/world.js'))throw new Error('This commit stores source rather than dist. Build it in a separate checkout and pass --baseline-dir /absolute/path/to/dist.');
+    for(const name of paths){
+      const destination=path.join(snapshot,name);
+      fs.mkdirSync(path.dirname(destination),{recursive:true});
+      fs.writeFileSync(destination,execFileSync('git',['show',baseline+':'+name],{cwd:root,maxBuffer:32*1024*1024}));
+    }
+    fs.writeFileSync(path.join(snapshot,'package.json'),'{"type":"module"}');
+    beforeDirectory=path.join(snapshot,'dist');
+  }
+  const before=await build(beforeDirectory,baselineDirectory||baseline),after=await build(path.join(root,'dist'),'working tree');
   const comparison=views.map((view,i)=>({view:view.id,calls:{before:before.views[i].estimatedMainPassCalls,after:after.views[i].estimatedMainPassCalls},triangles:{before:before.views[i].submittedTriangles,after:after.views[i].submittedTriangles},referencedBufferBytes:{before:before.views[i].referencedGeometryAndInstanceBytes,after:after.views[i].referencedGeometryAndInstanceBytes}}));
   const report={method:'Actual production Three geometry, fixed 16:9 cameras, material groups, instance counts, transparent double-sided passes and real object-frustum culling. No occlusion culling. Excludes background/sky, cockpit, shadow passes and environment captures. Buffer counts exclude textures, driver allocation and renderer overhead; hidden geometry is included only in allocated totals. This does not measure GPU time or FPS.',baseline:before,current:after,comparison};
   const output=JSON.stringify(report,null,2)+'\n';
