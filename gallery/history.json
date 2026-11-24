@@ -1,0 +1,72 @@
+[
+  {
+    "id": "dev-pass-01",
+    "title": "First playable frame",
+    "description": "The initial highway composition, with a large foreground sign and very dark ground.",
+    "category": "Development history",
+    "time": "Afterglow",
+    "camera": "Chase",
+    "screen": false,
+    "style": "Physical",
+    "src": "shots/dev-pass-01.png",
+    "width": 1200,
+    "height": 750,
+    "viewId": null
+  },
+  {
+    "id": "dev-pass-02",
+    "title": "Glass, ground, and framing",
+    "description": "Reframed Devon, moved the foreground sign, and lifted the road and terrain.",
+    "category": "Development history",
+    "time": "Afterglow",
+    "camera": "Chase",
+    "screen": false,
+    "style": "Physical",
+    "src": "shots/dev-pass-02.png",
+    "width": 1200,
+    "height": 750,
+    "viewId": null
+  },
+  {
+    "id": "dev-pass-03",
+    "title": "Haze and vehicle refinement",
+    "description": "A warmer horizon, stronger distance haze, and a more detailed player sedan.",
+    "category": "Development history",
+    "time": "Afterglow",
+    "camera": "Chase",
+    "screen": false,
+    "style": "Physical",
+    "src": "shots/dev-pass-03.png",
+    "width": 1200,
+    "height": 750,
+    "viewId": null
+  },
+  {
+    "id": "dev-pass-04",
+    "title": "Sharper glass reflections",
+    "description": "Corrected distant window-frame coverage to preserve smoother glass reflections.",
+    "category": "Development history",
+    "time": "Afterglow",
+    "camera": "Chase",
+    "screen": false,
+    "style": "Physical",
+    "src": "shots/dev-pass-04.png",
+    "width": 1200,
+    "height": 750,
+    "viewId": null
+  },
+  {
+    "id": "dev-pass-05",
+    "title": "The v0.1 opening view",
+    "description": "Closer road framing and cooler upper-cloud light in the shared sky environment.",
+    "category": "Development history",
+    "time": "Afterglow",
+    "camera": "Chase",
+    "screen": false,
+    "style": "Physical",
+    "src": "shots/dev-pass-05.png",
+    "width": 1200,
+    "height": 750,
+    "viewId": null
+  }
+]

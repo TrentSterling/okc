@@ -1,6 +1,0 @@
-node_modules/
-.openai/
-qa/
-dist/server/
-dist/gallery/*.zip
-__pycache__/

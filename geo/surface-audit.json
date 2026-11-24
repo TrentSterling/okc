@@ -1,0 +1,62 @@
+{
+  "sourceBuildingEntries": 1074,
+  "sourceRoadSegments": 1305,
+  "sourceFootways": 140,
+  "groundLayers": 7,
+  "compiledGroundPolygons": 1499,
+  "compiledGroundHoles": 864,
+  "removedDuplicateCoverageM2": {
+    "road": 63232.6606,
+    "path": 656.325,
+    "water": 0.0,
+    "curb": 147735.7436,
+    "parking": 0.6566,
+    "paving": 0.0,
+    "grass": 34726.6352
+  },
+  "remainingGroundLayerOverlapM2": 0.0,
+  "ownershipClearanceMeters": 0.001,
+  "collinearityCleanupMeters": 0.0005,
+  "redundantBuildingIds": [
+    1427733210
+  ],
+  "equalHeightRoofOverlapsBefore": [
+    {
+      "a": 1427733209,
+      "b": 1427733210,
+      "area": 864.3455
+    }
+  ],
+  "equalHeightRoofOverlapsAfter": 0,
+  "sharedWallPairs": [
+    {
+      "a": 1803014,
+      "b": 388826,
+      "length": 24.8868,
+      "height": 5.8
+    },
+    {
+      "a": 248156517,
+      "b": 1310714624,
+      "length": 13.1124,
+      "height": 47.449999999999996
+    },
+    {
+      "a": 248156517,
+      "b": 1310714623,
+      "length": 15.7686,
+      "height": 51.1
+    }
+  ],
+  "removedInternalWallAreaM2": 3144.6001,
+  "elevationsMeters": {
+    "road": 0.14,
+    "path": 0.105,
+    "water": 0.075,
+    "curb": 0.06,
+    "parking": 0.04,
+    "paving": 0.04,
+    "grass": 0.025
+  },
+  "note": "Geometric ownership audit, not a claim of surveyed surface elevations. Base terrain underlies these surfaces at a separate height."
+}

@@ -1,0 +1,19 @@
+Geographic data attribution
+
+OpenStreetMap-derived geographic data is © OpenStreetMap contributors and is
+available under the Open Database License (ODbL) 1.0:
+https://www.openstreetmap.org/copyright
+https://opendatacommons.org/licenses/odbl/1-0/
+
+The compiled geographic snapshot is available at ../city-data.js. Its
+OpenStreetMap-derived data is offered under the same ODbL terms. This data
+license does not apply to the application's original rendering or UI code.
+
+Additional building footprints are City of Oklahoma City data shared through
+the Esri Community Maps program. Credit: Esri Community Maps Contributors.
+Source and snapshot information: provenance.json.
+
+Principal skyline height references: Council on Tall Buildings and Urban
+Habitat / The Skyscraper Center. Untagged supporting heights are estimates.
+
+No source provider endorses this application or warrants this reconstruction.
