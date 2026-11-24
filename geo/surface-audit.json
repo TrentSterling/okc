@@ -1,5 +1,5 @@
 {
-  "sourceBuildingEntries": 1301,
+  "sourceBuildingEntries": 1300,
   "sourceRoadSegments": 1710,
   "sourceFootways": 140,
   "groundLayers": 7,
@@ -80,9 +80,9 @@
       }
     ],
     "sourceOverlapAreaM2": 11197.2201,
-    "compiledVolumes": 1308,
-    "exposedRoofPolygons": 1310,
-    "exposedWallSegments": 17194,
+    "compiledVolumes": 1307,
+    "exposedRoofPolygons": 1309,
+    "exposedWallSegments": 17180,
     "hiddenRoofAreaRemovedM2": 19460.3632,
     "hiddenWallAreaRemovedM2": 159708.2606,
     "remainingEqualHeightRoofOverlapM2": 0.0,
@@ -92,7 +92,7 @@
     "customLandmarkCount": 8,
     "actualFacadeOpenings": 3466,
     "recessedEntrances": 1095,
-    "collisionPolygons": 1292,
+    "collisionPolygons": 1291,
     "drivingBounds": {
       "minX": -1600,
       "maxX": 1600,

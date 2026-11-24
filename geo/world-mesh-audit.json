@@ -1,14 +1,14 @@
 {
-  "sourceTriangles": 196239,
-  "triangles": 204249,
-  "vertices": 263074,
-  "chunks": 189,
+  "sourceTriangles": 196199,
+  "triangles": 204195,
+  "vertices": 262980,
+  "chunks": 190,
   "instanceChunks": 57,
-  "boxInstances": 36821,
+  "boxInstances": 36808,
   "openings": 3466,
   "entrances": 1095,
-  "rooftopUnits": 948,
+  "rooftopUnits": 947,
   "chunkSize": 1024,
-  "bytes": 16035524,
-  "worldSurfacesSha256": "bac97bb633bc627efcdce1732db1e5d78f338f2eebb509cd09f2c2d7d55e105b"
+  "bytes": 16030083,
+  "worldSurfacesSha256": "804ab8acd2a51515784be5b1f5fdef227f16b3324b4678b71ef981be4e158013"
 }

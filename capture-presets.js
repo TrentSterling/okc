@@ -133,6 +133,22 @@ function framed(position, target, fov = 44) {
   };
 }
 const reno = framed([-650, 2.1, 300], [25, 105, -35], 43);
+// Live optical studies have no archived screenshot attached. Keep them
+// separate from the historical ten-view gallery/capture contract below.
+export const REFLECTION_SHOT_PRESETS = [
+  shot('v05-devon-last-sun', 'Devon catches the last sun',
+    'A fixed southwest view: the street has lost direct sunlight while the upper tower still sees part of the solar disk. Warm western-sky reflections sit against the cooler northeastern sky. Exposure is fixed at 1.08; the crown display is off.',
+    'Reflection study', 'Last direct sunlight',
+    { camera: 'orbit', progress: .63, exposure: 1.08 }, framed([-450, 100, 620], [0, 125, 0], 38)),
+  shot('v05-devon-afterglow', 'Reflected afterglow',
+    'The same camera and exposure after direct sun has left the whole tower. The glass can still reflect the warm western twilight. This separates reflected sky from the shorter height-dependent sunset delay.',
+    'Reflection study', 'Reflected afterglow',
+    { camera: 'orbit', progress: .70, exposure: 1.08 }, framed([-450, 100, 620], [0, 125, 0], 38)),
+  shot('v05-reno-reflection', 'The reflection from Reno',
+    'The same frozen sky and exposure from driver-eye height. Moving closer changes the reflected elevation across the facade; no color band is painted onto the glass.',
+    'Reflection study', 'Last direct sunlight',
+    { camera: 'orbit', progress: .63, exposure: 1.08 }, reno),
+];
 export const SHOT_PRESETS = [
   shot('v02-opening-view', 'The rebuilt opening view',
     'The default chase camera on mapped Reno Avenue, with Devon and the real downtown arrangement at dusk.',
@@ -165,4 +181,4 @@ export const SHOT_PRESETS = [
     'The driver view on the mapped at-grade corridor, with two through lanes in each direction and a glance toward Devon.',
     'Reconstruction pass', 'Golden hour', { camera: 'driver', route: .392, progress: .18, exposure: 1 }, { lookYaw: .35, lookPitch: .10, fov: 56 })
 ];
-export const SHOT_BY_ID = new Map([...ARCHIVED_SHOT_PRESETS, ...SHOT_PRESETS].map(preset => [preset.id, preset]));
+export const SHOT_BY_ID = new Map([...ARCHIVED_SHOT_PRESETS, ...SHOT_PRESETS, ...REFLECTION_SHOT_PRESETS].map(preset => [preset.id, preset]));

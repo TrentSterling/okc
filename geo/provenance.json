@@ -15,7 +15,7 @@
       35.477
     ],
     "dataEditUTC": "2022-10-03",
-    "countRendered": 1301
+    "countRendered": 1300
   },
   "streetsAndContext": {
     "source": "\u00a9 OpenStreetMap contributors",
@@ -41,6 +41,28 @@
     "ground": "Flat local datum; source elevations are not available"
   },
   "heightReference": "https://www.skyscrapercenter.com/city/oklahoma-city",
+  "heightSourceCounts": {
+    "Estimated canopy height; OSM identifies an open-sided carousel": 1,
+    "Estimated low-rise context height (not inferred from area)": 1231,
+    "Estimated single-story garden service structure height": 1,
+    "OSM floors \u00d7 estimated floor pitch": 56,
+    "OSM height": 2,
+    "OSM height; skyline height reference": 1,
+    "Skyline height reference": 8
+  },
+  "footprintCorrections": [
+    {
+      "osmWay": 752099946,
+      "name": "BOK Park Plaza",
+      "replacedGISObjects": [
+        165140,
+        165141
+      ],
+      "outlineSource": "https://www.openstreetmap.org/way/752099946",
+      "reference": "https://www.kendall-heaton.com/projects/499-sheridan/",
+      "reason": "Replace duplicate legacy GIS volumes with the saved rotated tower outline."
+    }
+  ],
   "nightLighting": "Eight non-shadowing point lights at modeled lamp locations illuminate the western approach. More distant lamps use soft ground-only light-pool overlays. Intensities are visual approximations, not a photometric survey.",
   "limits": [
     "Geographic footprint/street placement is mapped; supporting heights without tags are estimates.",
