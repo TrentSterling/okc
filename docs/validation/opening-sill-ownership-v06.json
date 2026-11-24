@@ -1,0 +1,11 @@
+{
+  "directory": "/workspace/okc-modular/dist",
+  "openings": 18726,
+  "probes": 37452,
+  "upwardFacesAtOpeningLevels": 18726,
+  "minimumCovers": 0.9999999999998401,
+  "maximumCovers": 1.0000000000000664,
+  "failures": 0,
+  "examples": [],
+  "scope": "Actual baked triangles and transformed box tops; a 2 mm square probe requires exactly one upward surface at every door/window sill. Adjacent triangle-edge coverage is integrated, not counted twice."
+}

@@ -30,7 +30,8 @@ for(const s of source.buildingShells){
  const well=s.roofAssembly;
  const groups=well?[[well.deck,well.deckY],[well.coping,s.height]]:[[s.roofs,s.height]];
  if(well){stats.recessedDecks++;assert.equal(Number((s.height-well.deckY).toFixed(4)),.42);}
- for(const [polygons,height]of groups)for(const p of polygons){
+ for(const [polygons,rawHeight]of groups)for(const p of polygons){
+  const height=Number(rawHeight.toFixed(4));
   const a=area(p.outer)-p.holes.reduce((n,h)=>n+area(h),0);
   expectedAreas.set(height,(expectedAreas.get(height)||0)+a);
  }
@@ -94,7 +95,7 @@ assert.equal(stats.entrances,baked.stats.entrances);
 assert.equal(stats.hiddenFacadeTriangles,0,'An exterior facade triangle points into another building');
 assert.equal(stats.hiddenRoofTriangles,0,'A visible roof triangle is inside a higher volume');
 assert.equal(stats.blockedOpeningCenters,0,'A door/window is still covered by a closed facade');
-assert.ok(Math.abs(stats.roofArea-stats.expectedRoofArea)<=Math.max(.05,stats.expectedRoofArea*2e-6),'Baked roof coverage differs from the height-envelope polygons');
+assert.ok(Math.abs(stats.roofArea-stats.expectedRoofArea)<=Math.max(.05,stats.expectedRoofArea*2e-6),`Baked roof coverage differs from the height-envelope polygons by ${stats.roofArea-stats.expectedRoofArea} square meters`);
 assert.equal(roofAreas.size,expectedAreas.size,'Missing or extra roof deck elevation');
 for(const[y,expected]of expectedAreas)assert.ok(Math.abs((roofAreas.get(y)||0)-expected)<=Math.max(.05,expected*2e-6),`Roof coverage at ${y} m differs from the physical deck/coping partition`);
 assert.ok(stats.entrances>500,'Mapped city must retain its street-facing entrances');

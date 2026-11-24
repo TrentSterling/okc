@@ -135,13 +135,19 @@ for(const shell of WORLD_SURFACES.buildingShells){
     const length=Math.hypot(wall.b[0]-wall.a[0],wall.b[1]-wall.a[1]);
     if(length<.002)continue;
     const nx=(wall.b[1]-wall.a[1])/length,nz=-(wall.b[0]-wall.a[0])/length,normal=[nx,0,nz];
-    const xs=[...new Set([0,length,...wall.openings.flatMap(o=>[o.start,o.end])])].sort((a,b)=>a-b);
     const ys=[...new Set([wall.base,wall.top,...wall.openings.flatMap(o=>[o.bottom,o.top])])].sort((a,b)=>a-b);
-    for(let x=0;x<xs.length-1;x++)for(let y=0;y<ys.length-1;y++){
-      const a=xs[x],b=xs[x+1],lo=ys[y],hi=ys[y+1],mx=(a+b)/2,my=(lo+hi)/2;
-      if(wall.openings.some(o=>mx>o.start&&mx<o.end&&my>o.bottom&&my<o.top))continue;
-      quad([wallPoint(wall,a,lo),wallPoint(wall,b,lo),wallPoint(wall,b,hi),wallPoint(wall,a,hi)],normal,material,
-           [[(wall.u+a)/uScale,lo/vScale],[(wall.u+b)/uScale,lo/vScale],[(wall.u+b)/uScale,hi/vScale],[(wall.u+a)/uScale,hi/vScale]]);
+    for(let y=0;y<ys.length-1;y++){
+      const lo=ys[y],hi=ys[y+1],my=(lo+hi)/2;
+      const active=wall.openings.filter(o=>my>o.bottom&&my<o.top);
+      // A window on a different floor cannot cut this strip. The old global
+      // Cartesian grid split solid spandrels at every bay on every other row.
+      const xs=[...new Set([0,length,...active.flatMap(o=>[o.start,o.end])])].sort((a,b)=>a-b);
+      for(let x=0;x<xs.length-1;x++){
+        const a=xs[x],b=xs[x+1],mx=(a+b)/2;
+        if(active.some(o=>mx>o.start&&mx<o.end))continue;
+        quad([wallPoint(wall,a,lo),wallPoint(wall,b,lo),wallPoint(wall,b,hi),wallPoint(wall,a,hi)],normal,material,
+             [[(wall.u+a)/uScale,lo/vScale],[(wall.u+b)/uScale,lo/vScale],[(wall.u+b)/uScale,hi/vScale],[(wall.u+a)/uScale,hi/vScale]]);
+      }
     }
     for(const o of wall.openings){
       stats.openings++;if(o.kind==='door')stats.entrances++;
@@ -179,13 +185,13 @@ for(const shell of WORLD_SURFACES.buildingShells){
     // Cornice only follows a genuinely exposed wall. It cannot trace the
     // hidden parent footprint across the face of a neighboring tower.
     if(length>1.0&&wall.top>3&&!shell.roofAssembly){
-      wallBox(wall,.11,length-.11,wall.top-.22,wall.top+.06,.11,.20,
+      wallBox(wall,.22,length-.22,wall.top-.22,wall.top+.06,.11,.20,
               shell.kind==='glass'?'detail.steel':'detail.concrete');
     }
     for(const band of wall.detailBands||[])bakeFacadeBand(wall,band,{wallPoint,quad});
     bakeLandmarkFins(wall,profile,{wallPoint,quad});
   }
-  bakeRoofAssembly(shell,{polygon,quad,wallPoint});
+  bakeRoofAssembly(shell,{polygon,quad,triangle,wallPoint});
   for(const unit of shell.rooftop){
     instanceBox([unit.x,unit.y+unit.h/2,unit.z],[unit.w,unit.h,unit.d],0,'detail.roof');
     instanceBox([unit.x,unit.y+unit.h+.06,unit.z],[unit.w*.86,.12,unit.d*.86],0,'detail.steel');

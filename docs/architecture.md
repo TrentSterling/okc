@@ -27,6 +27,9 @@ Prairie Prism remains a static Three.js application with native ES modules. The 
 | `public/` | Authored HTML/CSS, original images, vendor files, licenses and reference contracts |
 | `scripts/data/` | Compressed, checked-in geographic input snapshots |
 | `scripts/` | Offline generation, validation, profiling and deployment verification |
+| `scripts/street_surfaces.py`, `bake-street-details.mjs` | Owned street sections, curb caps/risers, physical ramps and contained paint |
+| `scripts/mapped_massing.py` | Selected complete OSM building-part complexes and masks over legacy GIS volumes |
+| `scripts/city_facades.py`, `city_roof_details.py`, `bake-facade-details.mjs` | Metric facade bays, real openings, projecting trim and constrained roof-well geometry |
 | `dist/` | Ignored, generated deployment output |
 
 Public `world.js`, `tower.js`, and `app.js` imports keep their prior exports. Setup JSON remains compatible with the original versions. New factories receive explicit dependencies; UI/input code reads the current state after setup loading and resets.
@@ -46,6 +49,10 @@ The build first checks the pinned Shapely version. It copies `public/` and `src/
 The v0.4 checks also exercise independent velocity/yaw, shared vehicle/camera interpolation, old/new setup restoration, and finite-height camera clearance over props. `npm run check:city-art` checks actual generated decoration against the mapped polygons with Shapely, including concavities and holes, complete rendered prop bounds, added paint coverage, collision footprints and clear Reno takeover positions. These gates do not replace GPU image review or subjective driving playtests.
 
 The original map inputs and baked building/ground meshes are independent of the visual pass. New dressing adds its own collision polygons to the runtime world. Building solids without measured height remain conservative camera obstacles; prop solids supply an absolute `height` and `bottom` in world meters. A saved map tree remains in source even when a conflict with a building suppresses its rendering.
+
+The v0.6 compiler reconstructs street cross-sections with asphalt at 0.14 m and sidewalks/caps at 0.29 m. Flat layers, ramps and vertical faces have separate ownership. Compiled paint is tested as complete rectangles against roads/lots and other paint. Raised curbs remain visual geometry; driving still uses the existing flat road-height model.
+
+Supporting facades fit complete metric bays to joined exposed wall domains. The baker cuts each horizontal strip only at openings active in that strip. A sill or threshold owns each aperture's bottom, avoiding a coplanar reveal underneath. Low-rise roofs partition into inset decks and coping; pinned GEOS constrained triangulation supplies coping triangles to avoid fragile Earcut bridges on thin rings. Eight documented complete mapped complexes replace legacy prism ownership with saved part outlines. The original GIS records remain in source, with explicit masks marking where those parts own the volume.
 
 The Node geometry tests resolve bare `three` imports through `scripts/lib/register-three.mjs`, which mirrors the browser import map while retaining normal file URLs and nested module imports. The vendored runtime library is used by both tests and the browser.
 

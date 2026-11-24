@@ -26,7 +26,7 @@ try {
   for (const directory of ['scripts', 'src', 'public', 'dist/assets']) {
     fs.mkdirSync(path.join(fixture, directory), {recursive: true});
   }
-  for (const file of ['build.mjs', 'build-city-data.py']) {
+  for (const file of ['build.mjs', 'build-city-data.py', 'mapped_massing.py']) {
     fs.copyFileSync(path.join(root, 'scripts', file), path.join(fixture, 'scripts', file));
   }
   fs.writeFileSync(path.join(fixture, 'public/index.html'), '<title>New build</title>');

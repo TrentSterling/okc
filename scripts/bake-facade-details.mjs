@@ -36,11 +36,15 @@ export function bakeLandmarkFins(wall,profile,emit){
   }
 }
 
-export function bakeRoofAssembly(shell,{polygon,quad,wallPoint}){
+export function bakeRoofAssembly(shell,{polygon,quad,triangle,wallPoint}){
   const assembly=shell.roofAssembly;
   if(!assembly){for(const roof of shell.roofs)polygon(roof,shell.height,'detail.roof',true,18);return;}
   for(const roof of assembly.deck)polygon(roof,assembly.deckY,'detail.roof',true,18);
-  for(const cap of assembly.coping)polygon(cap,shell.height,'detail.coping',true,18);
+  for(const points of assembly.copingTriangles){
+    let [a,b,c]=points;
+    if((b[1]-a[1])*(c[0]-a[0])-(b[0]-a[0])*(c[1]-a[1])<0)[b,c]=[c,b];
+    triangle(...[a,b,c].map(p=>[p[0],shell.height,p[1],0,1,0,p[0]/18,p[1]/18]),'detail.coping',true);
+  }
   for(const wall of assembly.innerWalls){
     const length=Math.hypot(wall.b[0]-wall.a[0],wall.b[1]-wall.a[1]);if(length<.002)continue;
     const n=[(wall.b[1]-wall.a[1])/length,0,-(wall.b[0]-wall.a[0])/length];

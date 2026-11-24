@@ -1,0 +1,56 @@
+{
+  "baseline": "0aa810f316e7f808f6d75355d07c10aa045afba5",
+  "originalBuildingRecordsRetained": 1300,
+  "preservedBuildingFields": [
+    "id",
+    "osm",
+    "p",
+    "h",
+    "kind",
+    "heightSource"
+  ],
+  "addedMappedParts": 23,
+  "unchangedGeographicCollections": [
+    "origin",
+    "axis",
+    "drivingBounds",
+    "route",
+    "roads",
+    "surfaces",
+    "paths",
+    "trees",
+    "features"
+  ],
+  "roadPolygonsAndGradeIdentical": true,
+  "roadUVScaleBefore": 16,
+  "roadUVScaleAfter": 4,
+  "rawGeographicInputs": {
+    "scripts/data/okc-map.osm.gz": "e030e348df7d0cf1942b2ebe558770eb75ddba4c0d27d5df38b24f278a75e815",
+    "scripts/data/okc-buildings-source.geojson.gz": "3cd1cb579c66c3ee2f8f12d95cdb66f2f14bac25233c95d47b5bc912a0b58c1a"
+  },
+  "unchangedCoreModules": [
+    "src/driving.js",
+    "src/driving-motion.js",
+    "src/sky.js",
+    "src/atmosphere/radiance.js",
+    "src/atmosphere/glass.js",
+    "src/atmosphere/solar.js",
+    "src/atmosphere/sunlight.js",
+    "src/tower/devon.js",
+    "src/tower/geometry.js",
+    "src/tower/shaft.js",
+    "src/tower/campus.js",
+    "src/tower/crown.js",
+    "src/tower/auditorium.js",
+    "src/tower/screens.js",
+    "src/tower/campus-data.js",
+    "src/tower/dimensions.js",
+    "src/tower/legends.js"
+  ],
+  "unchangedSourcePngs": 29,
+  "unchangedCapturePacks": {
+    "gallery/prairie-prism-captures.zip": "a980d2658869a9aefc7e055f73147442fdffb816b73663698ba9c0fece08c598",
+    "gallery/prairie-prism-v02-captures.zip": "05eb5486d77bd1997d107956fd532dfb2efd390fd03ba6188a2a57ccbd91714f"
+  },
+  "limits": "Mapped massing masks replace legacy volume ownership inside eight documented parent outlines; that geometry and driving collision footprints intentionally change. Original source records and all unrelated geodata remain recoverable."
+}

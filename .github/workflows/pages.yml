@@ -54,13 +54,15 @@ jobs:
         run: |
           node scripts/visual/prepare-sunset-diagnostics.mjs --output "$RUNNER_TEMP/okc-sunset-shaders"
           python scripts/visual/check-sunset-gles.py --input "$RUNNER_TEMP/okc-sunset-shaders" --output "$RUNNER_TEMP/sunset-shader-validation" --compile-only
+          node scripts/check-depth-offsets.mjs --output "$RUNNER_TEMP/okc-depth-offsets.json"
+          python scripts/visual/check-depth-offsets-gles.py --state "$RUNNER_TEMP/okc-depth-offsets.json" --output "$RUNNER_TEMP/sunset-shader-validation/depth-offsets-v06.json"
 
       - name: Preserve shader validation evidence
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: sunset-shaders-${{ github.sha }}
-          path: ${{ runner.temp }}/sunset-shader-validation/sunset-shader-report-v05.json
+          path: ${{ runner.temp }}/sunset-shader-validation/*.json
           if-no-files-found: ignore
           retention-days: 14
 

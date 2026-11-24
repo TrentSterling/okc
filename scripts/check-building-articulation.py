@@ -32,7 +32,7 @@ def main():
         command = f'import {{WORLD_SURFACES}} from {json.dumps(uri)};process.stdout.write(JSON.stringify(WORLD_SURFACES));'
         payload = json.loads(subprocess.check_output(['node', '--input-type=module', '-e', command], text=True))
     stats = {'buildings': 0, 'frontages': 0, 'physicalOpenings': 0, 'upperFloorOpenings': 0,
-             'clerestories': 0, 'trimBands': 0, 'roofWells': 0, 'innerRoofRisers': 0,
+             'clerestories': 0, 'trimBands': 0, 'roofWells': 0, 'innerRoofRisers': 0, 'copingTriangles': 0,
              'roofPartitionErrorM2': 0., 'roofPartitionOverlapM2': 0., 'invalidPolygons': 0}
     for shell in payload['buildingShells']:
         stats['buildings'] += 1
@@ -87,6 +87,11 @@ def main():
         stats['roofPartitionOverlapM2'] += overlap
         stats['roofPartitionErrorM2'] += difference
         assert overlap < .001 and difference < .002, 'Roof deck and parapet do not partition the old roof'
+        triangles = [Polygon(points) for points in well['copingTriangles']]
+        stats['copingTriangles'] += len(triangles)
+        triangulated = unary_union(triangles)
+        assert abs(sum(p.area for p in triangles)-coping.area) < .001, 'Coping triangles overlap or have gaps'
+        assert triangulated.symmetric_difference(coping).area < .001, 'Coping triangulation crosses a roof boundary'
         assert abs(shell['height']-well['deckY']-.42) < .00001
         assert well['deckY'] > 3
         total = 0.

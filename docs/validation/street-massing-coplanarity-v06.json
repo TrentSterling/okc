@@ -1,0 +1,122 @@
+{
+  "label": "v0.6 street pass",
+  "geometrySha256": "5845e36710f2afcfc2e8c61bdc8b67566f9b53bb0eae7d723c0e98535bf49d23",
+  "bounds": {
+    "minX": -800,
+    "maxX": 400,
+    "minZ": -200,
+    "maxZ": 550
+  },
+  "scope": "All flat co-facing surfaces",
+  "method": "Audit actual submitted Float32 geometry for co-facing coplanar patches.\n\nReads prepare-city-diagnostics.mjs output. Unlike silhouette or source-polygon\nchecks, this includes baked detail instances after their real world transforms.\nOpposite-facing contact surfaces are excluded. Same-material overlaps are\nstill checked for different texture coordinates, a frequent missed flicker.\nDefault scope is upward-facing surfaces in the Reno/Devon review district.\n",
+  "planeToleranceMeters": 0.00015,
+  "minimumPatchAreaM2": 0.0001,
+  "testedTriangles": 293404,
+  "coincidentPairs": 710,
+  "coincidentAreaM2": 3.0419699185073146,
+  "appearanceConflictAreaM2": 0.0,
+  "groups": [
+    {
+      "a": [
+        "Mapped city geometry",
+        "Cast concrete curb and exposed riser"
+      ],
+      "b": [
+        "Mapped city geometry",
+        "Cast concrete curb and exposed riser"
+      ],
+      "conflict": "matching-appearance",
+      "pairs": 2,
+      "areaM2": 0.0008592146562699919,
+      "appearanceConflictAreaM2": 0.0,
+      "examples": [
+        {
+          "centroid": [
+            -734.593,
+            0.29,
+            478.635
+          ],
+          "normal": [
+            0.0,
+            1.0,
+            0.0
+          ],
+          "plane": 0.29,
+          "areaM2": 0.0004358106993408265
+        },
+        {
+          "centroid": [
+            -161.3446,
+            0.29,
+            313.6501
+          ],
+          "normal": [
+            0.0,
+            1.0,
+            0.0
+          ],
+          "plane": 0.29,
+          "areaM2": 0.0004234039569291654
+        }
+      ]
+    },
+    {
+      "a": [
+        "Crystal Bridge / mapped footprint / merged static material",
+        "MeshStandardMaterial"
+      ],
+      "b": [
+        "Crystal Bridge / mapped footprint / merged static material",
+        "MeshStandardMaterial"
+      ],
+      "conflict": "matching-appearance",
+      "pairs": 708,
+      "areaM2": 3.0411107038510448,
+      "appearanceConflictAreaM2": 0.0,
+      "examples": [
+        {
+          "centroid": [
+            -33.1431,
+            13.1626,
+            227.4293
+          ],
+          "normal": [
+            -0.129477,
+            0.0,
+            -0.991582
+          ],
+          "plane": -221.22361,
+          "areaM2": 0.004321089586103804
+        },
+        {
+          "centroid": [
+            -33.1431,
+            13.1626,
+            227.4293
+          ],
+          "normal": [
+            -0.129477,
+            0.0,
+            -0.991582
+          ],
+          "plane": -221.22361,
+          "areaM2": 0.00048202316707469185
+        },
+        {
+          "centroid": [
+            -33.1431,
+            13.1626,
+            227.4293
+          ],
+          "normal": [
+            -0.129477,
+            0.0,
+            -0.991582
+          ],
+          "plane": -221.22361,
+          "areaM2": 0.0013458105591889966
+        }
+      ]
+    }
+  ]
+}

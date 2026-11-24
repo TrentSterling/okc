@@ -18,6 +18,9 @@
 5. Run the appropriate checks before updating `main`. CI builds and validates the source before publishing. Verify the final workflow result before reporting a live deployment.
 6. Devon color comes from the shared sky and surface/view angles. Keep its facade emission zero; optional crown displays stay separate. Preserve fixed-exposure reflection study views and test the height-dependent horizon.
 7. Use additive commits and reviewed reversions. Do not rewrite shared history or delete recovery branches as cleanup.
+8. Street sections and paint belong to the offline street compiler. Sidewalks, caps and ramps partition their footprint; do not add competing flat ribbons or center-only-checked paint.
+9. Each opening bottom has one sill/threshold owner. Do not restore a bottom reveal quad over its sill top. Roof coping uses the checked constrained triangles, not a second triangulation of a thin holed ring.
+10. Restore building parts only with recorded source coverage and height provenance. Keep generic unknown heights labeled as estimates and retain original geographic inputs.
 
 ## Build and validation
 

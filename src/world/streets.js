@@ -24,8 +24,11 @@ export function addStreets({group,addBatch,addBox,addPaint,materials,dynamicLigh
       const ax=px+tz*side*5.5,az=pz-tx*side*5.5;
       addBox(steel,ax,7.35,az,.16,.16,11,angle);
       const sx=px+tz*side*8,sz=pz-tx*side*8;
-      addBox(darkSteel,sx,6.98,sz,.32,.9,.35,angle);
-      addBox(signalGreen,sx-tx*.18,6.71,sz-tz*.18,.025,.19,.19,angle);
+      // Hang the housing below the arm: matching top planes formerly left
+      // overlapping steel and housing faces that flickered at shallow angles.
+      addBox(steel,sx,7.275,sz,.09,.15,.09,angle);
+      addBox(darkSteel,sx,6.79,sz,.32,.9,.35,angle);
+      addBox(signalGreen,sx-tx*.18,6.52,sz-tz*.18,.025,.19,.19,angle);
     }
   }
   for(let x=-1450;x<1020;x+=48){const s=(x+1500)/2550,t=tangent(s);for(const side of [-1,1]){

@@ -1,5 +1,5 @@
 """Recessed supporting-building roof decks within their existing envelopes."""
-from shapely import make_valid, set_precision
+from shapely import constrained_delaunay_triangles, make_valid, set_precision
 from shapely.geometry import GeometryCollection, Polygon
 from shapely.geometry.polygon import orient
 from shapely.ops import unary_union
@@ -26,7 +26,7 @@ def encode(g):
 
 
 def add_roof_wells(shells):
-    stats = {'recessedRoofDecks': 0, 'roofDeckAreaM2': 0., 'parapetCopingAreaM2': 0.,
+    stats = {'recessedRoofDecks': 0, 'roofDeckAreaM2': 0., 'parapetCopingAreaM2': 0., 'copingTriangles': 0,
              'parapetInnerWallMeters': 0., 'roofEnvelopeCoverageErrorM2': 0.}
     for shell in shells:
         if shell['kind'] not in ('lowrise', 'retail') or shell['stage'] or shell['height'] < 3.6:
@@ -43,6 +43,14 @@ def add_roof_wells(shells):
         overlap = deck.intersection(coping).area
         error = roof.symmetric_difference(deck.union(coping)).area
         assert overlap < .001 and error < .002
+        # A narrow ring can be a valid polygon yet defeat Earcut's bridge
+        # heuristic (the saved roof at GIS 154260 is a regression fixture).
+        # The pinned build-time GEOS triangulator constrains every boundary;
+        # the browser/baker receives simple triangles, never a fragile hole.
+        triangulated = list(constrained_delaunay_triangles(coping).geoms)
+        assert abs(sum(p.area for p in triangulated)-coping.area) < .001
+        triangles = [[[round(x, 4), round(z, 4)] for x, z in list(p.exterior.coords)[:3]]
+                     for p in sorted(triangulated, key=lambda p: (*p.bounds, p.area))]
         inner = []
         for component in parts(deck):
             component = orient(component, sign=1)
@@ -55,9 +63,10 @@ def add_roof_wells(shells):
                                   'b': [round(a[0], 4), round(a[1], 4)],
                                   'base': round(shell['height']-.42, 4), 'top': shell['height']})
         shell['roofAssembly'] = {'deckY': round(shell['height']-.42, 4), 'deck': encode(deck),
-                                 'coping': encode(coping), 'innerWalls': inner,
+                                 'coping': encode(coping), 'copingTriangles': triangles, 'innerWalls': inner,
                                  'note': 'Reconstructed .42 m parapet well within mapped height envelope.'}
         stats['recessedRoofDecks'] += 1
+        stats['copingTriangles'] += len(triangles)
         stats['roofDeckAreaM2'] += deck.area
         stats['parapetCopingAreaM2'] += coping.area
         stats['parapetInnerWallMeters'] += deck.length
