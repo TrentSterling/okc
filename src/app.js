@@ -45,12 +45,14 @@ async function init(){
  $('loadingStatus').textContent='Building the skyline…';
  glass=createGlassMaterial();
  atmosphere=createAtmosphere(renderer,scene);
+ atmosphere.bindGlass(glass);
  world=createWorld({scene,glassMaterial:glass.material,seed:1907});
  drivingWorld=createDrivingWorld(world.drivingSolids,world.drivingBounds);
  devon=createDevon({glassMaterial:glass.material});scene.add(devon.group);
  legends=createLegends({glassMaterial:glass.material});legends.group.position.set(690,0,-280);legends.group.visible=false;scene.add(legends.group);
  player=createCar('sedan',0xc79956);scene.add(player);
  cameraRig=createCameraRig({camera,world,player,atmosphere,drivingWorld});cockpit=cameraRig.cockpit;
+ atmosphere.bindSunlight(scene);
  // Reverse depth reverses the sign of a decal's depth bias too. Keep only
  // intentional paint/screen overlays biased; building shells are separated
  // geometrically by the offline compiler.

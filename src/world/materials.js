@@ -43,7 +43,7 @@ export function createCityMaterials({ group, dynamicLights, seed = 42 }) {
   const surfaceMaterials = { road: asphalt, path: pavement, water, curb, parking: lotMat, paving: pavement, grass };
   const masonry = ['limestone', 'brick', 'sandstone', 'brownstone'].map(style =>
     createFacadeMaterial({ seed, id: style, style, dynamicLights }));
-  const facades = Object.fromEntries(['glass', 'banded', 'parking', 'deco'].map(style =>
+  const facades = Object.fromEntries(['glass', 'bok', 'banded', 'parking', 'deco'].map(style =>
     [style, createFacadeMaterial({ seed, id: style, style, dynamicLights })]));
   const lowrise = [
     createLowriseMaterial(seed, 'limestone', 'stone', [185, 174, 151]),

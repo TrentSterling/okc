@@ -15,7 +15,7 @@ Prairie Prism remains a static Three.js application with native ES modules. The 
 | `src/app/audio.js` | Gesture-triggered synthesized vehicle/road audio |
 | `src/world.js`, `src/world/` | Stable world/vehicle API; route, traffic, materials, generated-mesh assembly and scenery |
 | `src/tower.js`, `src/tower/` | Stable landmark API; Devon, Legends, shaft, crown, campus and screen construction |
-| `src/sky.js` | HDR atmosphere, lighting, glass shader and local reflection integration |
+| `src/sky.js`, `src/atmosphere/` | HDR atmosphere, lighting, glass shader and local reflection integration |
 | `src/driving.js` | Fixed-step driving and collision geometry queries |
 | `src/driving-motion.js` | Shared angle and analytic-spring math for vehicle/camera presentation |
 | `src/world/material-textures.js`, `surface-textures.js`, `facade-textures.js` | Repeatable procedural color, material-data and emission textures |

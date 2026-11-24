@@ -118,12 +118,19 @@ const galleryFile = path.join(dist, 'gallery', 'shots.json');
 const manifest = json(galleryFile);
 assert.equal(manifest.shots.length, 29, 'All 29 captures must remain available');
 assert.equal(new Set(manifest.shots.map(shot => shot.id)).size, 29, 'Duplicate capture IDs');
-const {SHOT_PRESETS} = await import(pathToFileURL(path.join(dist, 'capture-presets.js')));
+const {SHOT_PRESETS, SHOT_BY_ID, REFLECTION_SHOT_PRESETS} = await import(pathToFileURL(path.join(dist, 'capture-presets.js')));
 const current = manifest.shots.filter(shot => shot.id.startsWith('v02-'));
 assert.equal(current.length, 10);
 assert.equal(SHOT_PRESETS.length, 10);
 assert.deepEqual(current.map(shot => shot.viewId).sort(), SHOT_PRESETS.map(shot => shot.id).sort(),
                  'Current gallery links must match the live camera presets');
+for (const study of REFLECTION_SHOT_PRESETS) {
+  assert.equal(SHOT_BY_ID.get(study.id), study, 'Optical study must be addressable by its live URL');
+  assert.equal(study.state.exposure, 1.08, 'Optical comparisons keep exposure fixed');
+  assert.equal(study.state.screen, false, 'Optical comparisons exclude the crown display');
+  assert.ok(!manifest.shots.some(shot => shot.viewId === study.id), 'Do not label an old photograph as a new optical study');
+  assert.ok(text(path.join(dist, 'index.html')).includes('value="' + study.id + '"'), 'Live optical study must be available in the viewpoint control');
+}
 for (const shot of manifest.shots) {
   assert.ok(/^[a-z0-9-]+$/.test(shot.id), 'Unsafe capture ID');
   assert.ok(shot.id.startsWith('v02-') || shot.viewId === null, 'Archived images must not claim an exact live replay');

@@ -7,10 +7,12 @@
 - Separate unchanged baseline checkout/build: `/workspace/okc-v04-baseline`.
 - User requirement: Devon must reflect the warm western sunset against the cooler sky behind it. Surface/view angle and real height-dependent horizon visibility matter. No artificial tower emission, rainbow UV strip, bloom, or reflection-only brightness boost.
 - Confirmed defects: height-blind sunset cutoff; artificial facade office emission; two legacy GIS footprints both assigned BOK Park Plaza's 132 m height; repeated 14-floor occupancy textures.
-- Current work: correct BOK to its saved OSM outline once, model shared height-aware atmosphere/reflection, improve metric facades, and validate new shaders.
+- Implemented v0.5: corrected BOK to its saved OSM outline once, shared height-aware atmosphere/reflection, zero-emission Devon glass, metric BOK facade, and nonrepeating city office occupancy. Three fixed-exposure live optical studies are in Settings > Viewpoint.
+- Full local build/check and 18 native production shader compilations pass. Native diagnostic images and exact preservation evidence are recorded in `docs/validation/devon-reflection-v05.md`. The shader gate is also required by CI.
+- First remote checkpoint: `85989e3aaa6d4ddb33467a7858a7f6b75f688b07`. The complete source follows it on the same work branch. Inspect current branch and Actions for authoritative final source/publication status.
 - Source data limitation: 1,231 of 1,301 v0.4 building records use generic estimated low-rise heights. The source GIS snapshot has no height field. See `docs/validation/city-reference-audit-v05.md`.
 - Browser check November 24: unchanged v0.4 still cannot create WebGL2 in the cloud browser; one reload confirmed it. Native shader and geometry diagnostics must be labeled honestly, never as a live browser screenshot or full-scene playtest.
-- Resume by inspecting Git status, main, this work branch and Actions. Do not publish until the integrated build/check and shader gates pass. Keep checkpoints additive.
+- Resume by inspecting Git status, main, this work branch and Actions. Keep checkpoints additive. Full-scene WebGL2 visual review is still outstanding; native diagnostic images do not replace it.
 
 ## Active city art and handling pass
 

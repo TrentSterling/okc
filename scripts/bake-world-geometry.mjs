@@ -7,10 +7,12 @@ import assert from 'node:assert/strict';
 import {fileURLToPath,pathToFileURL} from 'node:url';
 import {createHash} from 'node:crypto';
 import * as THREE from '../public/vendor/three.module.js';
+import { skylineFacadeProfile } from '../src/world/skyline-profiles.js';
 
 const ROOT=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..');
 const OUTPUT=path.resolve(process.env.OKC_BUILD_OUTPUT||path.join(ROOT,'dist'));
 const {WORLD_SURFACES}=await import(pathToFileURL(path.join(OUTPUT,'world-surfaces.js')).href);
+const {CITY_DATA}=await import(pathToFileURL(path.join(OUTPUT,'city-data.js')).href);
 const CELL=Number(process.argv.find(v=>v.startsWith('--cell='))?.split('=')[1]||1024), chunks=new Map(), instanceChunks=new Map();
 const groundUvScale=Object.fromEntries(WORLD_SURFACES.layers.map(l=>['ground.'+l.kind,l.uvScale]));
 const stats={sourceTriangles:0,triangles:0,vertices:0,chunks:0,instanceChunks:0,boxInstances:0,openings:0,entrances:0,rooftopUnits:0};
@@ -116,13 +118,16 @@ function instanceBox(position,scale,angle,material){
   for(let k=0;k<3;k++){chunk.min[k]=Math.min(chunk.min[k],p[k]-extents[k]);chunk.max[k]=Math.max(chunk.max[k],p[k]+extents[k]);}
 }
 function facadeMaterial(s){
+  const profile=skylineFacadeProfile(CITY_DATA.buildings[s.sourceIndex]);
+  if(profile)return profile.material;
   if(['glass','parking','banded','deco'].includes(s.kind))return 'building.'+s.kind;
   return 'building.'+(['lowrise','retail'].includes(s.kind)?'lowrise.':'masonry.')+(Math.abs(s.id)%4);
 }
 for(const layer of WORLD_SURFACES.layers)for(const p of layer.polygons)polygon(p,layer.y,'ground.'+layer.kind,false,layer.uvScale);
 for(const shell of WORLD_SURFACES.buildingShells){
   const material=facadeMaterial(shell),lowrise=['lowrise','retail'].includes(shell.kind);
-  const uScale=lowrise?3:14.4,vScale=lowrise?2.4:49;
+  const profile=skylineFacadeProfile(CITY_DATA.buildings[shell.sourceIndex]);
+  const uScale=profile?.width||(lowrise?3:14.4),vScale=profile?.height||(lowrise?2.4:49);
   for(const wall of shell.walls){
     const length=Math.hypot(wall.b[0]-wall.a[0],wall.b[1]-wall.a[1]);
     if(length<.002)continue;

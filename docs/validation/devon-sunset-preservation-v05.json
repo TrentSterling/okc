@@ -1,0 +1,49 @@
+{
+  "baseline": "86d755224793319cc48ae276af084267f9a8baf9",
+  "passed": true,
+  "unchangedGeographicCollections": [
+    "origin",
+    "axis",
+    "drivingBounds",
+    "route",
+    "roads",
+    "surfaces",
+    "paths",
+    "trees",
+    "features"
+  ],
+  "unchangedBuildingRecords": 1299,
+  "oldBuildingRecords": 1301,
+  "newBuildingRecords": 1300,
+  "correction": {
+    "removedCompiledIds": [
+      165140,
+      165141
+    ],
+    "replacementId": 752099946,
+    "exactSavedOSMOutline": true,
+    "heightMeters": 132,
+    "originalSnapshotsRetained": true
+  },
+  "unchangedSourcesAndDriving": {
+    "scripts/data/okc-map.osm.gz": "e030e348df7d0cf1942b2ebe558770eb75ddba4c0d27d5df38b24f278a75e815",
+    "scripts/data/okc-buildings-source.geojson.gz": "3cd1cb579c66c3ee2f8f12d95cdb66f2f14bac25233c95d47b5bc912a0b58c1a",
+    "src/driving.js": "e5d7ac9eb3017aa3575921416e945a5bb43588e7d71d6d040c627b18a9bc6974",
+    "src/driving-motion.js": "bc833ef8513b85d0c85f1630ea9d87e194708f2446ab4db962d305f98a274c28",
+    "src/app/camera.js": "8b74f3fe506f8166446be99be9b8c7c65cb07fa1e171cb4d54589f7798a38939",
+    "src/world/placement.js": "9ef54b9553ba63a06701b8a5aac10806d4dd223acf947623deb1b864efcb2c26",
+    "src/world/street-dressing.js": "f2ebad1347ca3bfdac5467c02c483f9662ee4d471a720ccc1fdc13774f917817",
+    "src/world/planting.js": "69c661564278dcb8f500ef3afae80b6b0a99b425fedc6f580c86e1416a1799a7"
+  },
+  "originalCaptureFilesPreserved": 29,
+  "originalCaptureDownloadsPreserved": [
+    {
+      "path": "gallery/prairie-prism-v02-captures.zip",
+      "sha256": "05eb5486d77bd1997d107956fd532dfb2efd390fd03ba6188a2a57ccbd91714f"
+    },
+    {
+      "path": "gallery/prairie-prism-captures.zip",
+      "sha256": "a980d2658869a9aefc7e055f73147442fdffb816b73663698ba9c0fece08c598"
+    }
+  ]
+}

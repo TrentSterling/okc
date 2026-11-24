@@ -36,11 +36,33 @@ jobs:
       - name: Install pinned map compiler
         run: python -m pip install --requirement requirements-build.txt
 
+      - name: Install pinned shader source and native validation runtime
+        run: |
+          npm ci --ignore-scripts
+          sudo apt-get update
+          sudo apt-get install --no-install-recommends -y libegl1 libgles2 libegl-mesa0 libgl1-mesa-dri
+
       - name: Build site from saved source inputs
         run: npm run build
 
-      - name: Validate source, build safety, geometry and driving
+      - name: Validate source, build safety, geometry, driving and sunset optics
         run: npm run check
+
+      - name: Compile the actual production shader variants
+        env:
+          LIBGL_ALWAYS_SOFTWARE: '1'
+        run: |
+          node scripts/visual/prepare-sunset-diagnostics.mjs --output "$RUNNER_TEMP/okc-sunset-shaders"
+          python scripts/visual/check-sunset-gles.py --input "$RUNNER_TEMP/okc-sunset-shaders" --output "$RUNNER_TEMP/sunset-shader-validation" --compile-only
+
+      - name: Preserve shader validation evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: sunset-shaders-${{ github.sha }}
+          path: ${{ runner.temp }}/sunset-shader-validation/sunset-shader-report-v05.json
+          if-no-files-found: ignore
+          retention-days: 14
 
       - name: Preserve the verified deployment output
         uses: actions/upload-artifact@v4

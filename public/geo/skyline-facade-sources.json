@@ -1,0 +1,46 @@
+{
+  "scope": "BOK Park Plaza facade reconstruction and source-shape correction; existing source snapshots are retained.",
+  "building": {
+    "name": "BOK Park Plaza / 499 Sheridan",
+    "osmWay": 752099946,
+    "sourceHeightMeters": 132,
+    "occupiedStories": 27,
+    "lobbyHeightMeters": 10.668,
+    "crownHeightMeters": 12.192,
+    "facadeType": "Reflective curtain wall with fine vertical framing",
+    "sources": [
+      {
+        "url": "https://www.kendall-heaton.com/projects/499-sheridan/",
+        "publisher": "Kendall/Heaton, architect of record",
+        "supports": ["27 stories", "rotated parallelogram footprint", "vertical curtain-wall rods", "35-foot lobby glazing"]
+      },
+      {
+        "url": "https://www.pickardchilton.com/work/bok-park-plaza",
+        "publisher": "Pickard Chilton, design architect",
+        "supports": ["27 floors", "vertical proportions and crown", "relation to Devon campus and Myriad Gardens"]
+      },
+      {
+        "url": "https://jedunn.com/projects/bok-park-plaza/",
+        "publisher": "JE Dunn, general contractor",
+        "supports": ["40-foot crown"]
+      },
+      {
+        "url": "https://www.openstreetmap.org/way/752099946",
+        "publisher": "OpenStreetMap contributors",
+        "localSnapshot": "scripts/data/okc-map.osm.gz",
+        "supports": ["mapped rotated footprint", "132-meter tagged height", "27 tagged building levels"]
+      }
+    ],
+    "reconstruction": {
+      "officeFloorsAboveLobby": 26,
+      "officeFloorPitchMeters": 4.197692307692307,
+      "method": "The 35-foot lobby and 40-foot crown bound 26 equally spaced reconstructed office floors inside the retained 132-meter mapped height.",
+      "limitations": [
+        "Intermediate floor elevations and pane spacing are not surveyed.",
+        "Coating reflectance is a visual approximation, not measured product data.",
+        "Office lighting is procedural occupancy, not a survey of tenants.",
+        "The crown is not artificially illuminated by this material."
+      ]
+    }
+  }
+}

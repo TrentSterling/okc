@@ -4,7 +4,7 @@
 
 - `src/app.js` composes the scene and frame loop. `src/app/` owns camera, controls, UI, sound, setup files, screenshots, and renderer startup.
 - `src/world.js` and `src/tower.js` are stable public entrypoints. Their implementations live in `src/world/` and `src/tower/`.
-- `src/sky.js`, `src/driving.js`, and `src/capture-presets.js` own atmosphere/glass, driving physics, and saved views.
+- `src/sky.js` composes atmosphere; `src/atmosphere/` owns solar geometry, shared sky radiance, reflected glass and surface-height sunlight. `src/driving.js` and `src/capture-presets.js` own driving physics and saved views.
 - `public/` contains HTML/CSS, original gallery assets, vendored Three.js, licenses, and geographic reference contracts.
 - `scripts/data/` contains the original compressed geographic snapshots. Map generation is offline.
 - `dist/` is disposable build output and is ignored by Git. Never make a source fix there or add it to a source commit. `gh-pages` is the generated deployment branch.
@@ -16,7 +16,8 @@
 3. Preserve seeded random call order and scene construction order during structural refactors. Geometry and material changes require explicit verification.
 4. Use an incremental work branch for recoverable checkpoints. Keep `HANDOFF.md` current with the next action and actual verification limits.
 5. Run the appropriate checks before updating `main`. CI builds and validates the source before publishing. Verify the final workflow result before reporting a live deployment.
-6. Use additive commits and reviewed reversions. Do not rewrite shared history or delete recovery branches as cleanup.
+6. Devon color comes from the shared sky and surface/view angles. Keep its facade emission zero; optional crown displays stay separate. Preserve fixed-exposure reflection study views and test the height-dependent horizon.
+7. Use additive commits and reviewed reversions. Do not rewrite shared history or delete recovery branches as cleanup.
 
 ## Build and validation
 
