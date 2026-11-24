@@ -6,22 +6,18 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write
   pages: write
-  id-token: write
 
 concurrency:
   group: pages
   cancel-in-progress: false
 
 jobs:
-  deploy:
+  publish:
     runs-on: ubuntu-latest
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
     steps:
-      - name: Checkout
+      - name: Checkout source
         uses: actions/checkout@v4
 
       - name: Build original capture downloads
@@ -34,19 +30,57 @@ jobs:
         run: node scripts/check-tower-surfaces.mjs
 
       - name: Check compiled world surface ownership
-        run: |
-          if [ -f scripts/check-world-surfaces.mjs ]; then
-            node scripts/check-world-surfaces.mjs
-          fi
+        run: node scripts/check-world-surfaces.mjs
 
-      - name: Configure Pages
-        uses: actions/configure-pages@v5
-
-      - name: Upload static site
-        uses: actions/upload-pages-artifact@v3
+      - name: Checkout publishing branch
+        uses: actions/checkout@v4
         with:
-          path: dist
+          ref: gh-pages
+          path: .pages-publish
 
-      - name: Deploy
-        id: deployment
-        uses: actions/deploy-pages@v5
+      - name: Publish complete static build
+        run: |
+          rsync -a --delete --exclude='.git' dist/ .pages-publish/
+          git -C .pages-publish config user.name 'github-actions[bot]'
+          git -C .pages-publish config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git -C .pages-publish add --all
+          if ! git -C .pages-publish diff --cached --quiet; then
+            git -C .pages-publish commit -m "Publish Prairie Prism from ${GITHUB_SHA}"
+            git -C .pages-publish push origin HEAD:gh-pages
+          fi
+          echo "PAGES_COMMIT=$(git -C .pages-publish rev-parse HEAD)" >> "$GITHUB_ENV"
+
+      - name: Request native Pages deployment
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh api --method POST "repos/${GITHUB_REPOSITORY}/pages/builds" --jq '{status: .status, url: .url}'
+          for attempt in {1..36}; do
+            read -r status commit <<< "$(gh api "repos/${GITHUB_REPOSITORY}/pages/builds/latest" --jq '[.status, .commit] | @tsv')"
+            if [ "$commit" = "$PAGES_COMMIT" ]; then
+              if [ "$status" = 'built' ]; then
+                echo "GitHub Pages published ${PAGES_COMMIT}"
+                exit 0
+              fi
+              if [ "$status" = 'errored' ]; then
+                echo 'GitHub Pages build failed'
+                exit 1
+              fi
+            fi
+            sleep 5
+          done
+          echo 'Timed out waiting for the requested Pages revision'
+          exit 1
+
+      - name: Verify published scene and capture downloads
+        env:
+          SITE_URL: https://tront.xyz/okc
+        run: |
+          mkdir -p /tmp/okc-published-check
+          for file in app.js gallery/index.html gallery/shots.json gallery/prairie-prism-v02-captures.zip gallery/prairie-prism-captures.zip; do
+            target="/tmp/okc-published-check/${file}"
+            mkdir -p "$(dirname "$target")"
+            curl --fail --silent --show-error --location --retry 18 --retry-all-errors --retry-delay 10 --max-time 30 "${SITE_URL}/${file}?revision=${PAGES_COMMIT}" --output "$target"
+            cmp "dist/${file}" "$target"
+            echo "Verified ${SITE_URL}/${file} matches this build"
+          done

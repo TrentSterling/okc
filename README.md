@@ -140,6 +140,8 @@ See `dist/geo/provenance.json` for URLs, bounds, dates, coordinate system, and l
 
 There is no runtime CDN dependency, asset API, or account database. The scene ships as static files; deployment builds only the downloadable screenshot archives. Textures and sounds are generated locally in the browser. Supplied reference photos are not included in the deployment.
 
+GitHub Pages publishes the root of `gh-pages`. Each push to `main` rebuilds the two capture ZIPs, runs the static and geometry checks, and commits the complete `dist/` output to that publishing branch. The workflow explicitly requests GitHub's native Pages build and checks the public scene, gallery, and both downloadable archives against the source bytes. Source and map inputs stay on `main`; the publishing branch contains the runnable site.
+
 ## Run locally
 
 Serve `dist/` with any static HTTP server. For example, from the project root:
