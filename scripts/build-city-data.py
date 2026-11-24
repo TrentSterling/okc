@@ -46,7 +46,17 @@ HEIGHTS={113737419:152.4,248156517:135,256921821:119.2,250012923:119.8,
          752099946:132,1427733209:125,1427733210:125,247978756:86.9,
          247978758:66.8,113737423:43,938769876:63}
 NAMES={248156517:'First National Center',247978756:'Leadership Square North',
-       247978758:'Leadership Square South',1427733209:'Oklahoma Tower',1427733210:'Oklahoma Tower crown'}
+       247978758:'Leadership Square South',1427733209:'Oklahoma Tower',1427733210:'Oklahoma Tower crown',
+       752099946:'BOK Park Plaza'}
+# The older GIS layer splits this site into two orthogonal legacy footprints.
+# Both centroid matches previously inherited the height of ONE modern tower.
+# Use the saved OSM tower outline once. This agrees with the architect's
+# rotated-parallelogram plan; original input snapshots remain untouched.
+FOOTPRINT_REPLACEMENTS={752099946:{
+    'name':'BOK Park Plaza','kind':'glass',
+    'reference':'https://www.kendall-heaton.com/projects/499-sheridan/',
+    'reason':'Replace duplicate legacy GIS volumes with the saved rotated tower outline.'}}
+replaced_footprints={key:[] for key in FOOTPRINT_REPLACEMENTS}
 landmark_ids=set(HEIGHTS)
 building_ways=[w for w in ways if w['tags'].get('building') not in [None,'no'] or w['tags'].get('building:part')]
 for w in building_ways:w['c']=centroid(w['p']);w['a']=area(w['p'])
@@ -66,6 +76,9 @@ for f in source['features']:
         matches=[w for w in building_ways if abs(w['c'][0]-c[0])<90 and abs(w['c'][1]-c[1])<90 and (inside(c,w['p']) or inside(w['c'],p))]
         match=min(matches,key=lambda w:abs(w['a']-a),default=None)
         tags=match['tags'] if match else {};mid=match['id'] if match else 0
+        if mid in FOOTPRINT_REPLACEMENTS:
+            replaced_footprints[mid].append(f['properties']['OBJECTID'])
+            continue
         name=tags.get('name','')
         if 'Devon' in name or 'Crystal Bridge' in name or 'Paycom Center' in name:continue
         height=number(tags.get('height'))
@@ -95,6 +108,13 @@ for f in source['features']:
         if mid==159100324:
             height=5.0;kind='carousel';provenance='Estimated canopy height; OSM identifies an open-sided carousel'
         buildings.append({'id':f['properties']['OBJECTID'],'osm':mid,'name':name,'p':p,'h':round(height,2),'kind':kind,'heightSource':provenance})
+for w in building_ways:
+    if w['id'] not in FOOTPRINT_REPLACEMENTS or not in_scene(w['c']):continue
+    replacement=FOOTPRINT_REPLACEMENTS[w['id']]
+    buildings.append({'id':w['id'],'osm':w['id'],'name':replacement['name'],
+        'p':w['p'],'h':HEIGHTS[w['id']],'kind':replacement['kind'],
+        'heightSource':'OSM height; skyline height reference',
+        'footprintSource':'OpenStreetMap way '+str(w['id'])})
 for w in parts:
     c=w['c'];tags=w['tags']
     if not in_scene(c):continue
@@ -154,6 +174,12 @@ provenance={
  'sceneBoundsMeters':SCENE_BOUNDS,'sceneAreaSquareKilometers':7.232,'previousSceneAreaSquareKilometers':5.664,
  'scale':{'worldUnit':'meter','projection':'Local equirectangular projection at Devon Tower latitude','metersPerLongitudeDegree':MX,'metersPerLatitudeDegree':MZ,'ground':'Flat local datum; source elevations are not available'},
  'heightReference':'https://www.skyscrapercenter.com/city/oklahoma-city',
+ 'heightSourceCounts':{key:sum(b['heightSource']==key for b in buildings) for key in sorted({b['heightSource'] for b in buildings})},
+ 'footprintCorrections':[{'osmWay':key,'name':item['name'],
+     'replacedGISObjects':sorted(set(replaced_footprints[key])),
+     'outlineSource':'https://www.openstreetmap.org/way/'+str(key),
+     'reference':item['reference'],'reason':item['reason']}
+     for key,item in FOOTPRINT_REPLACEMENTS.items()],
  'nightLighting':'Eight non-shadowing point lights at modeled lamp locations illuminate the western approach. More distant lamps use soft ground-only light-pool overlays. Intensities are visual approximations, not a photometric survey.',
  'limits':['Geographic footprint/street placement is mapped; supporting heights without tags are estimates.','Road widths are reconstructed from OSM lane counts; turning pockets and traffic signal timing are simplified.','Ground elevation is flattened; this is not a surveyed terrain model.','Landmark crowns and facades are visual reconstructions, not original construction models.','Garden paths follow mapped ways; supplementary park planting is illustrative and not a surveyed tree inventory.'],
  'route':{'start':route[0],'end':route[-1],'lengthApproxMeters':2550,'laneBase':5.25,'laneSpacing':3.5,'laneLimit':1.75}}

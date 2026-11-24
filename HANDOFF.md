@@ -1,5 +1,17 @@
 # Prairie Prism handoff
 
+## Active Devon reflection and skyline correction
+
+- Work branch: `refactor/devon-sunset-20261124` in `/workspace/okc-modular`.
+- Baseline: `86d755224793319cc48ae276af084267f9a8baf9`, remotely preserved on `backup/pre-devon-sunset-20261124-86d7552` and the existing v0.4 recovery branch.
+- Separate unchanged baseline checkout/build: `/workspace/okc-v04-baseline`.
+- User requirement: Devon must reflect the warm western sunset against the cooler sky behind it. Surface/view angle and real height-dependent horizon visibility matter. No artificial tower emission, rainbow UV strip, bloom, or reflection-only brightness boost.
+- Confirmed defects: height-blind sunset cutoff; artificial facade office emission; two legacy GIS footprints both assigned BOK Park Plaza's 132 m height; repeated 14-floor occupancy textures.
+- Current work: correct BOK to its saved OSM outline once, model shared height-aware atmosphere/reflection, improve metric facades, and validate new shaders.
+- Source data limitation: 1,231 of 1,301 v0.4 building records use generic estimated low-rise heights. The source GIS snapshot has no height field. See `docs/validation/city-reference-audit-v05.md`.
+- Browser check November 24: unchanged v0.4 still cannot create WebGL2 in the cloud browser; one reload confirmed it. Native shader and geometry diagnostics must be labeled honestly, never as a live browser screenshot or full-scene playtest.
+- Resume by inspecting Git status, main, this work branch and Actions. Do not publish until the integrated build/check and shader gates pass. Keep checkpoints additive.
+
 ## Active city art and handling pass
 
 Trent selected a believable, slightly worn city with strong color and lighting. See `docs/city-art-direction.md` for the accepted direction and scope.
