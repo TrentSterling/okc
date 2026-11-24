@@ -1,6 +1,6 @@
 # Prairie Prism
 
-An Oklahoma City sunset drive for Trent. Geographically grounded reconstruction, v0.3.0.
+An Oklahoma City sunset drive for Trent. Geographically grounded reconstruction, v0.4.0.
 
 **Live site:** https://tront.xyz/okc/
 
@@ -17,6 +17,14 @@ Install the pinned Python compiler with `python -m pip install -r requirements-b
 GitHub Actions validates work branches under `refactor/` and pull requests. Updates to `main` publish the exact validated artifact and compare every deployed runtime module and capture ZIP with that build. The pre-refactor release is retained at `backup/pre-modular-20261124-5c832b1`.
 
 See [Architecture and release process](docs/architecture.md) for module ownership, local development, validation, and recovery. Read [AGENTS.md](AGENTS.md) before automated edits.
+
+## v0.4: a lived-in city and more physical driving
+
+The city uses warmer masonry, cooler glazing, restrained asphalt repairs, jointed paving, and distinct facade families. Planting has varied canopy silhouettes; a bounded set of parked cars and street furniture gives the main driving area more activity. Added lane markings follow mapped lane counts and one-way flags outside Reno. Props stay within valid surfaces and have separate collision footprints; the original mapped building and ground geometry remains unchanged.
+
+Free driving now keeps world velocity independent of body heading, with front/rear tire grip, yaw inertia and rear-grip handbraking. The car and chase camera share an interpolated simulation pose. The camera contracts immediately at obstructions and extends smoothly after they clear; chassis pitch and roll are visual, leaving the city collision hull and tires level.
+
+Independent named random streams make later visual changes predictable. See [City art direction](docs/city-art-direction.md). The pre-art release is retained at `backup/pre-city-art-20261124-0408b4b`.
 
 ## v0.3: a larger city you can drive
 

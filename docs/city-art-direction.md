@@ -22,6 +22,15 @@ Use `rngFor(seed, stableKey)` from `src/world/random.js` for independent named r
 
 Source remains in `src/` and `public/`. Build output is generated and ignored. Make source checkpoints on the work branch, validate them, and publish through the existing CI workflow.
 
+## Material studies
+
+The diagnostic sheets below show the actual procedural color textures at their intended aspect ratios, alongside sparse facade emission masks. They are raw sRGB texture studies, not rendered photographs of the game.
+
+- [Surface and low-rise materials](validation/city-surface-materials-v04.webp)
+- [Facade families and matching emission](validation/city-facade-materials-v04.webp)
+
+Counting shared material-factory textures once and including mipmaps gives approximately 17.48 MB for this pass versus 13.63 MB before it. Linear detail and emission maps use half the color-map dimensions to limit the increase. These figures exclude driver allocation, render targets and unrelated scene textures; they do not measure GPU performance.
+
 ## Baseline and verification limits
 
 The pre-art source is `0408b4b5d476912402ecb0d6eddf8ab34ec17e48`, retained on GitHub at `backup/pre-city-art-20261124-0408b4b`. The separate local build is `/workspace/okc-v03-baseline/dist`.

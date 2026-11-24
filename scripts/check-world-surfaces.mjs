@@ -14,7 +14,7 @@ const {WORLD_SURFACES}=await import(moduleURL('world-surfaces.js'));
 const {CITY_DATA}=await import(moduleURL('city-data.js'));
 // Texture drawing does not affect geometry. Supply only the 2D operations the
 // generator calls, while retaining real Three materials, geometry and meshes.
-const context=new Proxy({createImageData:(w,h)=>({data:new Uint8ClampedArray(w*h*4)}),createRadialGradient:()=>({addColorStop(){}}),measureText:()=>({width:1})},{get:(o,k)=>k in o?o[k]:(()=>{}),set:(o,k,v)=>(o[k]=v,true)});
+const context=new Proxy({createImageData:(w,h)=>({data:new Uint8ClampedArray(w*h*4)}),createRadialGradient:()=>({addColorStop(){}}),createLinearGradient:()=>({addColorStop(){}}),measureText:()=>({width:1})},{get:(o,k)=>k in o?o[k]:(()=>{}),set:(o,k,v)=>(o[k]=v,true)});
 globalThis.document={createElement:()=>({width:1,height:1,getContext:()=>context})};
 const {createWorld}=await import(moduleURL('world.js'));
 const world=createWorld({scene:new THREE.Scene(),glassMaterial:new THREE.MeshPhysicalMaterial()});

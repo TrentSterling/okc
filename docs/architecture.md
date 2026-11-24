@@ -17,6 +17,11 @@ Prairie Prism remains a static Three.js application with native ES modules. The 
 | `src/tower.js`, `src/tower/` | Stable landmark API; Devon, Legends, shaft, crown, campus and screen construction |
 | `src/sky.js` | HDR atmosphere, lighting, glass shader and local reflection integration |
 | `src/driving.js` | Fixed-step driving and collision geometry queries |
+| `src/driving-motion.js` | Shared angle and analytic-spring math for vehicle/camera presentation |
+| `src/world/material-textures.js`, `surface-textures.js`, `facade-textures.js` | Repeatable procedural color, material-data and emission textures |
+| `src/world/random.js` | Stable named random streams, isolated from unrelated scene additions |
+| `src/world/placement.js`, `street-dressing.js` | Conservative prop placement and matching finite-height collision shapes |
+| `src/world/road-markings.js` | Bounded side-street markings from saved lane/one-way data |
 | `src/capture-presets.js` | Existing named scene/camera presets |
 | `src/gallery/gallery.js` | Capture gallery interaction |
 | `public/` | Authored HTML/CSS, original images, vendor files, licenses and reference contracts |
@@ -37,6 +42,10 @@ The build first checks the pinned Shapely version. It copies `public/` and `src/
 ## Validation
 
 `npm run check` runs the source guard, a real failed-build preservation test, static module/asset traversal, tower surface tests, road coverage tests, baked building-shell tests, driving tests, and deterministic mesh regeneration checks.
+
+The v0.4 checks also exercise independent velocity/yaw, shared vehicle/camera interpolation, old/new setup restoration, and finite-height camera clearance over props. `npm run check:city-art` checks actual generated decoration against the mapped polygons with Shapely, including concavities and holes, complete rendered prop bounds, added paint coverage, collision footprints and clear Reno takeover positions. These gates do not replace GPU image review or subjective driving playtests.
+
+The original map inputs and baked building/ground meshes are independent of the visual pass. New dressing adds its own collision polygons to the runtime world. Building solids without measured height remain conservative camera obstacles; prop solids supply an absolute `height` and `bottom` in world meters. A saved map tree remains in source even when a conflict with a building suppresses its rendering.
 
 The Node geometry tests resolve bare `three` imports through `scripts/lib/register-three.mjs`, which mirrors the browser import map while retaining normal file URLs and nested module imports. The vendored runtime library is used by both tests and the browser.
 

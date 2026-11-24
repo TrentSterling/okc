@@ -1,0 +1,45 @@
+{
+  "baseline": "0408b4b5d476912402ecb0d6eddf8ab34ec17e48",
+  "checks": [
+    {
+      "path": "city-data.js",
+      "unchanged": true,
+      "sha256": "5d04e4b81d32aa6fbcef4d4f298260bc8458d88160c00015acb931c440bff6ce"
+    },
+    {
+      "path": "world-surfaces.js",
+      "unchanged": true,
+      "sha256": "bac97bb633bc627efcdce1732db1e5d78f338f2eebb509cd09f2c2d7d55e105b"
+    },
+    {
+      "path": "world-meshes.js",
+      "unchanged": true,
+      "sha256": "17d447f86568f3c5eb49b93db2647a1a148cf3194959eb6cc32c1e69175284ed"
+    },
+    {
+      "path": "geo/provenance.json",
+      "unchanged": true,
+      "sha256": "6f74f3dba7eb2d5c4f70caec8fe25d62ac8c3bad814106c2e975003acf18cf3c"
+    },
+    {
+      "path": "geo/surface-audit.json",
+      "unchanged": true,
+      "sha256": "538aa3ce71d60c22183130e4d3313a687b5ba7b3d6534c7618db96bff446de45"
+    },
+    {
+      "path": "geo/world-mesh-audit.json",
+      "unchanged": true,
+      "sha256": "6ced631a90a1109f3e09e9b8ba33dadd4b9e1b38533b33ac64b59ff2601ac0b2"
+    },
+    {
+      "path": "gallery/prairie-prism-v02-captures.zip",
+      "unchanged": true,
+      "sha256": "05eb5486d77bd1997d107956fd532dfb2efd390fd03ba6188a2a57ccbd91714f"
+    },
+    {
+      "path": "gallery/prairie-prism-captures.zip",
+      "unchanged": true,
+      "sha256": "a980d2658869a9aefc7e055f73147442fdffb816b73663698ba9c0fece08c598"
+    }
+  ]
+}

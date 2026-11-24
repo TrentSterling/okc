@@ -7,9 +7,11 @@ Trent selected a believable, slightly worn city with strong color and lighting. 
 - Working branch: `refactor/city-art-driving-20261124` in `/workspace/okc-modular`.
 - Pre-art source: `0408b4b5d476912402ecb0d6eddf8ab34ec17e48`, backed up remotely on `backup/pre-city-art-20261124-0408b4b`.
 - Separate baseline worktree and built output: `/workspace/okc-v03-baseline`.
-- Work in progress: surface/facade materials, bounded planting/street dressing, road markings beyond Reno, atmospheric color, and independent velocity/yaw with shared car/camera presentation.
+- Implemented: surface/facade materials, bounded planting/street dressing, road markings beyond Reno, atmospheric color, and independent velocity/yaw with shared car/camera presentation. Release metadata is v0.4.0.
 - Browser QA limit: managed preview starts, but the cloud browser cannot create WebGL2 even for the unchanged baseline. One reload confirmed the same error. Do not claim a new GPU screenshot or a measured FPS result.
-- Next: integrate the independent source changes, inspect material swatches, run the full build/check suite and meaningful art/handling checks, compare the submission budget, checkpoint, then publish through validated CI.
+- Local full build/check, independent Shapely placement validation, material swatch review, and submission profiling pass. See `docs/validation/city-art-and-driving-v04.md` for exact scope, counts and costs.
+- First remote foundation checkpoint: `1c483905362f339640e3df308041f88bde3f09d1`, with successful work-branch validation at https://github.com/TrentSterling/okc/actions/runs/45458141998. The complete v0.4 source follows it on the same work branch.
+- When resuming: inspect current `main`, the work branch and Actions status before changing anything. The remaining experiential review is daylight/evening rendering and driving on a WebGL2-capable browser. Use the preserved pre-art release for comparisons.
 
 The earlier modularization record below remains useful recovery history.
 
