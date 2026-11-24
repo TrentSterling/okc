@@ -34,6 +34,7 @@ function updateCamera(dt){cameraRig.update(dt,state,freeCar,actualLane);}
 function snapshotView(){return {state:{...state},driving:state.driveMode==='free'?snapshotDriving(freeCar):null,view:cameraRig.snapshot(),simTime};}
 function restoreSetup(restored){
  state=restored.state;freeCar=restored.freeCar;clearDrivingInputs();cameraRig.restore(restored.view);actualLane=state.lane;cameraRig.view.firstCamera=true;
+ if(freeCar&&!state.driving)freeCar.yawRate=0;
  resize();atmosphere.update(state.progress,state.style,true,performance.now(),state.neutral);syncUI();
 }
 
@@ -176,7 +177,7 @@ function recoverCar(){
 
 function reset(){$('studyView').value='';const oldSound=state.sound;cameraRig.view.orbitFocus=null;cameraRig.view.viewFov=null;state={...defaults,sound:oldSound,quality:state.quality};freeCar=null;clearDrivingInputs();actualLane=state.lane;cameraRig.view.lookYaw=0;cameraRig.view.lookPitch=0;cameraRig.view.firstCamera=true;cameraRig.view.orbitYaw=2.25;cameraRig.view.orbitPitch=.19;cameraRig.view.orbitDistance=650;setPreset('prism');resize();toast('Back on the western approach.');}
 
-function toggleDrive(){state.driving=!state.driving;state.cruise=state.driveMode==='scenic';if(state.driveMode==='free'&&!state.driving){freeCar.vx=freeCar.vz=freeCar.speed=freeCar.travelSpeed=0;state.speed=0;clearDrivingInputs();}syncUI();focusRoad();}
+function toggleDrive(){state.driving=!state.driving;state.cruise=state.driveMode==='scenic';if(state.driveMode==='free'&&!state.driving){freeCar.vx=freeCar.vz=freeCar.speed=freeCar.travelSpeed=freeCar.yawRate=0;freeCar.bodyRoll=freeCar.bodyPitch=freeCar.bodyRollVelocity=freeCar.bodyPitchVelocity=0;cameraRig.reset(freeCar);state.speed=0;clearDrivingInputs();}syncUI();focusRoad();}
 
 function resize(){
  if(!renderer)return;

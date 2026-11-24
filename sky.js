@@ -18,9 +18,9 @@ vec3 skyRadiance(vec3 d){
  float dusk=smoothstep(.10,.65,uProgress);
  float late=smoothstep(.68,.98,uProgress);
  float golden=smoothstep(.035,.18,uProgress);
- vec3 zen=mix(vec3(.115,.255,.48),vec3(.027,.075,.17),dusk);
+ vec3 zen=mix(vec3(.085,.215,.43),vec3(.027,.075,.17),dusk);
  zen=mix(zen,vec3(.003,.006,.017),late);
- vec3 horizon=mix(vec3(.52,.62,.73),vec3(.16,.19,.27),dusk);
+ vec3 horizon=mix(vec3(.47,.59,.72),vec3(.16,.19,.27),dusk);
  horizon=mix(horizon,vec3(.012,.019,.036),late);
  vec3 c=mix(horizon,zen,pow(h,.44));
  vec2 dh=normalize(d.xz+vec2(.00001));
@@ -109,7 +109,7 @@ export function createAtmosphere(renderer, scene) {
   sun.shadow.mapSize.set(2048,2048);
   Object.assign(sun.shadow.camera,{left:-650,right:650,top:650,bottom:-650,near:20,far:4200});
   sun.shadow.camera.updateProjectionMatrix();
-  sun.shadow.bias=renderer.capabilities.reversedDepthBuffer?.00008:-.00008;sun.shadow.normalBias=.35;sun.shadow.radius=2;
+  sun.shadow.bias=renderer.capabilities.reversedDepthBuffer?.00008:-.00008;sun.shadow.normalBias=.20;sun.shadow.radius=2;
   sun.target.position.set(0,70,0);scene.add(sun);scene.add(sun.target);
   const fill=new THREE.HemisphereLight(0xaabacb,0x646365,.55);scene.add(fill);
   const fog=new THREE.FogExp2(0x8894a4,.00018);scene.fog=fog;
@@ -156,12 +156,14 @@ export function createAtmosphere(renderer, scene) {
     const night=THREE.MathUtils.smoothstep(progress,.72,.99);
     const dusk=THREE.MathUtils.smoothstep(progress,.1,.65);
     sun.position.copy(uniforms.uSunDirection.value).multiplyScalar(1800).add(sun.target.position);
-    sun.intensity=neutral?0:3.25*THREE.MathUtils.smoothstep(altitude,0,.09)*(1-night);
-    sun.color.setRGB(1,THREE.MathUtils.lerp(.94,.53,dusk),THREE.MathUtils.lerp(.82,.30,dusk));
-    fill.intensity=neutral?.65:THREE.MathUtils.lerp(THREE.MathUtils.lerp(.68,.60,dusk),.22,night);
-    fill.color.set(neutral?0xffffff:0xa1b4cd);fill.groundColor.set(neutral?0x777777:0x626164);
+    sun.intensity=neutral?0:3.45*THREE.MathUtils.smoothstep(altitude,0,.09)*(1-night);
+    sun.color.setRGB(1,THREE.MathUtils.lerp(.95,.60,dusk),THREE.MathUtils.lerp(.84,.36,dusk));
+    // Cooler skylight against restrained warm ground bounce keeps masonry,
+    // blue glazing and greenery distinct without crushing the shaded street.
+    fill.intensity=neutral?.65:THREE.MathUtils.lerp(THREE.MathUtils.lerp(.62,.64,dusk),.28,night);
+    fill.color.set(neutral?0xffffff:0xa5bad5);fill.groundColor.set(neutral?0x777777:0x71665b);
     fog.color.setRGB(THREE.MathUtils.lerp(THREE.MathUtils.lerp(.43,.18,dusk),.012,night),THREE.MathUtils.lerp(THREE.MathUtils.lerp(.50,.20,dusk),.020,night),THREE.MathUtils.lerp(THREE.MathUtils.lerp(.59,.27,dusk),.038,night));
-    fog.density=THREE.MathUtils.lerp(THREE.MathUtils.lerp(.00012,.00017,dusk),.00012,night);
+    fog.density=neutral?.00012:THREE.MathUtils.lerp(THREE.MathUtils.lerp(.00020,.00023,dusk),.00016,night);
     if(neutral)fog.color.setRGB(.35,.35,.35);
     const old=envTarget;
     envTarget=pmrem.fromScene(captureScene,0,.1,20000,{size:256});
