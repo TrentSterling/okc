@@ -11,7 +11,7 @@
   <script type="importmap">{"imports":{"three":"./vendor/three.module.js"}}</script>
 </head>
 <body>
-  <canvas id="scene" tabindex="0" aria-label="Interactive Oklahoma City Reno Avenue and sunset scene. Camera and lighting controls follow."></canvas>
+  <canvas id="scene" tabindex="0" aria-label="Interactive Oklahoma City driving scene. Choose Drive yourself, then use W and S for throttle, brake and reverse, A and D to steer, Space for handbrake, and R to recover. Camera and lighting controls follow."></canvas>
   <div class="cinema-shade" aria-hidden="true"></div>
 
   <div id="loading" class="loading-screen" role="status" aria-live="polite">
@@ -70,6 +70,7 @@
       <label class="switch-row" for="trafficToggle"><span>Traffic motion</span><input id="trafficToggle" type="checkbox" checked><span class="switch-track" aria-hidden="true"></span></label>
       <label class="switch-row" for="soundToggle"><span>Road ambience</span><input id="soundToggle" type="checkbox"><span class="switch-track" aria-hidden="true"></span></label>
       <div class="select-row"><label for="qualitySelect">Quality</label><select id="qualitySelect"><option value="high" selected>High</option><option value="balanced">Balanced</option><option value="low">Low</option></select></div>
+      <p class="quality-hint">Balanced softens shadow and reflection detail. Low removes live shadows and local reflections for a faster drive.</p>
       <div class="select-row"><span>Rendering</span><span id="fps" class="performance" aria-label="Frame rate">Measuring…</span></div>
       <div class="setting-divider"></div>
       <div class="settings-actions">
@@ -107,30 +108,41 @@
       </section>
 
       <section class="drive-zone" aria-label="Driving controls">
-        <div class="speed-readout"><span id="modeLabel">Cruise ready</span><div><span id="speedValue">0</span><span class="speed-unit">mph</span></div></div>
-        <div class="drive-actions"><button id="directionBtn" class="direction-button glass" type="button">Eastbound</button><button id="driveBtn" class="drive-button" type="button" aria-pressed="false">Start driving</button></div>
+        <div class="drive-mode segmented glass" role="group" aria-label="Driving mode">
+          <button type="button" data-drive-mode="scenic" class="active" aria-pressed="true"><span class="mode-full">Scenic cruise</span><span class="mode-short">Scenic</span></button>
+          <button type="button" data-drive-mode="free" aria-pressed="false"><span class="mode-full">Drive yourself</span><span class="mode-short">Free drive</span></button>
+        </div>
+        <div class="speed-readout"><span id="modeLabel">Cruise ready</span><div><span id="gearValue" class="gear-value" aria-label="Gear" hidden>D</span><span id="speedValue">0</span><span class="speed-unit">mph</span></div></div>
+        <div class="drive-actions"><button id="directionBtn" class="direction-button glass" type="button">Eastbound</button><button id="recoverBtn" class="direction-button glass" type="button" hidden>Recover <kbd>R</kbd></button><button id="driveBtn" class="drive-button" type="button" aria-pressed="false">Start cruise</button></div>
+        <p id="driveHint" class="drive-hint" hidden><kbd>W</kbd><kbd>S</kbd> gas / brake / reverse · <kbd>A</kbd><kbd>D</kbd> steer</p>
       </section>
     </div>
-    <p id="creditNote" class="credit-note">Reno Avenue · Oklahoma City · <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">© OpenStreetMap</a> · <a href="./geo/provenance.json" target="_blank" rel="noopener">City / Esri map data</a></p>
+    <div id="touchControls" class="touch-controls" role="group" aria-label="Touch driving controls" hidden>
+      <div class="touch-steering"><button type="button" data-drive-control="left" aria-label="Steer left">←</button><button type="button" data-drive-control="right" aria-label="Steer right">→</button></div>
+      <div class="touch-pedals"><button type="button" data-drive-control="handbrake" class="touch-handbrake" aria-label="Handbrake">Hold</button><button type="button" data-drive-control="brake" aria-label="Brake and hold to reverse">Brake<br><small>Reverse</small></button><button type="button" data-drive-control="throttle" class="touch-throttle" aria-label="Accelerate">Gas</button></div>
+    </div>
+    <p id="creditNote" class="credit-note">v0.3 · Oklahoma City · <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">© OpenStreetMap</a> · <a href="./geo/provenance.json" target="_blank" rel="noopener">City / Esri map data</a></p>
   </main>
+  <button id="showHudBtn" class="tool-button show-hud glass" type="button" hidden>Show controls</button>
 
   <div id="toast" class="toast" role="status" aria-live="polite"></div>
 
   <section id="helpPanel" class="help-overlay" role="dialog" aria-modal="true" aria-labelledby="helpTitle" hidden>
     <div class="help-card glass">
       <div class="help-header"><div><p class="eyebrow">Take the long way home</p><h2 id="helpTitle">The open road</h2></div><button id="closeHelp" class="tool-button" type="button" aria-label="Close help">Close</button></div>
-      <p class="help-intro">Drive toward the skyline. Hold the sunset still, or watch the light move across the glass.</p>
+      <p class="help-intro">Choose <strong>Drive yourself</strong> to steer through the mapped city streets, or relax on the Reno Avenue <strong>Scenic cruise</strong>. Hold the sunset still, or watch the light move across the glass.</p>
       <dl class="key-list">
-        <div><dt><kbd>W</kbd> <kbd>S</kbd></dt><dd>Throttle / brake</dd></div>
-        <div><dt><kbd>A</kbd> <kbd>D</kbd></dt><dd>Change lane</dd></div>
-        <div><dt><kbd>Space</kbd></dt><dd>Toggle cruise</dd></div>
+        <div><dt><kbd>W</kbd> <kbd>S</kbd></dt><dd>Gas / brake; hold S to reverse</dd></div>
+        <div><dt><kbd>A</kbd> <kbd>D</kbd></dt><dd>Steer freely / change scenic lane</dd></div>
+        <div><dt><kbd>Space</kbd></dt><dd>Handbrake / toggle scenic cruise</dd></div>
+        <div><dt><kbd>F</kbd></dt><dd>Switch driving mode</dd></div>
         <div><dt><kbd>C</kbd></dt><dd>Change camera</dd></div>
-        <div><dt><kbd>R</kbd></dt><dd>Reset the drive</dd></div>
+        <div><dt><kbd>R</kbd></dt><dd>Recover to a nearby clear road</dd></div>
         <div><dt><kbd>H</kbd></dt><dd>Hide / show controls</dd></div>
         <div><dt><kbd>M</kbd></dt><dd>Toggle sound</dd></div>
         <div><dt>Mouse drag</dt><dd>Look around</dd></div>
       </dl>
-      <p class="help-footnote">Sunset and driving are independent. Try a frozen sunset from different angles.</p>
+      <p class="help-footnote">Arrow keys also work in free driving. On touch screens, hold the steering and pedal buttons together. Buildings and map edges are solid; traffic is scenic. Click the scene after using settings to return keyboard control. Drag to look around; double-click to face forward.</p>
     </div>
   </section>
   <script type="module" src="./app.js"></script>

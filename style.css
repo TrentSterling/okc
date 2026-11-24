@@ -228,3 +228,50 @@ select { color: var(--cream); background: #24303f; border: 1px solid var(--line)
 }
 
 .credit-note a { color: inherit; text-decoration-color: rgba(255,255,255,.35); pointer-events: auto; }
+
+/* Free driving keeps the scenic presentation available in the same place. */
+.drive-zone { width: 100%; max-width: 305px; }
+.drive-mode { display: flex; width: 100%; margin-bottom: 12px; }
+.drive-mode button { flex: 1; padding: 8px 9px; font-size: .79rem; white-space: nowrap; }
+.drive-mode button[data-drive-mode="free"].active { background: var(--amber); color: #172030; }
+.mode-short { display: none; }
+.gear-value { display: inline-block; margin-right: 9px; color: var(--amber); font-size: .8rem; font-weight: 650; }
+.quality-hint { margin: 8px 0 0; color: #acb6c1; font-size: .69rem; line-height: 1.5; }
+.drive-hint { margin: 10px 0 0; font-size: .64rem; line-height: 1.6; color: #c9cbd1; }
+.drive-hint kbd { margin-right: 3px; padding: 1px 3px; font-size: .6rem; }
+.show-hud { position: fixed; top: max(20px,env(safe-area-inset-top)); right: 20px; z-index: 30; }
+.touch-controls { display: none; position: absolute; left: max(18px,env(safe-area-inset-left)); right: max(18px,env(safe-area-inset-right)); bottom: 195px; align-items: center; justify-content: space-between; gap: 12px; pointer-events: none; }
+.touch-steering, .touch-pedals { display: flex; gap: 7px; pointer-events: none; }
+.touch-controls button { display: grid; place-content: center; min-width: 54px; min-height: 58px; padding: 7px; border: 1px solid rgba(255,255,255,.38); border-radius: 12px; background: rgba(17,24,34,.78); color: var(--cream); backdrop-filter: blur(10px); touch-action: none; user-select: none; -webkit-user-select: none; font-size: .78rem; font-weight: 600; }
+.touch-steering button { font-size: 1.5rem; }
+.touch-controls small { font-size: .56rem; font-weight: 400; }
+.touch-controls .touch-throttle { background: rgba(244,191,122,.87); color: #172030; }
+.touch-controls .touch-handbrake { font-size: .65rem; }
+.touch-controls button.held { background: #fff0db; color: #172030; border-color: #fff0db; transform: translateY(2px); }
+@media (any-pointer: coarse) {
+  .free-driving .touch-controls { display: flex; }
+  .drive-hint { display: none; }
+}
+@media (max-width: 850px) {
+  .touch-controls { bottom: 300px; }
+  .drive-mode button { padding: 8px 7px; }
+}
+@media (max-width: 540px) {
+  .drive-mode { margin-bottom: 9px; padding: 3px; }
+  .drive-mode button { font-size: .75rem; padding: 8px 5px; }
+  .mode-full { display: none; }
+  .mode-short { display: inline; }
+  .drive-hint { display: none; }
+  #recoverBtn kbd { display: none; }
+  .free-driving .speed-readout { padding-right: 78px; }
+  .touch-controls { bottom: max(290px,calc(env(safe-area-inset-bottom) + 280px)); left: 14px; right: 14px; gap: 8px; }
+  .touch-controls button { min-width: 50px; min-height: 56px; }
+  .touch-steering, .touch-pedals { gap: 5px; }
+}
+@media (max-height: 560px) and (min-width: 650px) {
+  .touch-controls { bottom: 175px; }
+  .touch-controls button { min-height: 48px; }
+  .drive-mode { margin-bottom: 5px; }
+  .drive-mode button { font-size: .7rem; padding: 7px 5px; }
+  .drive-hint { display: none; }
+}

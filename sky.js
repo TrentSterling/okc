@@ -94,8 +94,8 @@ function solarAltitude(progress) {
 export function createAtmosphere(renderer, scene) {
   const uniforms={uProgress:{value:.63},uSunDisk:{value:1},uStyle:{value:0},uNeutral:{value:0},uSunDirection:{value:new THREE.Vector3(-.94,.02,.34).normalize()}};
   const mat=new THREE.ShaderMaterial({side:THREE.BackSide,depthWrite:false,uniforms,
-    vertexShader:`varying vec3 vDir;void main(){vDir=position;gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.);}`,
-    fragmentShader:`varying vec3 vDir;${skyGLSL}void main(){gl_FragColor=vec4(skyRadiance(vDir),1.);\n#include <tonemapping_fragment>\n#include <colorspace_fragment>}`});
+    vertexShader:`varying vec3 vDir;\n#include <common>\n#include <logdepthbuf_pars_vertex>\nvoid main(){vDir=position;gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.);\n#include <logdepthbuf_vertex>\n}`,
+    fragmentShader:`varying vec3 vDir;\n#include <logdepthbuf_pars_fragment>\n${skyGLSL}void main(){gl_FragColor=vec4(skyRadiance(vDir),1.);\n#include <logdepthbuf_fragment>\n#include <tonemapping_fragment>\n#include <colorspace_fragment>}`});
   const sky=new THREE.Object3D();
   const sunDisc=new THREE.Mesh(new THREE.CircleGeometry(28,32),new THREE.MeshBasicMaterial({color:new THREE.Color(25,18,10),depthWrite:false,fog:false}));
   sunDisc.renderOrder=-100;sunDisc.frustumCulled=false;scene.add(sunDisc);
@@ -109,10 +109,42 @@ export function createAtmosphere(renderer, scene) {
   sun.shadow.mapSize.set(2048,2048);
   Object.assign(sun.shadow.camera,{left:-650,right:650,top:650,bottom:-650,near:20,far:4200});
   sun.shadow.camera.updateProjectionMatrix();
-  sun.shadow.bias=-.00008;sun.shadow.normalBias=.35;sun.shadow.radius=2;
+  sun.shadow.bias=renderer.capabilities.reversedDepthBuffer?.00008:-.00008;sun.shadow.normalBias=.35;sun.shadow.radius=2;
   sun.target.position.set(0,70,0);scene.add(sun);scene.add(sun.target);
   const fill=new THREE.HemisphereLight(0xaabacb,0x646365,.55);scene.add(fill);
   const fog=new THREE.FogExp2(0x8894a4,.00018);scene.fog=fog;
+  // The city is static. Refresh shadows when something moves or the sun
+  // changes, rather than redrawing the complete map at the display's rate.
+  let shadowQuality='high',shadowDirty=true,lastShadowFrame=-Infinity;
+  renderer.shadowMap.autoUpdate=false;
+  function setQuality(quality) {
+    shadowQuality=quality;
+    renderer.shadowMap.enabled=quality!=='low';
+    const size=quality==='high'?2048:1024;
+    if(sun.shadow.mapSize.x!==size){
+      sun.shadow.map?.dispose();sun.shadow.map=null;
+      sun.shadow.mapPass?.dispose();sun.shadow.mapPass=null;
+      sun.shadow.mapSize.set(size,size);
+    }
+    shadowDirty=true;
+  }
+  function prepareShadows(focus,now=performance.now(),moving=true,force=false) {
+    if(!renderer.shadowMap.enabled||sun.intensity<=.001)return;
+    if(focus){
+      // A snapped light volume keeps nearby streets covered during free drive
+      // without letting tiny camera movements continually shift the shadows.
+      const x=Math.round(focus.x/32)*32,z=Math.round(focus.z/32)*32;
+      if(sun.target.position.x!==x||sun.target.position.z!==z){
+        sun.target.position.set(x,70,z);
+        sun.position.copy(uniforms.uSunDirection.value).multiplyScalar(1800).add(sun.target.position);
+        shadowDirty=true;
+      }
+    }
+    const interval=1000/(shadowQuality==='high'?30:20);
+    if(force||shadowDirty||(moving&&now-lastShadowFrame>=interval)){
+      renderer.shadowMap.needsUpdate=true;lastShadowFrame=now;shadowDirty=false;
+    }
+  }
 
   function update(progress,style=0,force=false,now=performance.now(),neutral=false){
     if(!force&&now-lastUpdate<160)return false;
@@ -126,10 +158,10 @@ export function createAtmosphere(renderer, scene) {
     sun.position.copy(uniforms.uSunDirection.value).multiplyScalar(1800).add(sun.target.position);
     sun.intensity=neutral?0:3.25*THREE.MathUtils.smoothstep(altitude,0,.09)*(1-night);
     sun.color.setRGB(1,THREE.MathUtils.lerp(.94,.53,dusk),THREE.MathUtils.lerp(.82,.30,dusk));
-    fill.intensity=neutral?.65:THREE.MathUtils.lerp(THREE.MathUtils.lerp(.52,.42,dusk),.22,night);
+    fill.intensity=neutral?.65:THREE.MathUtils.lerp(THREE.MathUtils.lerp(.68,.60,dusk),.22,night);
     fill.color.set(neutral?0xffffff:0xa1b4cd);fill.groundColor.set(neutral?0x777777:0x626164);
     fog.color.setRGB(THREE.MathUtils.lerp(THREE.MathUtils.lerp(.43,.18,dusk),.012,night),THREE.MathUtils.lerp(THREE.MathUtils.lerp(.50,.20,dusk),.020,night),THREE.MathUtils.lerp(THREE.MathUtils.lerp(.59,.27,dusk),.038,night));
-    fog.density=THREE.MathUtils.lerp(THREE.MathUtils.lerp(.00014,.00022,dusk),.00012,night);
+    fog.density=THREE.MathUtils.lerp(THREE.MathUtils.lerp(.00012,.00017,dusk),.00012,night);
     if(neutral)fog.color.setRGB(.35,.35,.35);
     const old=envTarget;
     envTarget=pmrem.fromScene(captureScene,0,.1,20000,{size:256});
@@ -137,6 +169,7 @@ export function createAtmosphere(renderer, scene) {
     scene.background=envTarget.texture;scene.backgroundBlurriness=0;
     sunDisc.visible=!neutral&&altitude>-.004;
     if(old)old.dispose();
+    shadowDirty=true;
     revision++;
     return true;
   }
@@ -198,7 +231,7 @@ export function createAtmosphere(renderer, scene) {
     return true;
   }
   return {
-    update,uniforms,sun,fill,sky,sunDisc,captureLocalReflection,
+    update,uniforms,sun,fill,sky,sunDisc,captureLocalReflection,setQuality,prepareShadows,
     night:p=>THREE.MathUtils.smoothstep(p,.72,.99),
     follow:camera=>{sky.position.copy(camera.position);sunDisc.position.copy(camera.position).addScaledVector(uniforms.uSunDirection.value,6000);sunDisc.lookAt(camera.position);}
   };

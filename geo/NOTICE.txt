@@ -5,7 +5,8 @@ available under the Open Database License (ODbL) 1.0:
 https://www.openstreetmap.org/copyright
 https://opendatacommons.org/licenses/odbl/1-0/
 
-The compiled geographic snapshot is available at ../city-data.js. Its
+The compiled geographic snapshot is available at ../city-data.js; derived
+surface and baked-mesh data are in ../world-surfaces.js and ../world-meshes.js. Their
 OpenStreetMap-derived data is offered under the same ODbL terms. This data
 license does not apply to the application's original rendering or UI code.
 

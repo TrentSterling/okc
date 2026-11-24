@@ -1,0 +1,181 @@
+{
+  "title": "Devon Energy Center architectural reference register",
+  "updated": "2026-11-24",
+  "modelStatus": "Mapped-footprint, dimension-anchored visual reconstruction. Not a surveyed digital twin, as-built model, or construction document.",
+  "coordinateSystem": {
+    "origin": [
+      -97.51758985376695,
+      35.466887450817715
+    ],
+    "units": "meters",
+    "axes": "x east, y up, z south"
+  },
+  "sources": [
+    {
+      "id": "architect-tower",
+      "publisher": "Pickard Chilton",
+      "type": "Primary project description and photographs",
+      "url": "https://www.pickardchilton.com/work/devon-energy-center",
+      "usedFor": [
+        "Three-sided footprint and slight upper taper",
+        "Triangular chamfers across each broad crown face",
+        "Six-story glazed rotunda with interior balconies",
+        "Five-story garden wing"
+      ]
+    },
+    {
+      "id": "engineer",
+      "publisher": "Thornton Tomasetti",
+      "type": "Primary structural engineer project description",
+      "url": "https://www.thorntontomasetti.com/project/devon-energy-center",
+      "usedFor": [
+        "Crown extends 60 ft above the roof",
+        "Rotunda 120 ft tall",
+        "Structural description uses 50 tower stories, seven rotunda levels and six podium levels"
+      ]
+    },
+    {
+      "id": "height-database",
+      "publisher": "Council on Vertical Urbanism / Skyscraper Center, formerly CTBUH",
+      "type": "Primary building height database",
+      "url": "https://www.skyscrapercenter.com/building/devon-energy-center/623",
+      "usedFor": [
+        "257.2 m architectural height",
+        "227.3 m highest occupied floor",
+        "257.4 m tip",
+        "52 floors above ground under the database counting method"
+      ]
+    },
+    {
+      "id": "crown-fabricator",
+      "publisher": "MG McGrath",
+      "type": "Primary fabricator project description",
+      "url": "https://mgmcgrath.com/projects/devon-energy-center/",
+      "usedFor": [
+        "Silver-finished aluminum plate cladding inside the crown"
+      ]
+    },
+    {
+      "id": "architect-auditorium",
+      "publisher": "Pickard Chilton",
+      "type": "Primary architect project description",
+      "url": "https://www.pickardchilton.com/work/devon-auditorium",
+      "usedFor": [
+        "38-foot angled glass lobby wall",
+        "Glazed skybridge into the second level",
+        "Timber seating-room finishes"
+      ]
+    },
+    {
+      "id": "auditorium-drawings",
+      "publisher": "ArchDaily / drawings supplied for Pickard Chilton project",
+      "type": "Public architect drawing reproduction and architect-provided project text",
+      "url": "https://www.archdaily.com/892684/devon-auditorium-pickard-chilton",
+      "published": "2018-04-17",
+      "usedFor": [
+        "Public site plan",
+        "Ground-level plan",
+        "Second-level plan",
+        "Building section",
+        "Auditorium lobby-to-garden geometry and bridge alignment"
+      ],
+      "redistribution": "Drawings are linked as references; their image bytes are not included in this repository.",
+      "publicDrawingPages": [
+        "https://www.archdaily.com/892684/devon-auditorium-pickard-chilton/5ad551a0f197cc5c96000d40-devon-auditorium-pickard-chilton-concept-section",
+        "https://www.archdaily.com/892684/devon-auditorium-pickard-chilton/5ad551d3f197cc5c96000d42-devon-auditorium-pickard-chilton-ground-level",
+        "https://www.archdaily.com/892684/devon-auditorium-pickard-chilton/5ad55233f197ccc2b40005b0-devon-auditorium-pickard-chilton-section",
+        "https://www.archdaily.com/892684/devon-auditorium-pickard-chilton/5ad55240f197cc5c96000d45-devon-auditorium-pickard-chilton-level-2",
+        "https://www.archdaily.com/892684/devon-auditorium-pickard-chilton/5ad5527df197cc5c96000d47-devon-auditorium-pickard-chilton-site-plan",
+        "https://www.archdaily.com/892684/devon-auditorium-pickard-chilton/5ad55286f197ccc2b40005b2-devon-auditorium-pickard-chilton-concept-elevation"
+      ]
+    },
+    {
+      "id": "architect-interview",
+      "publisher": "Architectural Record",
+      "author": "Beth Broome",
+      "type": "Project reporting and direct interview with architect Jon Pickard",
+      "url": "https://www.architecturalrecord.com/articles/7908-devon-energy-center",
+      "published": "2012-10-16",
+      "usedFor": [
+        "Five-foot glass-blade module reported in architect interview",
+        "Garden wing green roof"
+      ]
+    },
+    {
+      "id": "mapped-parts",
+      "publisher": "OpenStreetMap contributors",
+      "type": "Mapped footprint data",
+      "url": "https://www.openstreetmap.org/way/156035399",
+      "localFile": "devon-campus-reference.json",
+      "usedFor": [
+        "Tower, rotunda, podium, auditorium and campus envelope positioning"
+      ],
+      "license": "Open Database License; see project map attribution"
+    }
+  ],
+  "dimensionAnchors": {
+    "architecturalHeight": {
+      "meters": 257.2,
+      "source": "height-database",
+      "status": "Published dimension"
+    },
+    "highestOccupiedFloor": {
+      "meters": 227.3,
+      "source": "height-database",
+      "status": "Published dimension; metadata reference, not a full reconstructed floor schedule"
+    },
+    "crownAboveRoof": {
+      "meters": 18.288,
+      "sourceFeet": 60,
+      "source": "engineer",
+      "status": "Unit conversion of rounded published dimension"
+    },
+    "mechanicalRoof": {
+      "meters": 238.912,
+      "derivedFrom": "257.2 minus 60 feet",
+      "status": "Model inference using two source conventions; not a surveyed roof elevation"
+    },
+    "rotundaTop": {
+      "meters": 36.576,
+      "sourceFeet": 120,
+      "source": "engineer",
+      "status": "Unit conversion of published approximate height"
+    },
+    "podiumTop": {
+      "meters": 24.05,
+      "source": "Existing photograph-led model matched to mapped massing",
+      "status": "Approximation retained; exact elevation not established"
+    },
+    "auditoriumTop": {
+      "meters": 11.5824,
+      "sourceFeet": 38,
+      "source": "architect-auditorium",
+      "status": "Model height anchored to described lobby wall; exact roof pitch is simplified"
+    },
+    "facadeBladePitch": {
+      "meters": 1.524,
+      "sourceFeet": 5,
+      "source": "architect-interview",
+      "status": "Reported facade module"
+    },
+    "skybridge": {
+      "bottomMeters": 5.4,
+      "topMeters": 8.6,
+      "source": "auditorium-drawings",
+      "status": "Approximate registration of public second-level plan to mapped footprints"
+    }
+  },
+  "modelDecisions": [
+    "Preserve the characteristic three broad V chamfers. The real crown projects above a lower mechanical roof; closing it as a flat 257.2 m triangle would change the building.",
+    "A triangulated opaque mechanical roof, opaque inner crown lining, and rim faces close the previous one-sided appearance. The physical 0.18 m cladding offset is a rendering construction, not a measured assembly thickness.",
+    "Rotunda facade members follow exposed mapped wall segments. Balcony slabs are inset from the same perimeter so independent circular rings cannot protrude through adjoining volumes.",
+    "Auditorium exterior is a simplified leaning glass enclosure inside the mapped outline. The timber room, balcony spacing, roof framing and service plant are illustrative details.",
+    "The six local occupied-volume masks are shared with generic city-shell generation. Elevated skybridge clearance is kept separate from ground driving collision."
+  ],
+  "uncertainties": [
+    "Sources count floors differently: the architect describes six rotunda stories and five podium stories; the structural engineer describes seven and six levels. The tower is commonly described as 50 stories while CVU counts 52 above-ground floors including qualifying mechanical/mezzanine floors.",
+    "Thornton Tomasetti rounds tower height to 850 ft; the model uses CVU architectural height of 257.2 m.",
+    "Public auditorium plans and sections were located and viewed. A complete openly licensed tower construction or as-built blueprint set was not located.",
+    "OSM footprint positions, crown taper, glazing, floor spacing and connections are not survey-grade. No hidden structural system or exact plant layout is claimed."
+  ]
+}
