@@ -13,9 +13,10 @@ from pathlib import Path
 import subprocess
 
 from shapely import make_valid, set_precision
-from shapely.geometry import GeometryCollection, LineString, Point, Polygon
+from shapely.geometry import GeometryCollection, LineString, Point, Polygon, box
 from shapely.ops import unary_union
 from shapely.strtree import STRtree
+from city_shells import compile_buildings
 
 ROOT = Path(__file__).resolve().parents[1]
 GRID = .0001
@@ -90,11 +91,21 @@ def build():
     # single union at the same elevation as Reno, not competing ribbon quads.
     specs = [('road', .14, 16), ('path', .105, 18), ('water', .075, 14),
              ('curb', .06, 18), ('parking', .04, 14), ('paving', .04, 14), ('grass', .025, 24)]
+    bounds=d.get('drivingBounds')
+    # OSM returns complete ways even when they run well outside the requested
+    # map. Keep a small camera apron around the mapped driving area instead of
+    # baking isolated road strips several kilometers past its coverage.
+    clip=box(bounds['minX']-50,bounds['minZ']-50,bounds['maxX']+50,bounds['maxZ']+50) if bounds else None
+    outside_map={}
     occupied = GeometryCollection()
     layers, geometries, overlaps = [], {}, {}
     for kind, y, uv in specs:
         union = merge(raw[kind])
         overlaps[kind] = round(max(0., sum(p.area for p in raw[kind]) - union.area), 4)
+        if clip is not None:
+            clipped=clean(union.intersection(clip))
+            outside_map[kind]=round(union.area-clipped.area,4)
+            union=clipped
         # One millimeter of ownership clearance survives Float32 conversion
         # and avoids reintroducing slivers when GIS rings are rounded.
         mask = occupied.buffer(.001, join_style='mitre') if not occupied.is_empty else occupied
@@ -106,86 +117,10 @@ def build():
         layers.append({'kind': kind, 'y': y, 'uvScale': uv, 'polygons': encoded_polygons(exposed)})
         occupied = merge([occupied, union])
 
-    # Duplicate building parts with equal height must not contribute another
-    # roof or an artificial roof parapet inside their parent volume.
+    # Compile the outer shell of all intersecting height volumes. This also
+    # owns true facade holes and the collision footprint consumed by driving.
     buildings = d['buildings']
-    polys = [clean(Polygon(b['p'])) for b in buildings]
-    tree = STRtree(polys)
-    redundant = set()
-    roof_overlap = []
-    for i, (b, p) in enumerate(zip(buildings, polys)):
-        for j0 in tree.query(p):
-            j = int(j0)
-            if j <= i or abs(b['h'] - buildings[j]['h']) > EPS:
-                continue
-            q = polys[j]
-            area = p.intersection(q).area
-            if area <= EPS:
-                continue
-            roof_overlap.append({'a': b['id'], 'b': buildings[j]['id'], 'area': round(area, 4)})
-            if p.covers(q):
-                redundant.add(buildings[j]['id'])
-            elif q.covers(p):
-                redundant.add(b['id'])
-
-    # Remove both copies of internal party walls up to the smaller volume's
-    # height. Taller exposed portions stay in their original world positions.
-    cuts = defaultdict(list)
-    shared = []
-    for i, (b, p) in enumerate(zip(buildings, polys)):
-        if b['id'] in redundant:
-            continue
-        for j0 in tree.query(p):
-            j = int(j0)
-            other = buildings[j]
-            if j <= i or other['id'] in redundant:
-                continue
-            common = p.boundary.intersection(polys[j].boundary)
-            parts = line_parts(common)
-            if not parts:
-                continue
-            height = min(effective_height(b), effective_height(other))
-            shared.append({'a': b['id'], 'b': other['id'], 'length': round(common.length, 4), 'height': height})
-            for segment in parts:
-                cuts[b['id']].append((segment, height))
-                cuts[other['id']].append((segment, height))
-
-    wall_overrides = {}
-    removed_area = 0.
-    for b in buildings:
-        if b['id'] not in cuts:
-            continue
-        p = b['p'][:-1] if b['p'][0] == b['p'][-1] else b['p'][:]
-        signed = sum(a[0]*p[(i+1)%len(p)][1] - p[(i+1)%len(p)][0]*a[1] for i, a in enumerate(p))
-        if signed < 0:
-            p.reverse()
-        segments = []
-        distance = 0.
-        for i, a in enumerate(p):
-            z = p[(i+1)%len(p)]
-            edge = LineString([a, z]); length = edge.length
-            if length < .02:
-                continue
-            intervals = []
-            for cut, height in cuts[b['id']]:
-                for line in line_parts(edge.intersection(cut)):
-                    coords = list(line.coords)
-                    start, end = sorted([edge.project(Point(coords[0])) / length,
-                                         edge.project(Point(coords[-1])) / length])
-                    intervals.append((start, end, height))
-            knots = sorted(set([0., 1.] + [x for interval in intervals for x in interval[:2]]))
-            for start, end in zip(knots, knots[1:]):
-                if (end-start)*length < .001:
-                    continue
-                middle = (start+end)*.5
-                base = max([height for lo, hi, height in intervals if lo-EPS <= middle <= hi+EPS] or [0.])
-                aa = [a[k] + (z[k]-a[k])*start for k in range(2)]
-                bb = [a[k] + (z[k]-a[k])*end for k in range(2)]
-                segments.append({'a': [round(x, 4) for x in aa], 'b': [round(x, 4) for x in bb],
-                                 'base': round(base, 4), 'u': round(distance+start*length, 4)})
-                removed_area += base*(end-start)*length
-            distance += length
-        wall_overrides[str(b['id'])] = segments
+    building_payload, building_stats = compile_buildings(d, ROOT / 'dist/geo/custom-landmark-volumes.json')
 
     remaining = []
     overlap_total = 0.
@@ -197,8 +132,6 @@ def build():
                 remaining.append({'a': a, 'b': b, 'area': area})
     if remaining:
         raise ValueError(f'Overlapping compiled ground layers: {remaining}')
-    if len(redundant) != len(roof_overlap):
-        raise ValueError('New partially overlapping equal-height roofs need an explicit ownership rule')
 
     stats = {
         'sourceBuildingEntries': len(buildings), 'sourceRoadSegments': len(d['roads']),
@@ -206,19 +139,20 @@ def build():
         'compiledGroundPolygons': sum(len(l['polygons']) for l in layers),
         'compiledGroundHoles': sum(len(p['holes']) for l in layers for p in l['polygons']),
         'removedDuplicateCoverageM2': overlaps,
+        'clippedBeyondMapApronM2': outside_map,
         'remainingGroundLayerOverlapM2': round(overlap_total, 9),
         'ownershipClearanceMeters': .001,
         'collinearityCleanupMeters': .0005,
-        'redundantBuildingIds': sorted(redundant),
-        'equalHeightRoofOverlapsBefore': roof_overlap,
-        'equalHeightRoofOverlapsAfter': 0,
-        'sharedWallPairs': shared,
-        'removedInternalWallAreaM2': round(removed_area, 4),
+        'buildings': building_stats,
+        'redundantBuildingIds': building_payload['redundantBuildingIds'],
+        'equalHeightRoofOverlapsAfter': building_stats['remainingEqualHeightRoofOverlapM2'],
+        'removedInternalWallAreaM2': building_stats['hiddenWallAreaRemovedM2'],
         'elevationsMeters': {kind: y for kind, y, _ in specs},
         'note': 'Geometric ownership audit, not a claim of surveyed surface elevations. Base terrain underlies these surfaces at a separate height.'
     }
-    payload = {'version': 1, 'cityDataSha256': hashlib.sha256(source.read_bytes()).hexdigest(),
-               'layers': layers, 'redundantBuildingIds': sorted(redundant), 'wallOverrides': wall_overrides}
+    payload = {'version': 2, 'cityDataSha256': hashlib.sha256(source.read_bytes()).hexdigest(),
+               'customLandmarkSha256': hashlib.sha256((ROOT / 'dist/geo/custom-landmark-volumes.json').read_bytes()).hexdigest(),
+               'layers': layers, **building_payload}
     return payload, stats
 
 

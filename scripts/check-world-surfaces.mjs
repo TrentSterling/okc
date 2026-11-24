@@ -15,7 +15,7 @@ const {CITY_DATA}=await import(moduleURL('city-data.js'));
 const context=new Proxy({createImageData:(w,h)=>({data:new Uint8ClampedArray(w*h*4)}),createRadialGradient:()=>({addColorStop(){}}),measureText:()=>({width:1})},{get:(o,k)=>k in o?o[k]:(()=>{}),set:(o,k,v)=>(o[k]=v,true)});
 globalThis.document={createElement:()=>({width:1,height:1,getContext:()=>context})};
 let code=fs.readFileSync(path.join(root,'dist/world.js'),'utf8');
-for(const [from,to] of [["'three'",'vendor/three.module.js'],["'./city-data.js'",'city-data.js'],["'./world-surfaces.js'",'world-surfaces.js']])code=code.replace('from '+from,'from '+JSON.stringify(moduleURL(to)));
+for(const [from,to] of [["'three'",'vendor/three.module.js'],["'./city-data.js'",'city-data.js'],["'./world-surfaces.js'",'world-surfaces.js'],["'./world-meshes.js'",'world-meshes.js']])code=code.replace('from '+from,'from '+JSON.stringify(moduleURL(to)));
 const {createWorld}=await import('data:text/javascript;base64,'+Buffer.from(code).toString('base64'));
 const world=createWorld({scene:new THREE.Scene(),glassMaterial:new THREE.MeshPhysicalMaterial()});
 // Regression gate: depthWrite:false paint left in the opaque queue can be
@@ -63,7 +63,13 @@ for(const l of WORLD_SURFACES.layers){
 const ground=[...heights.values()];let invalidVertices=0,zeroAreaTriangles=0,roadUvCollapsed=0,roadUvTriangles=0;
 for(const mesh of world.group.children){
  if(!mesh.isMesh||mesh.isInstancedMesh||mesh.name!=='Mapped city geometry')continue;
- const p=mesh.geometry.attributes.position,n=mesh.geometry.attributes.normal,uv=mesh.geometry.attributes.uv;
+ // Baked meshes are indexed and store local chunk coordinates. Inspect the
+ // actual submitted triangles in world space, not the unique vertex table.
+ const raw=mesh.geometry.attributes.position,index=mesh.geometry.index;
+ const mapped=attribute=>({count:index?index.count:attribute.count,
+   getX:i=>attribute.getX(index?index.getX(i):i),getY:i=>attribute.getY(index?index.getX(i):i),getZ:i=>attribute.getZ(index?index.getX(i):i)});
+ const q=mapped(raw),p={count:q.count,getX:i=>q.getX(i)+mesh.position.x,getY:i=>q.getY(i)+mesh.position.y,getZ:i=>q.getZ(i)+mesh.position.z},
+       n=mapped(mesh.geometry.attributes.normal),uv=mapped(mesh.geometry.attributes.uv);
  for(let i=0;i<p.count;i++)if(!Number.isFinite(p.getX(i)+p.getY(i)+p.getZ(i)+n.getX(i)+n.getY(i)+n.getZ(i)))invalidVertices++;
  for(let i=0;i<p.count;i+=3){
   const layer=ground.find(l=>[0,1,2].every(k=>Math.abs(p.getY(i+k)-l.y)<1e-6));if(!layer)continue;

@@ -10,6 +10,9 @@ ROOT = Path(__file__).resolve().parents[1]
 ORIGIN = [-97.51758985376695, 35.466887450817715]
 MX = 111320 * math.cos(math.radians(ORIGIN[1]))
 MZ = 111132
+# Saved footprint coverage plus the complete intersecting OSM ways. This is a
+# 3.20 km by 2.26 km static city, enlarged from the original 2.95 by 1.92 km.
+SCENE_BOUNDS = {'minX':-1600,'maxX':1600,'minZ':-1140,'maxZ':1120}
 def local(c): return [round((c[0]-ORIGIN[0])*MX,2), round(-(c[1]-ORIGIN[1])*MZ,2)]
 def area(p): return abs(sum(a[0]*b[1]-b[0]*a[1] for a,b in zip(p,p[1:]+p[:1]))/2)
 def centroid(p):
@@ -25,7 +28,7 @@ def inside(pt,poly):
 def number(s):
     try:return float(re.search(r'[\d.]+',str(s))[0])
     except:return 0
-def in_scene(p):return -1600<p[0]<1350 and -1020<p[1]<900
+def in_scene(p):return SCENE_BOUNDS['minX']<p[0]<SCENE_BOUNDS['maxX'] and SCENE_BOUNDS['minZ']<p[1]<SCENE_BOUNDS['maxZ']
 
 doc=ET.fromstring(gzip.open(ROOT/'scripts/data/okc-map.osm.gz','rb').read())
 nodes={n.get('id'):[float(n.get('lon')),float(n.get('lat'))] for n in doc.findall('node')}
@@ -141,12 +144,14 @@ for w in ways:
     if w['tags'].get('name') in ['Crystal Bridge Tropical Conservatory','Paycom Center','Myriad Botanical Gardens']:
         features.append({'name':w['tags']['name'],'p':w['p'],'center':centroid(w['p'])})
 
-data={'origin':ORIGIN,'axis':'x east, z south; meters','route':route,'roads':roads,'buildings':buildings,'surfaces':surfaces,'paths':paths,'trees':trees,'features':features}
+data={'origin':ORIGIN,'axis':'x east, z south; meters','drivingBounds':SCENE_BOUNDS,'route':route,'roads':roads,'buildings':buildings,'surfaces':surfaces,'paths':paths,'trees':trees,'features':features}
 (ROOT/'dist/city-data.js').write_text('// Generated geographic snapshot; see geo/provenance.json.\nexport const CITY_DATA='+json.dumps(data,separators=(',',':'))+';\n')
 provenance={
  'origin':ORIGIN,'originMethod':'Centroid of OpenStreetMap Devon Energy Tower building:part way156035399',
  'retrievedUTC':'2026-11-24','footprints':{'source':'City of Oklahoma City / Esri Community Maps contributors','url':'https://services6.arcgis.com/Do88DoK2xjTUCXd1/ArcGIS/rest/services/Oklahoma_City_OK_Buildings/FeatureServer/0','bbox':[-97.535,35.457,-97.500,35.477],'dataEditUTC':'2022-10-03','countRendered':len(buildings)},
- 'streetsAndContext':{'source':'© OpenStreetMap contributors','license':'Open Database License (ODbL)','copyrightURL':'https://www.openstreetmap.org/copyright','queryURL':'https://api.openstreetmap.org/api/0.6/map?bbox=-97.535,35.459,-97.503,35.474','roads':len(roads),'trees':len(trees)},
+ 'streetsAndContext':{'source':'© OpenStreetMap contributors','license':'Open Database License (ODbL)','copyrightURL':'https://www.openstreetmap.org/copyright','queryURL':'https://api.openstreetmap.org/api/0.6/map?bbox=-97.535,35.457,-97.500,35.477','roads':len(roads),'trees':len(trees)},
+ 'sceneBoundsMeters':SCENE_BOUNDS,'sceneAreaSquareKilometers':7.232,'previousSceneAreaSquareKilometers':5.664,
+ 'scale':{'worldUnit':'meter','projection':'Local equirectangular projection at Devon Tower latitude','metersPerLongitudeDegree':MX,'metersPerLatitudeDegree':MZ,'ground':'Flat local datum; source elevations are not available'},
  'heightReference':'https://www.skyscrapercenter.com/city/oklahoma-city',
  'nightLighting':'Eight non-shadowing point lights at modeled lamp locations illuminate the western approach. More distant lamps use soft ground-only light-pool overlays. Intensities are visual approximations, not a photometric survey.',
  'limits':['Geographic footprint/street placement is mapped; supporting heights without tags are estimates.','Road widths are reconstructed from OSM lane counts; turning pockets and traffic signal timing are simplified.','Ground elevation is flattened; this is not a surveyed terrain model.','Landmark crowns and facades are visual reconstructions, not original construction models.','Garden paths follow mapped ways; supplementary park planting is illustrative and not a surveyed tree inventory.'],

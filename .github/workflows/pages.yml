@@ -32,6 +32,15 @@ jobs:
       - name: Check compiled world surface ownership
         run: node scripts/check-world-surfaces.mjs
 
+      - name: Check exposed building shells and recessed openings
+        run: node scripts/check-building-shells.mjs
+
+      - name: Verify reproducible baked geometry
+        run: node scripts/bake-world-geometry.mjs --check
+
+      - name: Check free driving and city collisions
+        run: node scripts/check-driving.mjs
+
       - name: Checkout publishing branch
         uses: actions/checkout@v4
         with:
@@ -77,7 +86,7 @@ jobs:
           SITE_URL: https://tront.xyz/okc
         run: |
           mkdir -p /tmp/okc-published-check
-          for file in app.js gallery/index.html gallery/shots.json gallery/prairie-prism-v02-captures.zip gallery/prairie-prism-captures.zip; do
+          for file in index.html app.js driving.js world.js world-meshes.js world-surfaces.js city-data.js tower.js sky.js geo/world-mesh-audit.json gallery/index.html gallery/shots.json gallery/prairie-prism-v02-captures.zip gallery/prairie-prism-captures.zip; do
             target="/tmp/okc-published-check/${file}"
             mkdir -p "$(dirname "$target")"
             curl --fail --silent --show-error --location --retry 18 --retry-all-errors --retry-delay 10 --max-time 30 "${SITE_URL}/${file}?revision=${PAGES_COMMIT}" --output "$target"

@@ -1,0 +1,1229 @@
+{
+  "method": "Actual production Three geometry, fixed 16:9 cameras, material groups, instance counts, transparent double-sided passes and real object-frustum culling. No occlusion culling. Excludes background/sky, cockpit, shadow passes and environment captures. Buffer counts exclude textures, driver allocation and renderer overhead; hidden geometry is included only in allocated totals. This does not measure GPU time or FPS.",
+  "baseline": {
+    "label": "064b664",
+    "mappedBuildings": 1074,
+    "mappedRoads": 1305,
+    "totalMeshObjects": 244,
+    "allocatedGeometryAndInstanceBytes": 11280164,
+    "views": [
+      {
+        "id": "reno-eye-height",
+        "position": [
+          -650,
+          2.1,
+          300
+        ],
+        "target": [
+          25,
+          105,
+          -35
+        ],
+        "fov": 43,
+        "aspect": 1.7777777777777777,
+        "near": 0.5,
+        "far": 7500,
+        "submittedMeshObjects": 223,
+        "estimatedMainPassCalls": 234,
+        "submittedTriangles": 544339,
+        "submittedInstances": 39128,
+        "referencedGeometryAndInstanceBytes": 11257788,
+        "contributors": [
+          {
+            "name": "city / Mesh",
+            "objects": 138,
+            "calls": 141,
+            "triangles": 11642
+          },
+          {
+            "name": "city / Mapped city geometry",
+            "objects": 19,
+            "calls": 19,
+            "triangles": 81634
+          },
+          {
+            "name": "Devon / Mesh",
+            "objects": 14,
+            "calls": 14,
+            "triangles": 4560
+          },
+          {
+            "name": "city / City detail batch",
+            "objects": 11,
+            "calls": 11,
+            "triangles": 362446
+          },
+          {
+            "name": "player / Mesh",
+            "objects": 7,
+            "calls": 7,
+            "triangles": 726
+          },
+          {
+            "name": "Devon / Campus paving at mapped building perimeter",
+            "objects": 2,
+            "calls": 4,
+            "triangles": 352
+          },
+          {
+            "name": "Devon / Mapped five-story Devon garden wing",
+            "objects": 2,
+            "calls": 4,
+            "triangles": 380
+          },
+          {
+            "name": "Devon / Mapped six-story glazed entrance rotunda",
+            "objects": 1,
+            "calls": 4,
+            "triangles": 292
+          },
+          {
+            "name": "city / City paint decals",
+            "objects": 2,
+            "calls": 2,
+            "triangles": 9480
+          },
+          {
+            "name": "Devon / Mapped Devon auditorium",
+            "objects": 1,
+            "calls": 2,
+            "triangles": 56
+          },
+          {
+            "name": "city / Traffic car paint",
+            "objects": 1,
+            "calls": 1,
+            "triangles": 3360
+          },
+          {
+            "name": "city / Traffic car glass",
+            "objects": 1,
+            "calls": 1,
+            "triangles": 240
+          },
+          {
+            "name": "city / Traffic car wheels",
+            "objects": 1,
+            "calls": 1,
+            "triangles": 5040
+          },
+          {
+            "name": "city / Traffic car hubs",
+            "objects": 1,
+            "calls": 1,
+            "triangles": 4880
+          },
+          {
+            "name": "city / Traffic car head",
+            "objects": 1,
+            "calls": 1,
+            "triangles": 480
+          },
+          {
+            "name": "city / Traffic car tail",
+            "objects": 1,
+            "calls": 1,
+            "triangles": 480
+          },
+          {
+            "name": "city / Traffic car shadow",
+            "objects": 1,
+            "calls": 1,
+            "triangles": 40
+          },
+          {
+            "name": "city / Traffic truck paint",
+            "objects": 1,
+            "calls": 1,
+            "triangles": 192
+          },
+          {
+            "name": "city / Traffic truck glass",
+            "objects": 1,
+            "calls": 1,
+            "triangles": 48
+          },
+          {
+            "name": "city / Traffic truck wheels",
+            "objects": 1,
+            "calls": 1,
+            "triangles": 1536
+          },
+          {
+            "name": "city / Traffic truck hubs",
+            "objects": 1,
+            "calls": 1,
+            "triangles": 1280
+          },
+          {
+            "name": "city / Traffic truck head",
+            "objects": 1,
+            "calls": 1,
+            "triangles": 96
+          },
+          {
+            "name": "city / Traffic truck tail",
+            "objects": 1,
+            "calls": 1,
+            "triangles": 96
+          },
+          {
+            "name": "city / Traffic truck shadow",
+            "objects": 1,
+            "calls": 1,
+            "triangles": 8
+          },
+          {
+            "name": "Devon / Mapped shaft: six broad facets and three recessed corner walls",
+            "objects": 1,
+            "calls": 1,
+            "triangles": 112
+          },
+          {
+            "name": "Devon / Five-foot silver facade blades",
+            "objects": 1,
+            "calls": 1,
+            "triangles": 3456
+          },
+          {
+            "name": "Devon / Curtain-wall floor bands and transoms",
+            "objects": 1,
+            "calls": 1,
+            "triangles": 34608
+          },
+          {
+            "name": "Devon / Three broad-face architectural V chamfers",
+            "objects": 1,
+            "calls": 1,
+            "triangles": 3
+          },
+          {
+            "name": "Devon / Continuous upper facade triangles and recessed feature walls",
+            "objects": 1,
+            "calls": 1,
+            "triangles": 40
+          },
+          {
+            "name": "Devon / Architectural V edges and pointed crown shoulders",
+            "objects": 1,
+            "calls": 1,
+            "triangles": 312
+          },
+          {
+            "name": "Devon / Continuous crown curtain-wall grid",
+            "objects": 1,
+            "calls": 1,
+            "triangles": 6648
+          },
+          {
+            "name": "Devon / Recessed corner edges and broad facade creases",
+            "objects": 1,
+            "calls": 1,
+            "triangles": 216
+          },
+          {
+            "name": "Devon / Closed mechanical roof at base of projecting crown",
+            "objects": 1,
+            "calls": 1,
+            "triangles": 24
+          },
+          {
+            "name": "Devon / Podium floor bands and silver curtain wall",
+            "objects": 1,
+            "calls": 1,
+            "triangles": 9204
+          },
+          {
+            "name": "Devon / Rotunda steel structure",
+            "objects": 1,
+            "calls": 1,
+            "triangles": 360
+          },
+          {
+            "name": "Devon / Rotunda entrance canopy",
+            "objects": 1,
+            "calls": 1,
+            "triangles": 12
+          }
+        ]
+      },
+      {
+        "id": "devon-campus-orbit",
+        "position": [
+          -340,
+          155,
+          390
+        ],
+        "target": [
+          25,
+          104,
+          -55
+        ],
+        "fov": 47,
+        "aspect": 1.7777777777777777,
+        "near": 0.5,
+        "far": 7500,
+        "submittedMeshObjects": 215,
+        "estimatedMainPassCalls": 226,
+        "submittedTriangles": 542373,
+        "submittedInstances": 39128,
+        "referencedGeometryAndInstanceBytes": 11228044,
+        "contributors": [
+          {
+            "name": "city / Mesh",
+            "objects": 137,
+            "calls": 140,
+            "triangles": 10402
+          },
+          {
+            "name": "city / Mapped city geometry",
+            "objects": 19,
+            "calls": 19,
+            "triangles": 81634
+          },
+          {
+            "name": "Devon / Mesh",
+            "objects": 14,
+            "calls": 14,
+            "triangles": 4560
+          },
+          {
+            "name": "city / City detail batch",
+            "objects": 11,
+            "calls": 11,
+            "triangles": 362446
+          },
+          {
+            "name": "Devon / Campus paving at mapped building perimeter",
+            "objects": 2,
+            "calls": 4,
+            "triangles": 352
+          },
+          {
+            "name": "Devon / Mapped five-story Devon garden wing",
+            "objects": 2,
+            "calls": 4,
+            "triangles": 380
+          },
+          {
+            "name": "Devon / Mapped six-story glazed entrance rotunda",
+            "objects": 1,
+            "calls": 4,
+            "triangles": 292
+          },
+          {
+            "name": "city / City paint decals",
+            "objects": 2,
+            "calls": 2,
+            "triangles": 9480
+          },
+          {
+            "name": "Devon / Mapped Devon auditorium",
+            "objects": 1,
+            "calls": 2,
+            "triangles": 56
+          },
+          {
+            "name": "city / Traffic car paint",
+            "objects": 1,
+            "calls": 1,
+            "triangles": 3360
+          },
+          {
+            "name": "city / Traffic car glass",
+            "objects": 1,
+            "calls": 1,
+            "triangles": 240
+          },
+          {
+            "name": "city / Traffic car wheels",
+            "objects": 1,
+            "calls": 1,
+            "triangles": 5040
+          },
+          {
+            "name": "city / Traffic car hubs",
+            "objects": 1,
+            "calls": 1,
+            "triangles": 4880
+          },
+          {
+            "name": "city / Traffic car head",
+            "objects": 1,
+            "calls": 1,
+            "triangles": 480
+          },
+          {
+            "name": "city / Traffic car tail",
+            "objects": 1,
+            "calls": 1,
+            "triangles": 480
+          },
+          {
+            "name": "city / Traffic car shadow",
+            "objects": 1,
+            "calls": 1,
+            "triangles": 40
+          },
+          {
+            "name": "city / Traffic truck paint",
+            "objects": 1,
+            "calls": 1,
+            "triangles": 192
+          },
+          {
+            "name": "city / Traffic truck glass",
+            "objects": 1,
+            "calls": 1,
+            "triangles": 48
+          },
+          {
+            "name": "city / Traffic truck wheels",
+            "objects": 1,
+            "calls": 1,
+            "triangles": 1536
+          },
+          {
+            "name": "city / Traffic truck hubs",
+            "objects": 1,
+            "calls": 1,
+            "triangles": 1280
+          },
+          {
+            "name": "city / Traffic truck head",
+            "objects": 1,
+            "calls": 1,
+            "triangles": 96
+          },
+          {
+            "name": "city / Traffic truck tail",
+            "objects": 1,
+            "calls": 1,
+            "triangles": 96
+          },
+          {
+            "name": "city / Traffic truck shadow",
+            "objects": 1,
+            "calls": 1,
+            "triangles": 8
+          },
+          {
+            "name": "Devon / Mapped shaft: six broad facets and three recessed corner walls",
+            "objects": 1,
+            "calls": 1,
+            "triangles": 112
+          },
+          {
+            "name": "Devon / Five-foot silver facade blades",
+            "objects": 1,
+            "calls": 1,
+            "triangles": 3456
+          },
+          {
+            "name": "Devon / Curtain-wall floor bands and transoms",
+            "objects": 1,
+            "calls": 1,
+            "triangles": 34608
+          },
+          {
+            "name": "Devon / Three broad-face architectural V chamfers",
+            "objects": 1,
+            "calls": 1,
+            "triangles": 3
+          },
+          {
+            "name": "Devon / Continuous upper facade triangles and recessed feature walls",
+            "objects": 1,
+            "calls": 1,
+            "triangles": 40
+          },
+          {
+            "name": "Devon / Architectural V edges and pointed crown shoulders",
+            "objects": 1,
+            "calls": 1,
+            "triangles": 312
+          },
+          {
+            "name": "Devon / Continuous crown curtain-wall grid",
+            "objects": 1,
+            "calls": 1,
+            "triangles": 6648
+          },
+          {
+            "name": "Devon / Recessed corner edges and broad facade creases",
+            "objects": 1,
+            "calls": 1,
+            "triangles": 216
+          },
+          {
+            "name": "Devon / Closed mechanical roof at base of projecting crown",
+            "objects": 1,
+            "calls": 1,
+            "triangles": 24
+          },
+          {
+            "name": "Devon / Podium floor bands and silver curtain wall",
+            "objects": 1,
+            "calls": 1,
+            "triangles": 9204
+          },
+          {
+            "name": "Devon / Rotunda steel structure",
+            "objects": 1,
+            "calls": 1,
+            "triangles": 360
+          },
+          {
+            "name": "Devon / Rotunda entrance canopy",
+            "objects": 1,
+            "calls": 1,
+            "triangles": 12
+          }
+        ]
+      }
+    ]
+  },
+  "current": {
+    "label": "working tree",
+    "mappedBuildings": 1301,
+    "mappedRoads": 1710,
+    "totalMeshObjects": 376,
+    "allocatedGeometryAndInstanceBytes": 14438310,
+    "views": [
+      {
+        "id": "reno-eye-height",
+        "position": [
+          -650,
+          2.1,
+          300
+        ],
+        "target": [
+          25,
+          105,
+          -35
+        ],
+        "fov": 43,
+        "aspect": 1.7777777777777777,
+        "near": 0.5,
+        "far": 7500,
+        "submittedMeshObjects": 251,
+        "estimatedMainPassCalls": 266,
+        "submittedTriangles": 606211,
+        "submittedInstances": 39139,
+        "referencedGeometryAndInstanceBytes": 11219370,
+        "contributors": [
+          {
+            "name": "city / Mapped city geometry",
+            "objects": 119,
+            "calls": 119,
+            "triangles": 152924
+          },
+          {
+            "name": "city / Baked facade detail instances",
+            "objects": 32,
+            "calls": 32,
+            "triangles": 312132
+          },
+          {
+            "name": "city / City detail batch",
+            "objects": 21,
+            "calls": 21,
+            "triangles": 34840
+          },
+          {
+            "name": "Devon / Rotunda inset balcony slab",
+            "objects": 5,
+            "calls": 10,
+            "triangles": 1960
+          },
+          {
+            "name": "city / Crystal Bridge / mapped footprint / merged static material",
+            "objects": 6,
+            "calls": 7,
+            "triangles": 10160
+          },
+          {
+            "name": "player / Mesh",
+            "objects": 7,
+            "calls": 7,
+            "triangles": 726
+          },
+          {
+            "name": "city / Mesh",
+            "objects": 6,
+            "calls": 6,
+            "triangles": 1482
+          },
+          {
+            "name": "Devon / Rotunda inner balcony handrail",
+            "objects": 5,
+            "calls": 5,
+            "triangles": 2400
+          },
+          {
+            "name": "Devon / Campus paving at mapped building perimeter",
+            "objects": 2,
+            "calls": 4,
+            "triangles": 352
+          },
+          {
+            "name": "Devon / Mapped five-story Devon garden wing",
+            "objects": 2,
+            "calls": 4,
+            "triangles": 380
+          },
+          {
+            "name": "Devon / Mapped six-story glazed entrance rotunda",
+            "objects": 1,
+            "calls": 4,
+            "triangles": 292
+          },
+          {
+            "name": "city / City paint decals",
+            "objects": 2,
+            "calls": 2,
+            "triangles": 11762
+          },
+          {
+            "name": "Devon / Mapped Devon auditorium angled glazed lobby",
+            "objects": 1,
+            "calls": 2,
+            "triangles": 60
+          },
+          {
+            "name": "Devon / Auditorium second-level glazed skybridge",
+            "objects": 1,
+            "calls": 2,
+            "triangles": 8
+          },
+          {
+            "name": "city / Traffic car paint",
+            "objects": 1,
+            "calls": 1,
+            "triangles": 3360
+          },
+          {
+            "name": "city / Traffic car glass",
+            "objects": 1,
+            "calls": 1,
+            "triangles": 240
+          },
+          {
+            "name": "city / Traffic car wheels",
+            "objects": 1,
+            "calls": 1,
+            "triangles": 5040
+          },
+          {
+            "name": "city / Traffic car hubs",
+            "objects": 1,
+            "calls": 1,
+            "triangles": 4880
+          },
+          {
+            "name": "city / Traffic car head",
+            "objects": 1,
+            "calls": 1,
+            "triangles": 480
+          },
+          {
+            "name": "city / Traffic car tail",
+            "objects": 1,
+            "calls": 1,
+            "triangles": 480
+          },
+          {
+            "name": "city / Traffic car shadow",
+            "objects": 1,
+            "calls": 1,
+            "triangles": 40
+          },
+          {
+            "name": "city / Traffic truck paint",
+            "objects": 1,
+            "calls": 1,
+            "triangles": 192
+          },
+          {
+            "name": "city / Traffic truck glass",
+            "objects": 1,
+            "calls": 1,
+            "triangles": 48
+          },
+          {
+            "name": "city / Traffic truck wheels",
+            "objects": 1,
+            "calls": 1,
+            "triangles": 1536
+          },
+          {
+            "name": "city / Traffic truck hubs",
+            "objects": 1,
+            "calls": 1,
+            "triangles": 1280
+          },
+          {
+            "name": "city / Traffic truck head",
+            "objects": 1,
+            "calls": 1,
+            "triangles": 96
+          },
+          {
+            "name": "city / Traffic truck tail",
+            "objects": 1,
+            "calls": 1,
+            "triangles": 96
+          },
+          {
+            "name": "city / Traffic truck shadow",
+            "objects": 1,
+            "calls": 1,
+            "triangles": 8
+          },
+          {
+            "name": "Devon / Mapped shaft: six broad facets and three recessed corner walls",
+            "objects": 1,
+            "calls": 1,
+            "triangles": 112
+          },
+          {
+            "name": "Devon / Five-foot silver facade blades",
+            "objects": 1,
+            "calls": 1,
+            "triangles": 3456
+          },
+          {
+            "name": "Devon / Curtain-wall floor bands and transoms",
+            "objects": 1,
+            "calls": 1,
+            "triangles": 34608
+          },
+          {
+            "name": "Devon / Three broad-face architectural V chamfers",
+            "objects": 1,
+            "calls": 1,
+            "triangles": 3
+          },
+          {
+            "name": "Devon / Continuous upper facade triangles and recessed feature walls",
+            "objects": 1,
+            "calls": 1,
+            "triangles": 40
+          },
+          {
+            "name": "Devon / Opaque inner crown lining above mechanical roof",
+            "objects": 1,
+            "calls": 1,
+            "triangles": 18
+          },
+          {
+            "name": "Devon / Capped upper crown edges",
+            "objects": 1,
+            "calls": 1,
+            "triangles": 6
+          },
+          {
+            "name": "Devon / Architectural V edges and pointed crown shoulders",
+            "objects": 1,
+            "calls": 1,
+            "triangles": 312
+          },
+          {
+            "name": "Devon / Continuous crown curtain-wall grid",
+            "objects": 1,
+            "calls": 1,
+            "triangles": 6648
+          },
+          {
+            "name": "Devon / Recessed corner edges and broad facade creases",
+            "objects": 1,
+            "calls": 1,
+            "triangles": 216
+          },
+          {
+            "name": "Devon / Closed mechanical roof at base of projecting crown",
+            "objects": 1,
+            "calls": 1,
+            "triangles": 24
+          },
+          {
+            "name": "Devon / Recessed mechanical plant enclosure",
+            "objects": 1,
+            "calls": 1,
+            "triangles": 12
+          },
+          {
+            "name": "Devon / Mechanical plant metal roof",
+            "objects": 1,
+            "calls": 1,
+            "triangles": 12
+          },
+          {
+            "name": "Devon / Mechanical plant horizontal louvers",
+            "objects": 1,
+            "calls": 1,
+            "triangles": 192
+          },
+          {
+            "name": "Devon / Podium exposed floor bands and silver curtain wall",
+            "objects": 1,
+            "calls": 1,
+            "triangles": 6444
+          },
+          {
+            "name": "Devon / Rotunda glazed roof oculus frame",
+            "objects": 1,
+            "calls": 1,
+            "triangles": 288
+          },
+          {
+            "name": "Devon / Rotunda mapped steel structure",
+            "objects": 1,
+            "calls": 1,
+            "triangles": 2496
+          },
+          {
+            "name": "Devon / Rotunda inner balcony railing posts",
+            "objects": 1,
+            "calls": 1,
+            "triangles": 2160
+          },
+          {
+            "name": "Devon / Rotunda entrance canopy within mapped vestibule",
+            "objects": 1,
+            "calls": 1,
+            "triangles": 12
+          },
+          {
+            "name": "Devon / Auditorium roof inside mapped envelope",
+            "objects": 1,
+            "calls": 1,
+            "triangles": 13
+          },
+          {
+            "name": "Devon / Auditorium lobby floor",
+            "objects": 1,
+            "calls": 1,
+            "triangles": 13
+          },
+          {
+            "name": "Devon / Auditorium timber performance room behind glazed lobby",
+            "objects": 1,
+            "calls": 1,
+            "triangles": 12
+          },
+          {
+            "name": "Devon / Auditorium interior timber-panel joints",
+            "objects": 1,
+            "calls": 1,
+            "triangles": 744
+          },
+          {
+            "name": "Devon / Auditorium angled curtain-wall structure",
+            "objects": 1,
+            "calls": 1,
+            "triangles": 852
+          },
+          {
+            "name": "Devon / Auditorium skybridge raised floor",
+            "objects": 1,
+            "calls": 1,
+            "triangles": 12
+          },
+          {
+            "name": "Devon / Auditorium skybridge roof",
+            "objects": 1,
+            "calls": 1,
+            "triangles": 12
+          },
+          {
+            "name": "Devon / Auditorium skybridge mullions",
+            "objects": 1,
+            "calls": 1,
+            "triangles": 240
+          }
+        ]
+      },
+      {
+        "id": "devon-campus-orbit",
+        "position": [
+          -340,
+          155,
+          390
+        ],
+        "target": [
+          25,
+          104,
+          -55
+        ],
+        "fov": 47,
+        "aspect": 1.7777777777777777,
+        "near": 0.5,
+        "far": 7500,
+        "submittedMeshObjects": 240,
+        "estimatedMainPassCalls": 255,
+        "submittedTriangles": 608916,
+        "submittedInstances": 39533,
+        "referencedGeometryAndInstanceBytes": 11284702,
+        "contributors": [
+          {
+            "name": "city / Mapped city geometry",
+            "objects": 116,
+            "calls": 116,
+            "triangles": 154497
+          },
+          {
+            "name": "city / Baked facade detail instances",
+            "objects": 34,
+            "calls": 34,
+            "triangles": 320772
+          },
+          {
+            "name": "city / City detail batch",
+            "objects": 19,
+            "calls": 19,
+            "triangles": 29298
+          },
+          {
+            "name": "Devon / Rotunda inset balcony slab",
+            "objects": 5,
+            "calls": 10,
+            "triangles": 1960
+          },
+          {
+            "name": "city / Crystal Bridge / mapped footprint / merged static material",
+            "objects": 6,
+            "calls": 7,
+            "triangles": 10160
+          },
+          {
+            "name": "city / Mesh",
+            "objects": 5,
+            "calls": 5,
+            "triangles": 242
+          },
+          {
+            "name": "Devon / Rotunda inner balcony handrail",
+            "objects": 5,
+            "calls": 5,
+            "triangles": 2400
+          },
+          {
+            "name": "Devon / Campus paving at mapped building perimeter",
+            "objects": 2,
+            "calls": 4,
+            "triangles": 352
+          },
+          {
+            "name": "Devon / Mapped five-story Devon garden wing",
+            "objects": 2,
+            "calls": 4,
+            "triangles": 380
+          },
+          {
+            "name": "Devon / Mapped six-story glazed entrance rotunda",
+            "objects": 1,
+            "calls": 4,
+            "triangles": 292
+          },
+          {
+            "name": "city / City paint decals",
+            "objects": 2,
+            "calls": 2,
+            "triangles": 11762
+          },
+          {
+            "name": "Devon / Mapped Devon auditorium angled glazed lobby",
+            "objects": 1,
+            "calls": 2,
+            "triangles": 60
+          },
+          {
+            "name": "Devon / Auditorium second-level glazed skybridge",
+            "objects": 1,
+            "calls": 2,
+            "triangles": 8
+          },
+          {
+            "name": "city / Traffic car paint",
+            "objects": 1,
+            "calls": 1,
+            "triangles": 3360
+          },
+          {
+            "name": "city / Traffic car glass",
+            "objects": 1,
+            "calls": 1,
+            "triangles": 240
+          },
+          {
+            "name": "city / Traffic car wheels",
+            "objects": 1,
+            "calls": 1,
+            "triangles": 5040
+          },
+          {
+            "name": "city / Traffic car hubs",
+            "objects": 1,
+            "calls": 1,
+            "triangles": 4880
+          },
+          {
+            "name": "city / Traffic car head",
+            "objects": 1,
+            "calls": 1,
+            "triangles": 480
+          },
+          {
+            "name": "city / Traffic car tail",
+            "objects": 1,
+            "calls": 1,
+            "triangles": 480
+          },
+          {
+            "name": "city / Traffic car shadow",
+            "objects": 1,
+            "calls": 1,
+            "triangles": 40
+          },
+          {
+            "name": "city / Traffic truck paint",
+            "objects": 1,
+            "calls": 1,
+            "triangles": 192
+          },
+          {
+            "name": "city / Traffic truck glass",
+            "objects": 1,
+            "calls": 1,
+            "triangles": 48
+          },
+          {
+            "name": "city / Traffic truck wheels",
+            "objects": 1,
+            "calls": 1,
+            "triangles": 1536
+          },
+          {
+            "name": "city / Traffic truck hubs",
+            "objects": 1,
+            "calls": 1,
+            "triangles": 1280
+          },
+          {
+            "name": "city / Traffic truck head",
+            "objects": 1,
+            "calls": 1,
+            "triangles": 96
+          },
+          {
+            "name": "city / Traffic truck tail",
+            "objects": 1,
+            "calls": 1,
+            "triangles": 96
+          },
+          {
+            "name": "city / Traffic truck shadow",
+            "objects": 1,
+            "calls": 1,
+            "triangles": 8
+          },
+          {
+            "name": "Devon / Mapped shaft: six broad facets and three recessed corner walls",
+            "objects": 1,
+            "calls": 1,
+            "triangles": 112
+          },
+          {
+            "name": "Devon / Five-foot silver facade blades",
+            "objects": 1,
+            "calls": 1,
+            "triangles": 3456
+          },
+          {
+            "name": "Devon / Curtain-wall floor bands and transoms",
+            "objects": 1,
+            "calls": 1,
+            "triangles": 34608
+          },
+          {
+            "name": "Devon / Three broad-face architectural V chamfers",
+            "objects": 1,
+            "calls": 1,
+            "triangles": 3
+          },
+          {
+            "name": "Devon / Continuous upper facade triangles and recessed feature walls",
+            "objects": 1,
+            "calls": 1,
+            "triangles": 40
+          },
+          {
+            "name": "Devon / Opaque inner crown lining above mechanical roof",
+            "objects": 1,
+            "calls": 1,
+            "triangles": 18
+          },
+          {
+            "name": "Devon / Capped upper crown edges",
+            "objects": 1,
+            "calls": 1,
+            "triangles": 6
+          },
+          {
+            "name": "Devon / Architectural V edges and pointed crown shoulders",
+            "objects": 1,
+            "calls": 1,
+            "triangles": 312
+          },
+          {
+            "name": "Devon / Continuous crown curtain-wall grid",
+            "objects": 1,
+            "calls": 1,
+            "triangles": 6648
+          },
+          {
+            "name": "Devon / Recessed corner edges and broad facade creases",
+            "objects": 1,
+            "calls": 1,
+            "triangles": 216
+          },
+          {
+            "name": "Devon / Closed mechanical roof at base of projecting crown",
+            "objects": 1,
+            "calls": 1,
+            "triangles": 24
+          },
+          {
+            "name": "Devon / Recessed mechanical plant enclosure",
+            "objects": 1,
+            "calls": 1,
+            "triangles": 12
+          },
+          {
+            "name": "Devon / Mechanical plant metal roof",
+            "objects": 1,
+            "calls": 1,
+            "triangles": 12
+          },
+          {
+            "name": "Devon / Mechanical plant horizontal louvers",
+            "objects": 1,
+            "calls": 1,
+            "triangles": 192
+          },
+          {
+            "name": "Devon / Podium exposed floor bands and silver curtain wall",
+            "objects": 1,
+            "calls": 1,
+            "triangles": 6444
+          },
+          {
+            "name": "Devon / Rotunda glazed roof oculus frame",
+            "objects": 1,
+            "calls": 1,
+            "triangles": 288
+          },
+          {
+            "name": "Devon / Rotunda mapped steel structure",
+            "objects": 1,
+            "calls": 1,
+            "triangles": 2496
+          },
+          {
+            "name": "Devon / Rotunda inner balcony railing posts",
+            "objects": 1,
+            "calls": 1,
+            "triangles": 2160
+          },
+          {
+            "name": "Devon / Rotunda entrance canopy within mapped vestibule",
+            "objects": 1,
+            "calls": 1,
+            "triangles": 12
+          },
+          {
+            "name": "Devon / Auditorium roof inside mapped envelope",
+            "objects": 1,
+            "calls": 1,
+            "triangles": 13
+          },
+          {
+            "name": "Devon / Auditorium lobby floor",
+            "objects": 1,
+            "calls": 1,
+            "triangles": 13
+          },
+          {
+            "name": "Devon / Auditorium timber performance room behind glazed lobby",
+            "objects": 1,
+            "calls": 1,
+            "triangles": 12
+          },
+          {
+            "name": "Devon / Auditorium interior timber-panel joints",
+            "objects": 1,
+            "calls": 1,
+            "triangles": 744
+          },
+          {
+            "name": "Devon / Auditorium angled curtain-wall structure",
+            "objects": 1,
+            "calls": 1,
+            "triangles": 852
+          },
+          {
+            "name": "Devon / Auditorium skybridge raised floor",
+            "objects": 1,
+            "calls": 1,
+            "triangles": 12
+          },
+          {
+            "name": "Devon / Auditorium skybridge roof",
+            "objects": 1,
+            "calls": 1,
+            "triangles": 12
+          },
+          {
+            "name": "Devon / Auditorium skybridge mullions",
+            "objects": 1,
+            "calls": 1,
+            "triangles": 240
+          }
+        ]
+      }
+    ]
+  },
+  "comparison": [
+    {
+      "view": "reno-eye-height",
+      "calls": {
+        "before": 234,
+        "after": 266
+      },
+      "triangles": {
+        "before": 544339,
+        "after": 606211
+      },
+      "referencedBufferBytes": {
+        "before": 11257788,
+        "after": 11219370
+      }
+    },
+    {
+      "view": "devon-campus-orbit",
+      "calls": {
+        "before": 226,
+        "after": 255
+      },
+      "triangles": {
+        "before": 542373,
+        "after": 608916
+      },
+      "referencedBufferBytes": {
+        "before": 11228044,
+        "after": 11284702
+      }
+    }
+  ]
+}

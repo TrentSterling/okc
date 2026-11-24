@@ -1,0 +1,14 @@
+{
+  "sourceTriangles": 196239,
+  "triangles": 204249,
+  "vertices": 263074,
+  "chunks": 189,
+  "instanceChunks": 57,
+  "boxInstances": 36821,
+  "openings": 3466,
+  "entrances": 1095,
+  "rooftopUnits": 948,
+  "chunkSize": 1024,
+  "bytes": 16035524,
+  "worldSurfacesSha256": "bac97bb633bc627efcdce1732db1e5d78f338f2eebb509cd09f2c2d7d55e105b"
+}

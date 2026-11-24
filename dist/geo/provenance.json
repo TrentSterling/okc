@@ -15,15 +15,30 @@
       35.477
     ],
     "dataEditUTC": "2022-10-03",
-    "countRendered": 1074
+    "countRendered": 1301
   },
   "streetsAndContext": {
     "source": "\u00a9 OpenStreetMap contributors",
     "license": "Open Database License (ODbL)",
     "copyrightURL": "https://www.openstreetmap.org/copyright",
-    "queryURL": "https://api.openstreetmap.org/api/0.6/map?bbox=-97.535,35.459,-97.503,35.474",
-    "roads": 1305,
-    "trees": 569
+    "queryURL": "https://api.openstreetmap.org/api/0.6/map?bbox=-97.535,35.457,-97.500,35.477",
+    "roads": 1710,
+    "trees": 719
+  },
+  "sceneBoundsMeters": {
+    "minX": -1600,
+    "maxX": 1600,
+    "minZ": -1140,
+    "maxZ": 1120
+  },
+  "sceneAreaSquareKilometers": 7.232,
+  "previousSceneAreaSquareKilometers": 5.664,
+  "scale": {
+    "worldUnit": "meter",
+    "projection": "Local equirectangular projection at Devon Tower latitude",
+    "metersPerLongitudeDegree": 90664.68353673142,
+    "metersPerLatitudeDegree": 111132,
+    "ground": "Flat local datum; source elevations are not available"
   },
   "heightReference": "https://www.skyscrapercenter.com/city/oklahoma-city",
   "nightLighting": "Eight non-shadowing point lights at modeled lamp locations illuminate the western approach. More distant lamps use soft ground-only light-pool overlays. Intensities are visual approximations, not a photometric survey.",

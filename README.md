@@ -1,6 +1,6 @@
 # Prairie Prism
 
-An Oklahoma City sunset drive for Trent. Geographically grounded reconstruction, v0.2.1.
+An Oklahoma City sunset drive for Trent. Geographically grounded reconstruction, v0.3.0.
 
 **Live site:** https://tront.xyz/okc/
 
@@ -8,7 +8,31 @@ An Oklahoma City sunset drive for Trent. Geographically grounded reconstruction,
 
 Static Three.js application. No sign-in or service credentials are required to run it.
 
-## What changed in v0.2.1
+## v0.3: a larger city you can drive
+
+Choose **Drive yourself** to steer freely, or keep the original **Scenic cruise**. The car has acceleration, braking, reverse, a handbrake, building collision and recovery to a nearby road. The chase camera follows the car heading and shortens before solid walls. Touch steering and pedals are available on small/touch screens.
+
+The static map covers **3.20 × 2.26 km (7.232 km²)**, about **28% more area** than the previous release. It contains 1,301 source building outlines/parts, 1,710 street segments, 517 land/parking/water polygons and 719 mapped trees. The original 2.55 km Reno cruise and saved camera links remain available.
+
+### Surface and building repair
+
+The offline compiler resolves buildings as a height envelope. Shorter roofs are cut where taller volumes occupy them; shared and buried walls are removed; equal-height roof areas have one owner. Custom Devon, arena and conservatory volumes exclude duplicate generic buildings. This replaces the earlier cleanup that only handled identical edges and one duplicate footprint.
+
+Street-facing doors and windows are actual openings cut into the wall, with inset glazing, reveals, frames and thresholds. Rooftop equipment is placed on exposed roof regions. Static ground, roofs and walls are triangulated and indexed offline, then partitioned into 1024 m spatial cells. The browser reads finished buffers rather than repeating polygon repair and triangulation.
+
+### Devon accuracy and scale
+
+One world unit is one meter. The city uses a local geographic projection around Devon's mapped footprint. The tower targets the Council on Vertical Urbanism / CTBUH architectural height of **257.2 m**. The model now includes an enclosed crown roof **18.288 m below the tip**, silver inner crown lining, a **36.576 m rotunda**, mapped campus framing, inset balconies and a reconstructed auditorium entrance/bridge.
+
+References include the architect's building description, the structural engineer's dimensions, and architect-provided public auditorium drawings. These are not a full tower construction set. Published story counts differ: architect/engineer descriptions commonly say 50 stories, while CVU counts 52 floors under its methodology. Unmeasured details remain reconstructions. See `dist/geo/devon-architecture-sources.json` for the source register and the distinction between published, mapped and inferred dimensions.
+
+### Rendering cost and depth
+
+Static meshes and repeated trim are grouped spatially so unseen city regions can be culled. High uses 2048-pixel directional shadows, Balanced 1024, and Low disables shadows and the local city reflection probe. Moving shadows refresh at up to 30/20 Hz instead of every display frame; a stationary sun and scene reuse their maps. Main canvas resolution is capped by quality, while photographs render synchronously before download.
+
+The renderer uses reversed depth when `EXT_clip_control` is available and logarithmic depth otherwise. Intentional road-paint and crown-screen biases respect the selected depth direction. Building overlap is addressed by geometry ownership rather than material bias. Settings shows measured FPS after startup; its tooltip reports the current draw calls and triangles. Those are runtime diagnostics, not a hardware benchmark.
+
+## Earlier release: v0.2.1
 
 This pass fixes coplanar geometry before the first GitHub Pages release:
 
@@ -19,7 +43,7 @@ This pass fixes coplanar geometry before the first GitHub Pages release:
 - Moved the crown display slightly farther off the glazing, kept its narrow decal bias, and tightened camera depth ranges. The geometry fixes remain the primary remedy.
 - Kept road and parking paint in a dedicated decal pass after opaque surfaces, with depth testing enabled and depth writes disabled. Cars still occlude the markings.
 
-The surface compiler runs offline; the shipped app needs no GIS library or map-service request. Rebuild it with `python3 scripts/build-world-surfaces.py` after changing `dist/city-data.js` (requires Shapely 2.1.2). The generated surface audit is in `dist/geo/surface-audit.json`.
+The surface compiler runs offline; the shipped app needs no GIS library or map-service request. After changing map inputs, rebuild with `npm run build:map` (Python requires Shapely 2.1.2). The generated surface audit is in `dist/geo/surface-audit.json`.
 
 ## What changed in v0.2
 
@@ -34,7 +58,7 @@ This is a **mapped visual reconstruction in progress**. It does not claim survey
 ## Try this first
 
 1. Start with **Daylight** to inspect the rebuilt geometry, then select **Afterglow** with the crown screen switched off.
-2. Press **Start driving** or Space to cruise toward Devon.
+2. Choose **Drive yourself** and use W/S and A/D, or press **Start cruise** for the guided route.
 3. Leave the sunset paused. Watch how the facade changes as the car moves.
 4. Open **Settings** and scrub **Position along the drive** to compare angles quickly.
 5. Switch to **Orbit**. Drag to circle the tower and use the wheel to move closer.
@@ -47,7 +71,7 @@ This is a **mapped visual reconstruction in progress**. It does not claim survey
 
 ## Capture gallery
 
-Open **Gallery** in the scene header or visit `https://tront.xyz/okc/gallery/`. The new reconstruction pass adds ten interface-free 1600 × 900 PNGs: four matching street-height Reno lighting states, a south-side daylight tower study, a campus overview, the western skyline, a crown detail, an eastbound driver view, and the opening chase view. The gallery also retains all 19 earlier captures.
+Open **Gallery** in the scene header or visit `https://tront.xyz/okc/gallery/`. The preserved v0.2 reconstruction pass contains ten interface-free 1600 × 900 PNGs: four matching street-height Reno lighting states, a south-side daylight tower study, a campus overview, the western skyline, a crown detail, an eastbound driver view, and the opening chase view. The gallery also retains all 19 earlier captures.
 
 Filter by reconstruction pass or earlier work, enlarge a capture, browse with the arrow keys, or compare any two images side by side. **Open this view** restores a current capture's camera and lighting. Earlier prototype captures retain their original pixels and are no longer presented as replays of the changed world. Current and earlier capture packs have separate ZIP downloads so both remain manageable.
 
@@ -63,9 +87,10 @@ The PNGs are rendered by the actual Three.js application. Loading the public sce
 
 | Control | Action |
 |---|---|
-| W / S | Throttle / brake |
-| A / D | Move between lanes |
-| Space | Start or pause cruise, unless a focused control owns Space |
+| W / S or arrow keys | Throttle / brake, then reverse in free mode |
+| A / D | Steer freely; switch lanes in scenic mode |
+| Space | Handbrake in free mode; start/pause scenic cruise |
+| F | Switch between free driving and scenic cruise |
 | C | Cycle Chase, Driver, Orbit |
 | Mouse or touch drag | Look around; orbit in Orbit mode |
 | Mouse wheel | Orbit distance |
@@ -73,17 +98,17 @@ The PNGs are rendered by the actual Three.js application. Loading the public sce
 | T | Play or pause the sunset |
 | N | Neutral environment diagnostic |
 | H | Hide or restore controls |
-| R | Reset the drive |
+| R | Recover to a clear mapped road in free mode; reset scenic drive |
 | M | Toggle synthesized road ambience |
 | Escape | Close panels and restore controls |
 
-Driving and time of day are independent. Reversing direction does not move the sun. The road is a bounded stretch; the car stops at either end so the user can turn around.
+Driving and time of day are independent. Reversing direction does not move the sun. Scenic cruise is a bounded stretch; free driving explores the larger map and stops at its boundary.
 
 ## What is implemented
 
 - A mapped, approximately 2.55 km at-grade Reno Avenue corridor with sidewalks, intersections, and simplified lane behavior.
 - Traffic in both directions with fixed lane speeds and even headways.
-- A player sedan, three camera modes, cruise, manual throttle/brake, and lane changes.
+- A player sedan, three camera modes, optional free steering with building collision, reverse, handbrake and recovery, plus scenic cruise.
 - A reconstructed Devon Tower with mapped footprint orientation, recessed corners, faceted broad faces, curtain-wall framing, crown lanterns, podium, and rotunda.
 - Procedural HDR sky, sunset/cloud colors, stars, a sun disc, direct sun, sky fill, and distance haze.
 - PBR reflections with a metalized-glazing approximation; an adjustable illustrated treatment.
@@ -107,7 +132,7 @@ Color flow is linear HDR capture, PBR lighting, ACES tone mapping, then sRGB dis
 
 The infinite sky remains a directional environment. A separate 256-pixel HDR cubemap captures surrounding city geometry from within the Devon volume, with the tower and screen hidden. The cube is transparent where it sees no geometry. A ray/box intersection corrects the local lookup for the facade point, and geometry coverage blends it over the infinite-sky radiance. Filtered RGB is divided by coverage before blending to avoid dark silhouette fringes.
 
-One box approximates city depth, so this is not ray tracing and cannot reproduce every nearby occlusion exactly. The local probe updates when the environment changes, with throttling during continuous sky playback. It does not rerender for every camera movement. Lower quality uses a 128-pixel cubemap. Neutral mode disables the local probe as well as colored sky lighting.
+One box approximates city depth, so this is not ray tracing and cannot reproduce every nearby occlusion exactly. The local probe updates when the environment changes, with throttling during continuous sky playback. It does not rerender for every camera movement. Balanced uses a 128-pixel cubemap; Low disables the local probe. Neutral mode disables the local probe as well as colored sky lighting.
 
 ## Geographic sources
 
@@ -138,7 +163,7 @@ See `dist/geo/provenance.json` for URLs, bounds, dates, coordinate system, and l
 | `.github/workflows/pages.yml` | GitHub Pages deployment from `dist/` |
 | `scripts/build-downloads.py` | Builds both downloadable capture archives |
 
-There is no runtime CDN dependency, asset API, or account database. The scene ships as static files; deployment builds only the downloadable screenshot archives. Textures and sounds are generated locally in the browser. Supplied reference photos are not included in the deployment.
+There is no runtime CDN dependency, asset API, or account database. The scene ships as static files with checked-in baked geometry; deployment builds the downloadable screenshot archives and validates the baked data. Textures and sounds are generated locally in the browser. Supplied reference photos are not included in the deployment.
 
 GitHub Pages publishes the root of `gh-pages`. Each push to `main` rebuilds the two capture ZIPs, runs the static and geometry checks, and commits the complete `dist/` output to that publishing branch. The workflow explicitly requests GitHub's native Pages build and checks the public scene, gallery, and both downloadable archives against the source bytes. Source and map inputs stay on `main`; the publishing branch contains the runnable site.
 
@@ -163,6 +188,9 @@ python3 scripts/build-downloads.py
 node scripts/check-static.mjs
 node scripts/check-tower-surfaces.mjs
 node scripts/check-world-surfaces.mjs
+node scripts/check-building-shells.mjs
+node scripts/check-driving.mjs
+node scripts/bake-world-geometry.mjs --check
 ```
 
 The tower checker constructs the production Three.js meshes and verifies zero coplanar campus wall overlaps, no duplicate beam instances, finite vertices/normals, and three independent crown displays. The world checker constructs the production ground meshes, compares triangle coverage with the compiled polygons, checks excluded areas, and samples 5,950 lane positions against the road. These are geometry and packaging checks, not a substitute for a GPU interaction test.
@@ -171,9 +199,9 @@ Earlier development passes also executed 33 control/state checks against the pro
 
 The shader audit assembles the actual Three.js 0.180 shader prefixes/includes and compiles eight vertex/fragment stages offline. Hosted Site captures render the actual production scene and materials. Independent visual reviews identified an incorrect crown silhouette, exaggerated unknown building heights, two invalid capture views, a discontinuous reflected horizon, and noisy night lighting. These findings drove the reconstruction and corrective passes. The reviewers still distinguish landmark recognition from full architectural and streetscape fidelity.
 
-The interactive preview browser available during development could not create a WebGL context; actual GPU rendering is verified through hosted captures. Consequently, there is no honest hardware FPS benchmark or complete end-to-end GPU interaction claim. FPS is measured after initial scene/shader setup and is available in Settings; quality controls reduce render resolution. Audio, fullscreen, download transport, and touch behavior need a real-device pass.
+For v0.3, the interactive preview browser reported its WebGL driver disabled before scene creation. Geometry, shader and controller checks are separate from a rendered browser test. Existing gallery PNGs are older GPU captures and do not verify v0.3 appearance. No v0.3 hardware FPS benchmark or complete GPU interaction pass is claimed. Settings provides actual FPS on the device running the game; touch, audio, fullscreen and photo downloads still need a real-device pass.
 
-This is a **scenic driving and reflection prototype**. Steering follows lanes; there are no collisions, suspension, wheel-ground physics, damage, or traffic AI. Building footprints and street placement now use map data. Terrain is flattened; unrecorded heights, facade details, road widths, turn pockets, and traffic signal behavior remain approximations. Legends is conceptual massing. The sky is authored, not calculated from a date, geographic solar ephemeris, measured atmosphere, or spectral glass simulation. The higher-tower/later-sunset effect from Earth curvature is not modeled yet.
+This is an **arcade driving and reflection prototype**. Static building collision and free steering are implemented. There is no suspension, wheel-ground physics, damage or traffic AI; decorative traffic is noncollidable. Building footprints and street placement now use map data. Terrain is flattened; unrecorded heights, facade details, road widths, turn pockets, and traffic signal behavior remain approximations. Legends is conceptual massing. The sky is authored, not calculated from a date, geographic solar ephemeris, measured atmosphere, or spectral glass simulation. The higher-tower/later-sunset effect from Earth curvature is not modeled yet.
 
 ## Focused route to 1.0
 
@@ -181,7 +209,8 @@ This is a **scenic driving and reflection prototype**. Steering follows lanes; t
 - [ ] Complete a real-browser pass for every control, mobile layout, fullscreen, audio, and photo/setup downloads.
 - [ ] Calibrate one outstanding west-to-east hero view against reference photos; finish the most visible Devon crown and facade details.
 - [ ] Replace the closest procedural car/tree shapes with authored low-poly assets if the visual target needs them.
-- [ ] Decide whether 1.0 is a relaxing guided drive or a vehicle game. Add driving physics only if it serves that decision.
+- [x] Add optional arcade free driving while retaining scenic cruise.
+- [ ] Evaluate traffic interaction and stronger vehicle handling through playtesting.
 - [x] Add a separate local city reflection probe with box projection.
 - [ ] Validate its depth/occlusion approximation against multiple real street-level photographs.
 - [ ] Add a location/date sun path and horizon-height demonstration if the optics experiment becomes the main product.
@@ -194,6 +223,8 @@ This is a **scenic driving and reflection prototype**. Steering follows lanes; t
 - Skyline heights: https://www.skyscrapercenter.com/city/oklahoma-city
 - Devon architecture: https://www.pickardchilton.com/work/devon-energy-center
 - Devon height: https://www.skyscrapercenter.com/building/devon-energy-center/623/
+- Devon structural dimensions: https://www.thorntontomasetti.com/project/devon-energy-center
+- Architect-provided auditorium drawings: https://www.archdaily.com/892684/devon-auditorium-pickard-chilton
 - Crown lighting: https://nanoltg.com/portfolio-items/devon-energy-center/
 - Legends proposal: https://okcboardwalk.com/tower/
 - Three.js physical material: https://threejs.org/docs/#api/en/materials/MeshPhysicalMaterial
@@ -205,6 +236,6 @@ Third-party runtime license: `dist/vendor/THREE-LICENSE.txt`.
 
 ## GitHub Pages deployment
 
-Pushes to `main` run `.github/workflows/pages.yml`: validate the static assets, build the two gallery ZIPs, and publish `dist/` to GitHub Pages. The repository uses Pages with GitHub Actions as its source. It inherits `tront.xyz` from the owner website and therefore has no repository-specific `CNAME`. The intended base URL is `https://tront.xyz/okc/`. Runtime imports, gallery assets, and view links are relative so the same build also works under another subdirectory.
+Pushes to `main` run `.github/workflows/pages.yml`: validate the static assets, build the two gallery ZIPs, and publish `dist/` to GitHub Pages. The repository publishes the `gh-pages` branch; the workflow requests the native Pages build after updating that branch. It inherits `tront.xyz` from the owner website and therefore has no repository-specific `CNAME`. The intended base URL is `https://tront.xyz/okc/`. Runtime imports, gallery assets, and view links are relative so the same build also works under another subdirectory.
 
 The gallery manifests retain the capture source revisions and dates. A live scene may have newer geometry fixes than a saved photograph. Geographic attribution and source licenses are included in `dist/geo/NOTICE.txt`; the vendored Three.js license is in `dist/vendor/`.

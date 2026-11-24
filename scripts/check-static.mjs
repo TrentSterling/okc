@@ -152,6 +152,15 @@ if (fs.existsSync(path.join(dist, 'world-surfaces.js'))) {
   const {WORLD_SURFACES} = await import(pathToFileURL(path.join(dist, 'world-surfaces.js')));
   const hash = createHash('sha256').update(fs.readFileSync(path.join(dist, 'city-data.js'))).digest('hex');
   assert.equal(WORLD_SURFACES.cityDataSha256, hash, 'Compiled surface geometry is stale');
+  if(WORLD_SURFACES.customLandmarkSha256){
+    const customHash=createHash('sha256').update(fs.readFileSync(path.join(dist,'geo/custom-landmark-volumes.json'))).digest('hex');
+    assert.equal(WORLD_SURFACES.customLandmarkSha256,customHash,'Custom landmark exclusions are stale');
+  }
+}
+if(fs.existsSync(path.join(dist,'world-meshes.js'))){
+  const {BAKED_WORLD}=await import(pathToFileURL(path.join(dist,'world-meshes.js')));
+  const hash=createHash('sha256').update(fs.readFileSync(path.join(dist,'world-surfaces.js'))).digest('hex');
+  assert.equal(BAKED_WORLD.worldSurfacesSha256,hash,'Baked static meshes are stale');
 }
 const packs = spawnSync('python3', [path.join(root, 'scripts', 'build-downloads.py'), '--check'], {encoding: 'utf8'});
 assert.equal(packs.status, 0, 'Build or refresh the capture archives first:\n' + packs.stderr);

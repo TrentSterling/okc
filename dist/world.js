@@ -1,6 +1,7 @@
 import * as THREE from 'three';
 import { CITY_DATA } from './city-data.js';
 import { WORLD_SURFACES } from './world-surfaces.js';
+import { BAKED_WORLD } from './world-meshes.js';
 
 // Geographic reconstruction in local meters, centered on the mapped Devon
 // tower footprint. Source attribution and height limits: geo/provenance.json.
@@ -72,11 +73,27 @@ export function createWorld({scene, glassMaterial, seed=42}={}) {
   const random=rng(seed),group=new THREE.Group(); group.name='Mapped Oklahoma City / Reno Avenue'; scene.add(group);
   const unit=new THREE.BoxGeometry(1,1,1),batches=new Map(),merged=new Map(),dynamicLights=[];
   function addBatch(geometry,material,position,scale=[1,1,1],rotation=0,color) {
-    const key=geometry.uuid+material.uuid;let b=batches.get(key);if(!b){b={geometry,material,items:[]};batches.set(key,b);}
+    const cell=geometry===paintGeometry?'paint':Math.floor(position[0]/BAKED_WORLD.chunkSize)+':'+Math.floor(position[2]/BAKED_WORLD.chunkSize);
+    const key=geometry.uuid+material.uuid+cell;let b=batches.get(key);if(!b){b={geometry,material,items:[]};batches.set(key,b);}
     b.items.push({position,scale,rotation,color});
   }
   function addBox(material,x,y,z,w,h,d,rot=0,color){addBatch(unit,material,[x,y,z],[w,h,d],rot,color);}
-  function mergePart(geometry,material,cast=true){let b=merged.get(material.uuid);if(!b){b={material,parts:[],cast};merged.set(material.uuid,b);}b.parts.push(geometry);}
+  function mergePart(geometry,material,cast=true){geometry.computeBoundingBox();const c=geometry.boundingBox.getCenter(new THREE.Vector3());const key=material.uuid+':'+cast+':'+Math.floor(c.x/BAKED_WORLD.chunkSize)+':'+Math.floor(c.z/BAKED_WORLD.chunkSize);let b=merged.get(key);if(!b){b={material,parts:[],cast};merged.set(key,b);}b.parts.push(geometry);}
+  function compactStaticGroup(target){
+    const bins=new Map(),originals=new Set();
+    for(const child of [...target.children]){
+      if(!child.isMesh||child.isInstancedMesh||Array.isArray(child.material))continue;
+      child.updateMatrix();const key=child.material.uuid+':'+child.castShadow;
+      let bin=bins.get(key);if(!bin){bin={material:child.material,cast:child.castShadow,parts:[]};bins.set(key,bin);}
+      bin.parts.push(child.geometry.clone().applyMatrix4(child.matrix));originals.add(child.geometry);target.remove(child);
+    }
+    for(const bin of bins.values()){
+      const mesh=new THREE.Mesh(mergeGeometry(bin.parts),bin.material);mesh.name=target.name+' / merged static material';
+      mesh.castShadow=bin.cast;mesh.receiveShadow=true;target.add(mesh);
+      for(const geometry of bin.parts)geometry.dispose();
+    }
+    for(const geometry of originals)geometry.dispose();
+  }
   function canvasTexture(w,h,draw,repeat=true){const c=document.createElement('canvas');c.width=w;c.height=h;draw(c.getContext('2d'),w,h);const t=new THREE.CanvasTexture(c);t.colorSpace=THREE.SRGBColorSpace;if(repeat)t.wrapS=t.wrapT=THREE.RepeatWrapping;t.anisotropy=8;return t;}
   const concrete=new THREE.MeshStandardMaterial({color:0xaaa79f,roughness:.93});
   const curb=new THREE.MeshStandardMaterial({color:0xb9b7ad,roughness:.92});
@@ -137,7 +154,8 @@ export function createWorld({scene, glassMaterial, seed=42}={}) {
   // horizontal area has exactly one exposed owner, including polygon holes.
   // This removes the depth competition rather than depending on draw order.
   const surfaceMaterials={road:asphalt,path:concrete,water,curb,parking:lotMat,paving:concrete,grass};
-  for(const layer of WORLD_SURFACES.layers)for(const polygon of layer.polygons)flatPolygon(polygon,layer.y,surfaceMaterials[layer.kind],layer.uvScale);
+  // Map triangulation, height envelopes, and facade holes are baked offline.
+  // Production decodes indexed buffers into spatially culled chunks below.
   const route=CITY_DATA.route;
   // Regular facade modules use meter-space UVs rather than stretching a single
   // building-sized bitmap. Emission is sparse and never paints the daytime sky.
@@ -145,8 +163,8 @@ export function createWorld({scene, glassMaterial, seed=42}={}) {
     const day=canvasTexture(256,512,(c,w,h)=>{c.fillStyle=wall;c.fillRect(0,0,w,h);
       for(let iy=0;iy<14;iy++){const y=iy*h/14;
         if(style==='parking'){c.fillStyle='#28363b';c.fillRect(0,y+9,w,20);c.fillStyle='#9d9c91';c.fillRect(0,y+30,w,6);continue;}
-        for(let ix=0;ix<8;ix++){const x=ix*w/8;const tint=36+Math.floor(random()*20);c.fillStyle=style==='glass'?`rgb(${tint+18},${tint+32},${tint+38})`:`rgb(${tint},${tint+12},${tint+16})`;c.fillRect(x+4,y+4,style==='glass'?25:19,28);
-          c.fillStyle='rgba(170,188,192,.34)';c.fillRect(x+4,y+4,style==='glass'?25:19,2);c.fillStyle='rgba(8,16,20,.32)';c.fillRect(x+4,y+30,20,2);}
+        for(let ix=0;ix<8;ix++){const x=ix*w/8;const tint=36+Math.floor(random()*20);c.fillStyle=style==='glass'?`rgb(${tint+18},${tint+32},${tint+38})`:`rgb(${tint},${tint+12},${tint+16})`;c.fillRect(x+4,y+5,style==='glass'?25:19,style==='glass'?28:23);
+          c.fillStyle='rgba(170,188,192,.34)';c.fillRect(x+4,y+5,style==='glass'?25:19,2);c.fillStyle='rgba(8,16,20,.32)';c.fillRect(x+4,y+28,20,2);}
         c.fillStyle=style==='banded'?'#bbc0bd':style==='glass'?'#89989b':'rgba(222,212,190,.22)';c.fillRect(0,y+34,w,style==='banded'?3:1);
       }
       if(style==='banded'){c.fillStyle='#b7bbb6';for(let x=0;x<w;x+=32)c.fillRect(x,0,4,h);}
@@ -161,27 +179,43 @@ export function createWorld({scene, glassMaterial, seed=42}={}) {
   const shopGlass=new THREE.MeshPhysicalMaterial({color:0x485c64,roughness:.17,metalness:.28,clearcoat:1,envMapIntensity:1});
   const shutter=new THREE.MeshStandardMaterial({color:0x8c908d,roughness:.7,metalness:.20});
   const gold=new THREE.MeshStandardMaterial({color:0x8e896b,metalness:.45,roughness:.55});
-  const redundantBuildings=new Set(WORLD_SURFACES.redundantBuildingIds);
-  for(const entry of CITY_DATA.buildings){
-    if(redundantBuildings.has(entry.id))continue;
-    // This small mapped garden service structure has no height attribute. Its
-    // previous8m context estimate overwhelmed a pedestrian view of the tower.
-    // Retain the real footprint and use a conservative single-story estimate.
-    const b=entry.id===433827?{...entry,h:3.6}:entry,c=center(b.p);
-    // OSMway159100324 identifies this circular footprint as a carousel. It is
-    // an open-sided covered ride, not an8m solid cylindrical building.
-    if(b.id===257271){const platform=new THREE.Mesh(new THREE.CylinderGeometry(10.3,10.3,.24,40),concrete);platform.position.set(c[0],.16,c[1]);platform.receiveShadow=true;group.add(platform);const canopy=new THREE.Mesh(new THREE.ConeGeometry(10.6,2.0,32),white);canopy.position.set(c[0],4.0,c[1]);canopy.castShadow=true;group.add(canopy);for(let i=0;i<12;i++){const a=i*Math.PI/6;addBox(steel,c[0]+Math.cos(a)*9.4,1.65,c[1]+Math.sin(a)*9.4,.12,3.0,.12);}addBox(concrete,c[0],1.9,c[1],1.1,3.4,1.1);continue;}
-    let mat=b.kind==='glass'?glass:b.kind==='parking'?parking:b.kind==='banded'?banded:b.kind==='deco'?deco:['lowrise','retail'].includes(b.kind)?lowrise[Math.abs(b.id)%lowrise.length]:masonry[Math.abs(b.id)%masonry.length];
-    if(b.kind==='deco'&&b.h>100){const body=b.h-21;footprint(b.p,body,mat,0,WORLD_SURFACES.wallOverrides[b.id]);let y=body;for(const [scale,h] of [[.91,6],[.77,5],[.62,4],[.44,3]]){const p=scaled(b.p,c,scale);footprint(p,y+h,mat,y);outline(p,y+h,concrete,.30,.6);y+=h;}const tip=new THREE.Mesh(new THREE.ConeGeometry(5.2,3,4),gold);tip.rotation.y=Math.PI/4;tip.position.set(c[0],b.h-1.5,c[1]);tip.castShadow=true;group.add(tip);}
-    else{footprint(b.p,b.h,mat,0,WORLD_SURFACES.wallOverrides[b.id]);if(b.h>18)outline(b.p,b.h+.28,b.kind==='glass'?steel:concrete,.3,.55);}
-    if(['lowrise','retail'].includes(b.kind)){
-      outline(b.p,b.h+.12,darkSteel,.25,.24);outline(b.p,.35,concrete,.24,.7);
-      // Street-facing openings are scaled architectural pieces, not repeated
-      // office-window wallpaper on every unmeasured warehouse and restaurant.
-      if(c[0]>-1050&&c[0]<400&&c[1]>-200&&c[1]<600){for(let e=0;e<b.p.length-1;e++){const a=b.p[e],d=b.p[e+1],dx=d[0]-a[0],dz=d[1]-a[1],len=Math.hypot(dx,dz);if(len<9)continue;const orient=Math.sign(b.p.reduce((sum,v,i,p)=>{const q=p[(i+1)%p.length];return sum+v[0]*q[1]-q[0]*v[1];},0))||1;const angle=-Math.atan2(dz,dx),nx=dz/len*orient,nz=-dx/len*orient;for(let at=4;at<len-3;at+=b.kind==='retail'?3.8:10){const x=a[0]+dx*at/len+nx*.07,z=a[1]+dz*at/len+nz*.07;const isDoor=b.kind!=='retail'&&at<5;addBox(isDoor?shutter:shopGlass,x,isDoor?1.65:b.kind==='retail'?1.65:2.8,z,isDoor?2.6:b.kind==='retail'?2.7:1.35,isDoor?3.1:b.kind==='retail'?2.4:.8,.10,angle);if(!isDoor){addBox(concrete,x,b.kind==='retail'?.4:2.35,z,b.kind==='retail'?2.9:1.5,.12,.24,angle);}}}}
-      if(b.h>4.5){addBox(roofMat,c[0],b.h+.6,c[1],3.4,1.2,2.5);addBox(steel,c[0]+3.2,b.h+.45,c[1],1.3,.9,1.3);}
+  const bakedMaterials={};
+  for(const [name,mat] of Object.entries(surfaceMaterials))bakedMaterials['ground.'+name]=mat;
+  for(let i=0;i<4;i++){bakedMaterials['building.masonry.'+i]=masonry[i];bakedMaterials['building.lowrise.'+i]=lowrise[i];}
+  Object.assign(bakedMaterials,{'building.glass':glass,'building.banded':banded,'building.parking':parking,'building.deco':deco,
+    'detail.roof':roofMat,'detail.concrete':concrete,'detail.steel':steel,'detail.darkSteel':darkSteel,'detail.glass':shopGlass});
+  function decodeBuffer(encoded){const binary=atob(encoded),bytes=new Uint8Array(binary.length);for(let i=0;i<binary.length;i++)bytes[i]=binary.charCodeAt(i);return bytes.buffer;}
+  for(const chunk of BAKED_WORLD.chunks){
+    const data=new THREE.InterleavedBuffer(new Float32Array(decodeBuffer(chunk.v)),8),g=new THREE.BufferGeometry();
+    g.setAttribute('position',new THREE.InterleavedBufferAttribute(data,3,0));
+    g.setAttribute('normal',new THREE.InterleavedBufferAttribute(data,3,3));
+    g.setAttribute('uv',new THREE.InterleavedBufferAttribute(data,2,6));
+    const Index=chunk.indexType===32?Uint32Array:Uint16Array;
+    g.setIndex(new THREE.BufferAttribute(new Index(decodeBuffer(chunk.i)),1));g.computeBoundingBox();g.computeBoundingSphere();
+    const mesh=new THREE.Mesh(g,bakedMaterials[chunk.material]);mesh.name='Mapped city geometry';mesh.position.fromArray(chunk.origin);
+    mesh.castShadow=chunk.cast;mesh.receiveShadow=true;mesh.userData={baked:true,chunk:chunk.key,bakedMaterial:chunk.material};group.add(mesh);
+  }
+  for(const chunk of BAKED_WORLD.instances){
+    const matrices=new Float32Array(decodeBuffer(chunk.m));
+    const mesh=new THREE.InstancedMesh(unit,bakedMaterials[chunk.material],matrices.length/16);
+    mesh.name='Baked facade detail instances';mesh.position.fromArray(chunk.origin);
+    mesh.instanceMatrix=new THREE.InstancedBufferAttribute(matrices,16);
+    mesh.boundingBox=new THREE.Box3(new THREE.Vector3(...chunk.min),new THREE.Vector3(...chunk.max));
+    mesh.boundingSphere=mesh.boundingBox.getBoundingSphere(new THREE.Sphere());
+    mesh.castShadow=true;mesh.receiveShadow=true;mesh.userData={baked:true,chunk:chunk.key,bakedMaterial:chunk.material};group.add(mesh);
+  }
+  // Specialized open structures and crown tips stay separate from the baked
+  // generic shell. Their mapped footprints never receive a second solid box.
+  for(const b of CITY_DATA.buildings){
+    const c=center(b.p);
+    if(b.id===257271||b.kind==='carousel'){
+      const platform=new THREE.Mesh(new THREE.CylinderGeometry(10.3,10.3,.24,40),concrete);platform.position.set(c[0],.16,c[1]);platform.receiveShadow=true;group.add(platform);
+      const canopy=new THREE.Mesh(new THREE.ConeGeometry(10.6,2.0,32),white);canopy.position.set(c[0],4.0,c[1]);canopy.castShadow=true;group.add(canopy);
+      for(let i=0;i<12;i++){const a=i*Math.PI/6;addBox(steel,c[0]+Math.cos(a)*9.4,1.65,c[1]+Math.sin(a)*9.4,.12,3.0,.12);}
+      addBox(concrete,c[0],1.9,c[1],1.1,3.4,1.1);
+    }else if(b.kind==='deco'&&b.h>100){
+      const tip=new THREE.Mesh(new THREE.ConeGeometry(5.2,3,4),gold);tip.rotation.y=Math.PI/4;tip.position.set(c[0],b.h-1.5,c[1]);tip.castShadow=true;group.add(tip);
     }
-    if(b.h>22&&b.kind!=='deco'){const w=Math.min(12,Math.max(5,Math.sqrt(Math.abs(b.p.reduce((s,a,i,p)=>{const bb=p[(i+1)%p.length];return s+a[0]*bb[1]-bb[0]*a[1];},0))*.5)*.18));addBox(roofMat,c[0],b.h+1.2,c[1],w,2.4,w*.78);addBox(steel,c[0]+w*.65,b.h+.7,c[1],w*.36,1.4,w*.48);}
   }
   // Crystal Bridge is positioned and oriented from its mapped footprint.
   const bridge=CITY_DATA.features.find(f=>f.name==='Crystal Bridge Tropical Conservatory');
@@ -193,7 +227,10 @@ export function createWorld({scene, glassMaterial, seed=42}={}) {
     const floor=new THREE.Mesh(new THREE.BoxGeometry(68,.35,7.5),concrete);floor.position.y=1.8;conservatory.add(floor);
     const interiorLeaves=new THREE.MeshStandardMaterial({color:0x486746,roughness:.9}),planterMat=new THREE.MeshStandardMaterial({color:0x6e6250,roughness:.95});
     for(let i=0;i<18;i++){const x=-28+i*3.3,z=(i%2?1:-1)*(3.2+random()*2);const planter=new THREE.Mesh(new THREE.BoxGeometry(2.5,1.1,2.2),planterMat);planter.position.set(x,2.3,z);conservatory.add(planter);for(let k=0;k<3;k++){const crown=new THREE.Mesh(new THREE.IcosahedronGeometry(1,1),interiorLeaves);crown.scale.set(1.4,2+random()*2,1.4);crown.position.set(x+(random()-.5)*1.6,4+k*1.2,z);conservatory.add(crown);}}
-    group.add(conservatory);
+    // The conservatory has more than a hundred fixed ribs, panes and plants.
+    // Bake their transforms into a handful of material meshes once, instead
+    // of paying a separate draw call for every small repeated piece.
+    compactStaticGroup(conservatory);group.add(conservatory);
   }
   const arena=CITY_DATA.features.find(f=>f.name==='Paycom Center');
   if(arena){footprint(arena.p,23,masonry[1]);const c=arena.center,xs=arena.p.map(p=>p[0]),zs=arena.p.map(p=>p[1]);const r=new THREE.Mesh(new THREE.SphereGeometry(1,40,16,0,Math.PI*2,0,Math.PI/2),roofMat);r.scale.set((Math.max(...xs)-Math.min(...xs))*.47,10,(Math.max(...zs)-Math.min(...zs))*.47);r.position.set(c[0],23,c[1]);r.castShadow=true;group.add(r);}
@@ -244,5 +281,5 @@ export function createWorld({scene, glassMaterial, seed=42}={}) {
   let lastNight=-1;
   function update(dt,simTime,nightAmount=0,trafficSpeed=1){const night=clamp(nightAmount,0,1);if(Math.abs(night-lastNight)>.002){for(const l of dynamicLights){if(l.mat)l.mat.emissiveIntensity=l.min+night*l.max;if(l.light)l.light.intensity=night*l.max;if(l.overlay)l.overlay.opacity=night*l.max;}materials.head.emissiveIntensity=.12+night*3.5;materials.tail.emissiveIntensity=.25+night*2;lastNight=night;}for(const t of traffic){t.s=(t.s+t.dir*t.speed*dt*trafficSpeed/ROUTE_LENGTH+1)%1;const p=roadPoint(t.s,t.offset),d=tangent(t.s);tmp.position.copy(p);tmp.scale.copy(t.scale);tmp.rotation.set(0,-Math.atan2(d.z,d.x)+(t.dir===-1?Math.PI:0),0);tmp.updateMatrix();for(const m of Object.values(trafficMeshes[t.kind]))m.setMatrixAt(t.index,tmp.matrix);}for(const type of Object.values(trafficMeshes))for(const m of Object.values(type))m.instanceMatrix.needsUpdate=true;}
   update(0,0,0);
-  return{group,update,getRoutePoint:(s,laneOffset=0)=>roadPoint(s,5.25+laneOffset),getRouteTangent:tangent,routeLength:ROUTE_LENGTH,trafficCount:traffic.length,laneBase:5.25,laneSpacing:3.5,laneLimit:1.75,geoOrigin:CITY_DATA.origin,mappedBuildingCount:CITY_DATA.buildings.length,mappedRoadCount:CITY_DATA.roads.length,surfaceLayerCount:WORLD_SURFACES.layers.length};
+  return{group,update,getRoutePoint:(s,laneOffset=0)=>roadPoint(s,5.25+laneOffset),getRouteTangent:tangent,routeLength:ROUTE_LENGTH,trafficCount:traffic.length,laneBase:5.25,laneSpacing:3.5,laneLimit:1.75,geoOrigin:CITY_DATA.origin,mappedBuildingCount:CITY_DATA.buildings.length,mappedRoadCount:CITY_DATA.roads.length,surfaceLayerCount:WORLD_SURFACES.layers.length,drivingBounds:WORLD_SURFACES.drivingBounds,drivingSolids:WORLD_SURFACES.drivingSolids,drivingRoads:CITY_DATA.roads,staticGeometryStats:BAKED_WORLD.stats};
 }

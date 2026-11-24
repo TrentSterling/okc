@@ -1,0 +1,144 @@
+{
+  "method": "Actual Three.js r180 parameter and GLSL preparation; native surfaceless GLES shader compile and link. No browser or rendering performance claim.",
+  "renderer": "llvmpipe (LLVM 19.1.7, 256 bits)",
+  "version": "OpenGL ES 3.2 Mesa 25.0.7-2+deb13u1",
+  "passed": true,
+  "programs": [
+    {
+      "name": "sky-reversed",
+      "stages": [
+        {
+          "stage": "vertex",
+          "compiled": true,
+          "log": ""
+        },
+        {
+          "stage": "fragment",
+          "compiled": true,
+          "log": ""
+        }
+      ],
+      "linked": true,
+      "linkLog": ""
+    },
+    {
+      "name": "crown-screen-reversed",
+      "stages": [
+        {
+          "stage": "vertex",
+          "compiled": true,
+          "log": ""
+        },
+        {
+          "stage": "fragment",
+          "compiled": true,
+          "log": ""
+        }
+      ],
+      "linked": true,
+      "linkLog": ""
+    },
+    {
+      "name": "physical-glass-reversed",
+      "stages": [
+        {
+          "stage": "vertex",
+          "compiled": true,
+          "log": ""
+        },
+        {
+          "stage": "fragment",
+          "compiled": true,
+          "log": ""
+        }
+      ],
+      "linked": true,
+      "linkLog": ""
+    },
+    {
+      "name": "instanced-glass-reversed",
+      "stages": [
+        {
+          "stage": "vertex",
+          "compiled": true,
+          "log": ""
+        },
+        {
+          "stage": "fragment",
+          "compiled": true,
+          "log": ""
+        }
+      ],
+      "linked": true,
+      "linkLog": ""
+    },
+    {
+      "name": "sky-logarithmic",
+      "stages": [
+        {
+          "stage": "vertex",
+          "compiled": true,
+          "log": ""
+        },
+        {
+          "stage": "fragment",
+          "compiled": true,
+          "log": ""
+        }
+      ],
+      "linked": true,
+      "linkLog": ""
+    },
+    {
+      "name": "crown-screen-logarithmic",
+      "stages": [
+        {
+          "stage": "vertex",
+          "compiled": true,
+          "log": ""
+        },
+        {
+          "stage": "fragment",
+          "compiled": true,
+          "log": ""
+        }
+      ],
+      "linked": true,
+      "linkLog": ""
+    },
+    {
+      "name": "physical-glass-logarithmic",
+      "stages": [
+        {
+          "stage": "vertex",
+          "compiled": true,
+          "log": ""
+        },
+        {
+          "stage": "fragment",
+          "compiled": true,
+          "log": ""
+        }
+      ],
+      "linked": true,
+      "linkLog": ""
+    },
+    {
+      "name": "instanced-glass-logarithmic",
+      "stages": [
+        {
+          "stage": "vertex",
+          "compiled": true,
+          "log": ""
+        },
+        {
+          "stage": "fragment",
+          "compiled": true,
+          "log": ""
+        }
+      ],
+      "linked": true,
+      "linkLog": ""
+    }
+  ]
+}

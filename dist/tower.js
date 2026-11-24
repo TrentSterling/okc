@@ -6,6 +6,22 @@ import * as THREE from 'three';
 const Y_AXIS = new THREE.Vector3(0, 1, 0);
 const TAU = Math.PI * 2;
 
+// Metric reference anchors: CVU/CTBUH architectural and occupied heights,
+// Thornton Tomasetti's 60-foot crown above the roof / 120-foot rotunda, and
+// Pickard Chilton's 38-foot auditorium entrance wall. Facade subdivisions and
+// mechanical equipment are a visual reconstruction, not construction plans.
+// The source register is geo/devon-architecture-sources.json.
+export const DEVON_DIMENSIONS = Object.freeze({
+  architecturalHeight: 257.2,
+  highestOccupiedFloor: 227.3,
+  crownAboveRoof: 18.288,
+  mechanicalRoof: 238.912,
+  rotundaTop: 36.576,
+  podiumTop: 24.05,
+  auditoriumTop: 11.5824,
+  facadeModule: 1.524
+});
+
 function addBox(group, size, position, material, name = '') {
   const mesh = new THREE.Mesh(new THREE.BoxGeometry(...size), material);
   mesh.position.set(...position);
@@ -84,11 +100,14 @@ function makeScreenMaterial() {
     ]),
     vertexShader: `
       varying vec2 vPanel;
+      #include <common>
       #include <fog_pars_vertex>
+      #include <logdepthbuf_pars_vertex>
       void main() {
         vPanel = uv;
         vec4 mvPosition = modelViewMatrix * vec4(position, 1.0);
         gl_Position = projectionMatrix * mvPosition;
+        #include <logdepthbuf_vertex>
         #include <fog_vertex>
       }
     `,
@@ -98,8 +117,10 @@ function makeScreenMaterial() {
       uniform float uEnabled;
       varying vec2 vPanel;
       #include <fog_pars_fragment>
+      #include <logdepthbuf_pars_fragment>
       void main() {
         if (uEnabled < .5) discard;
+        #include <logdepthbuf_fragment>
         vec2 p = vPanel;
         // One continuous architectural lantern. The very slow white balance
         // shift remains legible at skyline scale; no subpixel LED dots or
@@ -241,9 +262,52 @@ function triangleScreen(apex,topA,topB,material) {
   const mesh=new THREE.Mesh(g,material);mesh.name='Independent triangular crown display surface';mesh.userData.glassNormalOffset=.08;mesh.renderOrder=2;return mesh;
 }
 
+function horizontalGeometry(polygon, y) {
+  const path = ring => ring.map(([x,z]) => new THREE.Vector2(x,-z));
+  const shape = new THREE.Shape(path(polygon.outer || polygon));
+  for (const hole of polygon.holes || []) shape.holes.push(new THREE.Path(path(hole)));
+  const geometry = new THREE.ShapeGeometry(shape);
+  geometry.rotateX(-Math.PI / 2);
+  geometry.translate(0,y,0);
+  return geometry;
+}
+
+function clipFaceAbove(face,y) {
+  const clipped=[];
+  for(let i=0;i<face.length;i++) {
+    const a=face[i],b=face[(i+1)%face.length],insideA=a.y>=y-1e-7,insideB=b.y>=y-1e-7;
+    if(insideA)clipped.push(a.clone());
+    if(insideA!==insideB)clipped.push(a.clone().lerp(b,(y-a.y)/(b.y-a.y)));
+  }
+  return clipped.filter((p,i,all)=>p.distanceToSquared(all[(i+all.length-1)%all.length])>1e-9);
+}
+
+// Facade members follow the same exposed wall patches as the glass. Using an
+// unrelated complete circle for the rotunda previously put railings and beams
+// through its adjoining tower and podium, and outside the mapped envelope.
+function perimeterMembers(polygon,bottom,top,owners,bands,pitch,width=.12,depth=.19) {
+  const ring=polygon.outer||polygon,sign=Math.sign(signedPlanArea(ring)),entries=[];
+  for(let i=0;i<ring.length;i++) {
+    const a=ring[i],b=ring[(i+1)%ring.length],length=Math.hypot(b[0]-a[0],b[1]-a[1]);
+    if(length<.05)continue;
+    const normal=profileNormal(a,b,sign),point=t=>[a[0]+(b[0]-a[0])*t,a[1]+(b[1]-a[1])*t];
+    for(const patch of visibleWallPatches(a,b,bottom,top,owners)) {
+      const start=point(patch.t0),end=point(patch.t1);
+      for(const y of bands)if(y>=patch.bottom-.001&&y<=patch.top+.001)
+        entries.push([profilePoint(start,y).addScaledVector(normal,.06),profilePoint(end,y).addScaledVector(normal,.06),width,depth]);
+      const count=Math.max(1,Math.ceil(length*(patch.t1-patch.t0)/pitch));
+      for(let j=0;j<count;j++) {
+        const q=point(patch.t0+(patch.t1-patch.t0)*(j+.5)/count);
+        entries.push([profilePoint(q,patch.bottom).addScaledVector(normal,.07),profilePoint(q,patch.top).addScaledVector(normal,.07),width*.75,depth]);
+      }
+    }
+  }
+  return entries;
+}
+
 export function createDevon({ glassMaterial } = {}) {
   const group=new THREE.Group();group.name='Devon Energy Center';
-  group.userData={height:257.2,geographicOrigin:DEVON_CAMPUS.origin,footprintSource:'OpenStreetMap way 156035399',facadeSource:'Pickard Chilton photographs; 1.524 m glass-blade module',crownSource:'Photograph-led 34 m broad-face V; Nanometer Lighting 75 ft by 85 ft nested lit area',reconstruction:true};
+  group.userData={height:DEVON_DIMENSIONS.architecturalHeight,geographicOrigin:DEVON_CAMPUS.origin,footprintSource:'OpenStreetMap way 156035399',facadeSource:'Pickard Chilton photographs; 1.524 m glass-blade module',crownSource:'Photograph-led 34 m broad-face V; 60 ft above mechanical roof (Thornton Tomasetti); interior silver lining (MG McGrath)',dimensions:DEVON_DIMENSIONS,reconstruction:true,sourceRegister:'geo/devon-architecture-sources.json'};
   const glass=glassMaterial||new THREE.MeshPhysicalMaterial({color:0xa0bbc5,metalness:.62,roughness:.075,ior:1.52});
   const silver=new THREE.MeshStandardMaterial({color:0xb7bec1,roughness:.34,metalness:.48});
   const bright=new THREE.MeshStandardMaterial({color:0xd3d7d4,roughness:.42,metalness:.22});
@@ -295,7 +359,7 @@ export function createDevon({ glassMaterial } = {}) {
   // dimensions describe the smaller lighting installation inside that face.
   const crowns=[{a:0,m:4,b:6},{a:11,m:12,b:13},{a:18,m:19,b:21}];
   const corners=[{a:6,b:11,channel:[7,8,9,10]}, {a:13,b:18,channel:[14,15,16,17]}, {a:21,b:0,channel:[22,23,24,25,26,27]}];
-  const crownBase=223.2,crownTop=257.2,crownScale=.992,topScale=.972,roofY=239;
+  const crownBase=223.2,crownTop=DEVON_DIMENSIONS.architecturalHeight,crownScale=.992,topScale=.972,roofY=DEVON_DIMENSIONS.mechanicalRoof;
   const crownRibs=[],crownGrid=[],crownPanels=[],crownSides=[],roofBoundary=[];
   const screenMaterial=makeScreenMaterial(),screens=new THREE.Group();screens.name='Programmable crown screens';screens.visible=false;
   const crownPoint=i=>profilePoint(plan[i],crownBase,crownScale);
@@ -363,47 +427,147 @@ export function createDevon({ glassMaterial } = {}) {
   for(const f of [...crownPanels,...crownSides])addFaceGrid(f);
   group.add(surfaceMesh(crownPanels,glass,'Three broad-face architectural V chamfers'));
   group.add(surfaceMesh(crownSides,glass,'Continuous upper facade triangles and recessed feature walls'));
+  // The crown genuinely stands above a lower mechanical roof, but is not a
+  // set of one-sided paper fins. Silver inner cladding, documented by the
+  // fabricator, makes its inside visible from the aerial inspection camera.
+  const liningMaterial=new THREE.MeshStandardMaterial({name:'Silver aluminum inner crown cladding',color:0xacb4b8,roughness:.56,metalness:.44});
+  const liningFaces=[],rimFaces=[];
+  for(const face of [...crownPanels,...crownSides]) {
+    const clipped=clipFaceAbove(face,roofY);
+    if(clipped.length<3)continue;
+    const normal=new THREE.Vector3().crossVectors(face[1].clone().sub(face[0]),face[2].clone().sub(face[0])).normalize();
+    const inner=clipped.map(p=>p.clone().addScaledVector(normal,-.18));
+    liningFaces.push(inner.slice().reverse());
+    for(let i=0;i<clipped.length;i++) {
+      const j=(i+1)%clipped.length;
+      if(clipped[i].y>roofY+.01&&clipped[j].y>roofY+.01)
+        rimFaces.push([clipped[i],clipped[j],inner[j],inner[i]]);
+    }
+  }
+  const lining=surfaceMesh(liningFaces,liningMaterial,'Opaque inner crown lining above mechanical roof');
+  lining.userData.claddingThickness=.18;group.add(lining);
+  group.add(surfaceMesh(rimFaces,liningMaterial,'Capped upper crown edges'));
   const crownFrame=addBeams(group,crownRibs,bright,'Architectural V edges and pointed crown shoulders');crownFrame.castShadow=false;
   const crownGridMesh=addBeams(group,crownGrid,frameMaterial,'Continuous crown curtain-wall grid');softenFrame(crownGridMesh);
   for(const c of corners)for(const i of [c.a,c.b])spineFrames.push([profilePoint(plan[i],4.2),profilePoint(plan[i],210),.12,.18],[profilePoint(plan[i],210),peakPoint(i),.12,.18]);
-  const spineFrameCount=spineFrames.length;
   const shaftEdges=addBeams(group,spineFrames,bright,'Recessed corner edges and broad facade creases');shaftEdges.castShadow=false;
   group.add(screens);
-  const roofShape=new THREE.Shape(roofBoundary.map(p=>new THREE.Vector2(p.x,-p.z)));
-  const roofGeometry=new THREE.ShapeGeometry(roofShape);roofGeometry.rotateX(-Math.PI/2);roofGeometry.translate(0,roofY-.06,0);
+  const roofGeometry=horizontalGeometry(roofBoundary.map(p=>[p.x,p.z]),roofY);
   const roofMesh=new THREE.Mesh(roofGeometry,roof);roofMesh.name='Closed mechanical roof at base of projecting crown';roofMesh.castShadow=true;roofMesh.receiveShadow=true;group.add(roofMesh);
+  roofMesh.userData.roofElevation=roofY;roofMesh.userData.closedRoof=true;roofMesh.userData.roofOutline=roofBoundary.map(p=>[p.x,p.z]);
+  // Small enclosed service plant remains well within the actual roof section;
+  // exact plant positions are illustrative, never used as survey evidence.
+  addBox(group,[9.8,4.1,8.2],[0,roofY+2.0,0],dark,'Recessed mechanical plant enclosure');
+  addBox(group,[10.1,.18,8.5],[0,roofY+4.14,0],liningMaterial,'Mechanical plant metal roof');
+  const plantGrilles=[];
+  for(let y=roofY+.7;y<roofY+3.9;y+=.42)for(const z of [-4.15,4.15])plantGrilles.push([new THREE.Vector3(-4.7,y,z),new THREE.Vector3(4.7,y,z),.08,.09]);
+  addBeams(group,plantGrilles,liningMaterial,'Mechanical plant horizontal louvers');
 
   // Ground-level massing now follows the actual connected campus footprints.
   // The rotunda is northwest of the shaft; the long garden wing extends west.
   for(const polygon of DEVON_CAMPUS.plaza)addMappedVolume(group,polygon,.15,plaza,plaza,'Campus paving at mapped building perimeter',.02);
-  const podiumGlass=new THREE.MeshPhysicalMaterial({color:0x8eabb2,metalness:.42,roughness:.14,envMapIntensity:.85});
-  const campusWallOwners=[{polygon:plan,bottom:.6,top:257.2}];
+  const podiumGlass=new THREE.MeshPhysicalMaterial({color:0x8eabb2,metalness:.36,roughness:.18,envMapIntensity:.85});
+  const gardenRoof=new THREE.MeshStandardMaterial({name:'Planted garden-wing roof',color:0x687451,roughness:1});
+  const campusWallOwners=[{polygon:plan,bottom:.6,top:DEVON_DIMENSIONS.architecturalHeight}];
+  const rotundaOwner={polygon:DEVON_CAMPUS.rotunda,bottom:.25,top:DEVON_DIMENSIONS.rotundaTop};
+  const podiumFrames=[];
   for(const polygon of DEVON_CAMPUS.podium) {
-    const volume=addMappedVolume(group,polygon,23.8,podiumGlass,roof,'Mapped five-story Devon garden wing',.25,campusWallOwners);
+    const volume=addMappedVolume(group,polygon,DEVON_DIMENSIONS.podiumTop-.25,podiumGlass,gardenRoof,'Mapped five-story Devon garden wing',.25,campusWallOwners);
     if(!volume)continue;
-    campusWallOwners.push({polygon,bottom:.25,top:24.05});
-    const outline=polygon.outer,sgn=Math.sign(signedPlanArea(outline));
-    for(let i=0;i<outline.length;i++){
-      const a=outline[i],b=outline[(i+1)%outline.length],n=profileNormal(a,b,sgn),len=Math.hypot(b[0]-a[0],b[1]-a[1]);if(len<1)continue;
-      for(const y of [4.8,9.6,14.4,19.2,24.05])spineFrames.push([profilePoint(a,y).addScaledVector(n,.08),profilePoint(b,y).addScaledVector(n,.08),.20,.28]);
-      const count=Math.ceil(len/3.05);for(let j=0;j<=count;j++){const u=j/count,q=[a[0]+(b[0]-a[0])*u,a[1]+(b[1]-a[1])*u];spineFrames.push([profilePoint(q,.3).addScaledVector(n,.10),profilePoint(q,23.9).addScaledVector(n,.10),.14,.25]);}
+    volume.userData.occupiedFootprint=polygon;volume.userData.topElevation=DEVON_DIMENSIONS.podiumTop;
+    // Frames obey all joined volumes, including the later-built rotunda.
+    // This removes the old complete perimeter grid inside the atrium.
+    podiumFrames.push(...perimeterMembers(polygon,.3,23.9,[...campusWallOwners,rotundaOwner],[4.8,9.6,14.4,19.2,23.9],3.048,.16,.22));
+    campusWallOwners.push({polygon,bottom:.25,top:DEVON_DIMENSIONS.podiumTop});
+  }
+  const podiumFrame=addBeams(group,podiumFrames,bright,'Podium exposed floor bands and silver curtain wall');podiumFrame.castShadow=false;
+
+  const rotundaCenter=new THREE.Vector3(-38.194,0,-23.399),rotundaTop=DEVON_DIMENSIONS.rotundaTop;
+  const rotundaGlass=new THREE.MeshPhysicalMaterial({color:0xa8c4c7,metalness:.12,roughness:.12,transparent:true,opacity:.34,side:THREE.DoubleSide,depthWrite:false,envMapIntensity:.8});
+  const rotundaVolume=addMappedVolume(group,DEVON_CAMPUS.rotunda,rotundaTop-.25,rotundaGlass,rotundaGlass,'Mapped six-story glazed entrance rotunda',.25,campusWallOwners);
+  rotundaVolume.userData.occupiedFootprint={outer:DEVON_CAMPUS.rotunda,holes:[]};rotundaVolume.userData.topElevation=rotundaTop;
+  const atriumLevels=[5.8,11.6,17.4,23.2,29.0];
+  const atriumRibs=perimeterMembers(DEVON_CAMPUS.rotunda,.4,rotundaTop-.10,campusWallOwners,[1,...atriumLevels,34.8,rotundaTop-.10],2.9,.12,.17);
+  // The inset balcony outline follows the mapped lobes, not an independent
+  // full circle extending through adjoining buildings. The central atrium is
+  // left open all the way to its glazed roof. Slab spacing is illustrative.
+  // Offline 0.45 m polygon inset; radial scaling would cross two concave map notches.
+  const balconyOuter=[[-35.228084,-5.667508],[-35.031942,-5.731687],[-31.026838,-7.041029],[-28.198258,-8.734667],[-25.914693,-10.619],[-25.68663,-10.619],[-26.152817,-13.145484],[-23.115465,-18.3545],[-20.89464,-18.879515],[-21.302412,-19.670913],[-20.742248,-24.279329],[-21.640902,-24.117879],[-22.433525,-28.742427],[-23.809997,-31.94771],[-25.853252,-34.921748],[-28.920788,-37.497861],[-28.020687,-38.666179],[-30.428432,-40.135213],[-33.732612,-41.174086],[-37.413394,-41.555666],[-41.032652,-41.348236],[-44.293224,-40.513116],[-47.128637,-39.150656],[-46.315518,-37.894437],[-49.497866,-35.114379],[-52.234007,-31.701082],[-53.483226,-29.486072],[-54.536894,-26.456777],[-54.731981,-22.667219],[-54.446008,-19.421309],[-55.197913,-19.256256],[-54.181031,-16.343233],[-52.580646,-13.476974],[-50.30269,-10.80013],[-47.570164,-8.472132],[-45.902167,-7.399298],[-42.035495,-5.907035],[-38.675174,-5.787722]];
+  const innerRadius=12.15;
+  const balconyHole=Array.from({length:60},(_,i)=>[rotundaCenter.x+Math.cos(i*TAU/60)*innerRadius,rotundaCenter.z+Math.sin(i*TAU/60)*innerRadius]);
+  const balconyShape={outer:balconyOuter,holes:[balconyHole]};
+  const balconyMaterial=new THREE.MeshStandardMaterial({color:0xc9c5b9,roughness:.8});
+  const railEntries=[];
+  for(const y of atriumLevels) {
+    const slab=addMappedVolume(group,balconyShape,.18,balconyMaterial,balconyMaterial,'Rotunda inset balcony slab',y-.18);
+    slab.userData.insideFootprint='devon-rotunda';
+    const rail=new THREE.Mesh(new THREE.TorusGeometry(innerRadius+.04,.045,4,60),bright);
+    rail.name='Rotunda inner balcony handrail';rail.rotation.x=Math.PI/2;rail.position.copy(rotundaCenter).setY(y+1.05);group.add(rail);
+    for(let j=0;j<36;j++) {
+      const a=j*TAU/36,p=new THREE.Vector3(rotundaCenter.x+Math.cos(a)*(innerRadius+.04),y,rotundaCenter.z+Math.sin(a)*(innerRadius+.04));
+      railEntries.push([p,p.clone().setY(y+1.05),.045,.045]);
     }
   }
-  const podiumFrame=addBeams(group,spineFrames.slice(spineFrameCount),bright,'Podium floor bands and silver curtain wall');podiumFrame.castShadow=false;
-
-  const rotundaCenter=new THREE.Vector3(-38.194,0,-23.399),rotundaRadius=17.9,rotundaHeight=36.5;
-  const rotundaGlass=new THREE.MeshPhysicalMaterial({color:0x9bb8bc,metalness:.18,roughness:.13,transparent:true,opacity:.48,side:THREE.DoubleSide,depthWrite:false,envMapIntensity:.8});
-  addMappedVolume(group,DEVON_CAMPUS.rotunda,rotundaHeight,rotundaGlass,rotundaGlass,'Mapped six-story glazed entrance rotunda',.25,campusWallOwners);
-  campusWallOwners.push({polygon:DEVON_CAMPUS.rotunda,bottom:.25,top:rotundaHeight+.25});
-  const atriumRibs=[];
-  for(let j=0;j<30;j++){const a=j*TAU/30,p=rotundaCenter.clone().add(new THREE.Vector3(Math.cos(a)*rotundaRadius,0,Math.sin(a)*rotundaRadius));atriumRibs.push([p.clone().setY(.4),p.clone().setY(rotundaHeight),.13,.15]);}
-  for(const y of [1,5.6,11.2,16.8,22.4,28,33.6,36.5]) {
-    const band=new THREE.Mesh(new THREE.TorusGeometry(rotundaRadius,.13,4,60),bright);band.rotation.x=Math.PI/2;band.position.copy(rotundaCenter).setY(y);group.add(band);
-    if(y>1&&y<34){const balcony=new THREE.Mesh(new THREE.RingGeometry(12.6,17.7,60),stone);balcony.rotation.x=-Math.PI/2;balcony.position.copy(rotundaCenter).setY(y-.12);balcony.material.side=THREE.DoubleSide;group.add(balcony);}
+  // Roof spokes and a shallow oculus stay inside the same roof envelope.
+  const roofCenter=rotundaCenter.clone().setY(rotundaTop-.16),oculusRadius=2.5;
+  for(let i=0;i<DEVON_CAMPUS.rotunda.length;i+=2) {
+    const [x,z]=DEVON_CAMPUS.rotunda[i],direction=new THREE.Vector3(x-rotundaCenter.x,0,z-rotundaCenter.z).normalize();
+    atriumRibs.push([roofCenter.clone().addScaledVector(direction,oculusRadius),new THREE.Vector3(rotundaCenter.x+(x-rotundaCenter.x)*.983,rotundaTop-.16,rotundaCenter.z+(z-rotundaCenter.z)*.983),.10,.14]);
   }
-  const atriumFrame=addBeams(group,atriumRibs,bright,'Rotunda steel structure');atriumFrame.castShadow=false;
-  addBox(group,[22,.5,5],[-38.2,4.5,-3.8],bright,'Rotunda entrance canopy');
-  addMappedVolume(group,DEVON_CAMPUS.auditorium,10.5,stone,roof,'Mapped Devon auditorium',.25,campusWallOwners);
+  const oculus=new THREE.Mesh(new THREE.TorusGeometry(oculusRadius,.10,4,36),bright);oculus.name='Rotunda glazed roof oculus frame';oculus.rotation.x=Math.PI/2;oculus.position.copy(roofCenter);group.add(oculus);
+  const atriumFrame=addBeams(group,atriumRibs,bright,'Rotunda mapped steel structure');atriumFrame.castShadow=false;
+  const balconyRails=addBeams(group,railEntries,bright,'Rotunda inner balcony railing posts');balconyRails.castShadow=false;
+  campusWallOwners.push(rotundaOwner);
+  // This canopy belongs to the small mapped south entrance volume, so it
+  // cannot cross its neighbouring glass or occupy the garden drive.
+  addBox(group,[6.55,.24,3.25],[-38.70,4.45,-1.88],bright,'Rotunda entrance canopy within mapped vestibule');
+
+  // Public architect section and plans establish the auditorium's low,
+  // outward-leaning glass enclosure and interior timber room. The map ring is
+  // the roof envelope; insetting the base gives the 38-foot lobby its slope
+  // without pushing the facade beyond its reserved city footprint.
+  const auditoriumPlan=DEVON_CAMPUS.auditorium,auditoriumCenter=new THREE.Vector3(-142.0,0,15.2),auditoriumTop=DEVON_DIMENSIONS.auditoriumTop;
+  const auditoriumBase=auditoriumPlan.map(([x,z])=>[auditoriumCenter.x+(x-auditoriumCenter.x)*.88,auditoriumCenter.z+(z-auditoriumCenter.z)*.88]);
+  const auditoriumGlass=new THREE.MeshPhysicalMaterial({color:0xa5b9bd,metalness:.16,roughness:.13,transparent:true,opacity:.30,side:THREE.DoubleSide,depthWrite:false,envMapIntensity:.9});
+  const auditoriumFaces=[],auditoriumFrames=[],auditoriumSign=Math.sign(signedPlanArea(auditoriumPlan));
+  for(let i=0;i<auditoriumPlan.length;i++) {
+    const j=(i+1)%auditoriumPlan.length,a=auditoriumPlan[i],b=auditoriumPlan[j],ba=auditoriumBase[i],bb=auditoriumBase[j];
+    const face=[profilePoint(ba,.25),profilePoint(a,auditoriumTop-.12),profilePoint(b,auditoriumTop-.12),profilePoint(bb,.25)];
+    if(auditoriumSign<0)face.reverse();auditoriumFaces.push(face);
+    const length=Math.hypot(b[0]-a[0],b[1]-a[1]);
+    auditoriumFrames.push([profilePoint(a,auditoriumTop-.1),profilePoint(b,auditoriumTop-.1),.16,.20]);
+    const count=Math.max(1,Math.ceil(length/3.0));
+    for(let n=0;n<count;n++) {
+      const t=(n+.5)/count,lo=[ba[0]+(bb[0]-ba[0])*t,ba[1]+(bb[1]-ba[1])*t],hi=[a[0]+(b[0]-a[0])*t,a[1]+(b[1]-a[1])*t];
+      auditoriumFrames.push([profilePoint(lo,.3),profilePoint(hi,auditoriumTop-.1),.09,.13]);
+    }
+  }
+  const auditoriumWalls=surfaceMesh(auditoriumFaces,auditoriumGlass,'Mapped Devon auditorium angled glazed lobby');
+  auditoriumWalls.userData.occupiedFootprint={outer:auditoriumPlan,holes:[]};auditoriumWalls.userData.topElevation=auditoriumTop;group.add(auditoriumWalls);
+  const auditoriumRoof=new THREE.Mesh(horizontalGeometry(auditoriumPlan,auditoriumTop),roof);auditoriumRoof.name='Auditorium roof inside mapped envelope';auditoriumRoof.castShadow=true;group.add(auditoriumRoof);
+  const auditoriumFloor=new THREE.Mesh(horizontalGeometry(auditoriumBase,.30),stone);auditoriumFloor.name='Auditorium lobby floor';group.add(auditoriumFloor);
+  const timber=new THREE.MeshStandardMaterial({color:0x93714c,roughness:.78});
+  addBox(group,[23.2,8.35,17.1],[-136.4,4.48,15.5],timber,'Auditorium timber performance room behind glazed lobby');
+  const acousticRibs=[];
+  for(let x=-147.7;x<-125.0;x+=.75)for(const z of [6.90,24.10])acousticRibs.push([new THREE.Vector3(x,.5,z),new THREE.Vector3(x,8.6,z),.055,.08]);
+  addBeams(group,acousticRibs,bright,'Auditorium interior timber-panel joints');
+  const auditoriumStructure=addBeams(group,auditoriumFrames,bright,'Auditorium angled curtain-wall structure');auditoriumStructure.castShadow=false;
+
+  // The public second-level plan shows a narrow glass connector from the
+  // garden wing into the auditorium's west lobby. It is elevated clear of the
+  // pedestrian garden; the city collision contract records its lower bound.
+  const bridge={x0:-156.2,x1:-152.6,z0:-21.1,z1:2.5,bottom:5.4,top:8.6};
+  const bridgeX=(bridge.x0+bridge.x1)*.5,bridgeZ=(bridge.z0+bridge.z1)*.5,bridgeLength=bridge.z1-bridge.z0;
+  addBox(group,[bridge.x1-bridge.x0,.22,bridgeLength],[bridgeX,bridge.bottom+.11,bridgeZ],bright,'Auditorium skybridge raised floor');
+  addBox(group,[bridge.x1-bridge.x0,.16,bridgeLength],[bridgeX,bridge.top-.08,bridgeZ],roof,'Auditorium skybridge roof');
+  const bridgeFaces=[
+    [new THREE.Vector3(bridge.x0,bridge.bottom+.22,bridge.z0),new THREE.Vector3(bridge.x0,bridge.bottom+.22,bridge.z1),new THREE.Vector3(bridge.x0,bridge.top-.16,bridge.z1),new THREE.Vector3(bridge.x0,bridge.top-.16,bridge.z0)],
+    [new THREE.Vector3(bridge.x1,bridge.bottom+.22,bridge.z1),new THREE.Vector3(bridge.x1,bridge.bottom+.22,bridge.z0),new THREE.Vector3(bridge.x1,bridge.top-.16,bridge.z0),new THREE.Vector3(bridge.x1,bridge.top-.16,bridge.z1)]
+  ];
+  group.add(surfaceMesh(bridgeFaces,auditoriumGlass,'Auditorium second-level glazed skybridge'));
+  const bridgeRibs=[];
+  for(let z=bridge.z0+.5;z<bridge.z1;z+=2.4)for(const x of [bridge.x0,bridge.x1])bridgeRibs.push([new THREE.Vector3(x,bridge.bottom+.22,z),new THREE.Vector3(x,bridge.top-.16,z),.06,.08]);
+  const bridgeFrame=addBeams(group,bridgeRibs,bright,'Auditorium skybridge mullions');bridgeFrame.castShadow=false;
 
   const spineMaterial=new THREE.MeshBasicMaterial({color:0xffbd70,toneMapped:true}),lightLines=[];
   for(const c of corners){const middle=c.channel.slice(1,3).map(i=>plan[i]);const q=[(middle[0][0]+middle[1][0])*.5,(middle[0][1]+middle[1][1])*.5];lightLines.push([profilePoint(q,8.4),profilePoint(q,239,.983),.10,.10]);}

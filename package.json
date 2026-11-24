@@ -1,6 +1,6 @@
 {
   "name": "okc-prairie-prism",
-  "version": "0.2.1",
+  "version": "0.3.0",
   "private": true,
   "type": "module",
   "dependencies": {
@@ -9,6 +9,7 @@
   "homepage": "https://tront.xyz/okc/",
   "scripts": {
     "build:downloads": "python3 scripts/build-downloads.py",
-    "check": "node scripts/check-static.mjs"
+    "check": "node scripts/check-static.mjs && node scripts/check-tower-surfaces.mjs && node scripts/check-world-surfaces.mjs && node scripts/check-building-shells.mjs && node scripts/check-driving.mjs && node scripts/bake-world-geometry.mjs --check",
+    "build:map": "python3 scripts/build-city-data.py && python3 scripts/build-world-surfaces.py && node scripts/bake-world-geometry.mjs"
   }
 }
