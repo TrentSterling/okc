@@ -38,7 +38,15 @@ export function vehicleMaterials() {
 // Player vehicle, local forward +X. Put its origin on the road surface.
 export function createCar(style = 'sedan', color = 0xb9c1c8) {
   const geo=vehicleGeometry()[style==='truck'?'truck':'car']; const mats=vehicleMaterials(); mats.paint.color.set(color); const group=new THREE.Group();
-  for(const part of Object.keys(geo)){const m=new THREE.Mesh(geo[part],mats[part]); m.castShadow=part==='paint';m.receiveShadow=part==='paint';group.add(m);}
+  const body=new THREE.Group();body.name='Sprung vehicle body';body.position.y=.8;group.add(body);
+  for(const part of Object.keys(geo)){
+    const m=new THREE.Mesh(geo[part],mats[part]);m.name='Vehicle '+part;
+    m.castShadow=part==='paint';m.receiveShadow=part==='paint';
+    if(['paint','glass','head','tail'].includes(part)){m.position.y=-.8;body.add(m);}else group.add(m);
+  }
+  // Presentation moves only the sprung chassis, leaving tires and its ground
+  // shadow level. Keep the live Object3D out of JSON-serialized user data.
+  Object.defineProperty(group.userData,'body',{value:body,enumerable:false});
   if(style==='suv')group.scale.set(1.05,1.24,1.06);
   group.userData.setNight=n=>{mats.head.emissiveIntensity=.12+n*3.5;mats.tail.emissiveIntensity=.25+n*2;};
   return group;

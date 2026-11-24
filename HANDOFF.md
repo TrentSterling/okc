@@ -1,5 +1,18 @@
 # Prairie Prism handoff
 
+## Active city art and handling pass
+
+Trent selected a believable, slightly worn city with strong color and lighting. See `docs/city-art-direction.md` for the accepted direction and scope.
+
+- Working branch: `refactor/city-art-driving-20261124` in `/workspace/okc-modular`.
+- Pre-art source: `0408b4b5d476912402ecb0d6eddf8ab34ec17e48`, backed up remotely on `backup/pre-city-art-20261124-0408b4b`.
+- Separate baseline worktree and built output: `/workspace/okc-v03-baseline`.
+- Work in progress: surface/facade materials, bounded planting/street dressing, road markings beyond Reno, atmospheric color, and independent velocity/yaw with shared car/camera presentation.
+- Browser QA limit: managed preview starts, but the cloud browser cannot create WebGL2 even for the unchanged baseline. One reload confirmed the same error. Do not claim a new GPU screenshot or a measured FPS result.
+- Next: integrate the independent source changes, inspect material swatches, run the full build/check suite and meaningful art/handling checks, compare the submission budget, checkpoint, then publish through validated CI.
+
+The earlier modularization record below remains useful recovery history.
+
 ## Project and recovery
 
 - Source: https://github.com/TrentSterling/okc
