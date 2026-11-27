@@ -1,4 +1,7 @@
 import * as THREE from 'three';
+import {connectDiscovery} from './app/discovery-bridge.js';
+import {reportLoad} from './metro/download.js';
+import {stopTour} from './discovery.js';
 import {createWorld,createCar} from './world.js';
 import {createDevon,createLegends} from './tower.js';
 import {createAtmosphere,createGlassMaterial} from './sky.js';
@@ -16,7 +19,7 @@ import {createRenderer,configureDepthOffsets} from './app/renderer.js';
 const clamp=THREE.MathUtils.clamp;
 let state={...defaults};
 let renderer,scene,camera,world,devon,legends,atmosphere,glass,player,cockpit;
-let cameraRig,ui,captures;
+let cameraRig,ui,captures,discovery;
 let simTime=0,lastTime=performance.now(),lastEnvironment=0,frameCount=0,fpsTime=performance.now();
 let actualLane=-1.75;
 const keys=new Set();
@@ -42,7 +45,8 @@ async function init(){
  const initialized=createRenderer($('scene'),state.exposure);
  renderer=initialized.renderer;const reversedDepth=initialized.reversedDepth;
  scene=new THREE.Scene();camera=new THREE.PerspectiveCamera(48,innerWidth/innerHeight,.5,7500);scene.add(camera);
- $('loadingStatus').textContent='Building the skyline…';
+ reportLoad('scene','Building your Oklahoma City');
+ await new Promise(resolve=>requestAnimationFrame(resolve));
  glass=createGlassMaterial();
  atmosphere=createAtmosphere(renderer,scene);
  atmosphere.bindGlass(glass);
@@ -62,12 +66,15 @@ async function init(){
    setDriveMode,recoverCar,toggleHud,toggleDrive,setCamera,setPreset,enableAudio,resize,reset,applyCapturePreset,clearDrivingInputs,
    updateAtmosphere:(...args)=>atmosphere.update(...args),resetLane:()=>{actualLane=-1.75;},photograph:captures.photograph,
  }});resize();
- $('loadingStatus').textContent='Catching the western sky…';
+ reportLoad('lighting','Catching the western sky');
+ await new Promise(resolve=>requestAnimationFrame(resolve));
  const viewId=typeof location==='undefined'?null:new URLSearchParams(location.search).get('view');
  if(viewId&&SHOT_BY_ID.has(viewId))applyCapturePreset(SHOT_BY_ID.get(viewId));
  else {atmosphere.update(state.progress,state.style,true);updateCamera(.016);syncUI();}
+ discovery=await connectDiscovery({scene,camera,world,drivingWorld,cameraRig,renderer,atmosphere,getState:()=>state,getCar:()=>freeCar,setCar:car=>{freeCar=car;},syncUI,resize,clearDrivingInputs,reversedDepth});
  refreshLocalReflection(true);
  renderer.render(scene,camera);
+ reportLoad('ready','The city is yours');
  $('loading').hidden=true;
  // Do not include asset construction and first-use shader compilation in FPS.
  fpsTime=lastTime=performance.now();frameCount=0;
@@ -79,6 +86,7 @@ function setCamera(mode){$('studyView').value='';state.camera=mode;cameraRig.vie
 
 function refreshLocalReflection(immediate=false,now=performance.now()){
  if(state.quality==='low'){glass.clearLocalReflection();return;}
+ if(!immediate&&cameraRig&&Math.hypot(cameraRig.carPosition.x,cameraRig.carPosition.z)>3000)return;
  if(!localReflectionOptions||(!immediate&&now-lastLocalReflection<750))return;
  localReflectionOptions.size=state.quality==='high'?256:128;
  localReflectionOptions.force=immediate;
@@ -116,6 +124,7 @@ function frame(now){
  world.update(dt,simTime,night,state.traffic?1:0);
  refreshLocalReflection(false,now);
  updateCamera(dt);
+ discovery?.update(dt,simTime,night,now);
  atmosphere.prepareShadows(cameraRig.carPosition,now,state.traffic||state.speed>.01);
  updateAudio();
  renderer.render(scene,camera);
@@ -143,6 +152,7 @@ function scenicPose(){const offset=(state.direction===1?0:-2*(world.laneBase??5.
 function clearDrivingInputs(){keys.clear();touchInputs.clear();for(const el of document.querySelectorAll('[data-drive-control]'))el.classList.remove('held');}
 
 function setDriveMode(mode){
+ stopTour();
  if(mode===state.driveMode)return;
  clearDrivingInputs();
  if(mode==='free'){

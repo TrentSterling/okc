@@ -12,7 +12,7 @@ export function decodeSetup(p,drivingWorld){
    if(!['chase','driver','orbit'].includes(s.camera)||![-1,1].includes(s.direction)||!['high','balanced','low'].includes(s.quality))throw Error('Invalid view');
    for(const k of ['driving','cruise','sunPlaying','screen','legends','traffic','sound','neutral'])if(typeof s[k]!=='boolean')throw Error('Invalid '+k);
    let view=p.view||{};for(const k of ['lookYaw','lookPitch','orbitYaw','orbitPitch','orbitDistance'])if(!Number.isFinite(view[k]))throw Error('Invalid camera');
-   if(view.orbitFocus!=null&&(!Array.isArray(view.orbitFocus)||view.orbitFocus.length!==3||view.orbitFocus.some(n=>!Number.isFinite(n)||Math.abs(n)>20000)))throw Error('Invalid camera focus');
+   if(view.orbitFocus!=null&&(!Array.isArray(view.orbitFocus)||view.orbitFocus.length!==3||view.orbitFocus.some(n=>!Number.isFinite(n)||Math.abs(n)>60000)))throw Error('Invalid camera focus');
    if(view.fov!=null&&(!Number.isFinite(view.fov)||view.fov<15||view.fov>90))throw Error('Invalid camera lens');
    const driveMode=p.version===1?'scenic':s.driveMode;
    if(!['scenic','free'].includes(driveMode))throw Error('Invalid drive mode');

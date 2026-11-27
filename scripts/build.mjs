@@ -51,6 +51,10 @@ try {
   }
   console.log('Baking static city geometry');
   run(process.execPath, ['scripts/bake-world-geometry.mjs'], env);
+  console.log('Packing equivalent runtime geometry');
+  run(process.execPath, ['scripts/pack-runtime.mjs'], env);
+  console.log('Building the expanded metro atlas');
+  run(python, ['scripts/build-metro.py'], env);
   console.log('Building original capture downloads');
   run(python, ['scripts/build-downloads.py'], env);
 

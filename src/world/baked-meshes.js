@@ -2,7 +2,7 @@ import * as THREE from 'three';
 
 // Only decode the offline buffers here; no polygon repair or triangulation runs in the browser.
 export function addBakedMeshes({group,unit,bakedWorld,bakedMaterials}) {
-  function decodeBuffer(encoded){const binary=atob(encoded),bytes=new Uint8Array(binary.length);for(let i=0;i<binary.length;i++)bytes[i]=binary.charCodeAt(i);return bytes.buffer;}
+  function decodeBuffer(encoded){if(encoded instanceof ArrayBuffer)return encoded;const binary=atob(encoded),bytes=new Uint8Array(binary.length);for(let i=0;i<binary.length;i++)bytes[i]=binary.charCodeAt(i);return bytes.buffer;}
   for(const chunk of bakedWorld.chunks){
     const data=new THREE.InterleavedBuffer(new Float32Array(decodeBuffer(chunk.v)),8),g=new THREE.BufferGeometry();
     g.setAttribute('position',new THREE.InterleavedBufferAttribute(data,3,0));

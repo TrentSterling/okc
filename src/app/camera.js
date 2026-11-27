@@ -19,7 +19,7 @@ function updateCamera(dt,state,freeCar,actualLane){
  if(free&&snap)resetDrivingInterpolation(freeCar);
  const pose=free?sampleDrivingPose(freeCar,renderPose,drivingWorld):null;
  const laneOffset=(state.direction===1?0:-2*(world.laneBase??5.25))+actualLane;
- if(free)carPosition.set(pose.x,.14,pose.z);
+ if(free)carPosition.set(pose.x,world.groundHeight?.(pose.x,pose.z)??.14,pose.z);
  else carPosition.copy(world.getRoutePoint(state.route,laneOffset));
  const tangent=free?new THREE.Vector3(Math.cos(pose.heading),0,Math.sin(pose.heading)):world.getRouteTangent(state.route).multiplyScalar(state.direction);
  player.position.copy(carPosition);player.rotation.y=-Math.atan2(tangent.z,tangent.x);player.visible=state.camera!=='driver';
@@ -28,8 +28,8 @@ function updateCamera(dt,state,freeCar,actualLane){
  cockpit.visible=state.camera==='driver';
  const perpendicular=new THREE.Vector3(-tangent.z,0,tangent.x);
  if(state.camera==='orbit'){
-   const focus=free?carPosition.clone().add(new THREE.Vector3(0,1,0)):view.orbitFocus?new THREE.Vector3(...view.orbitFocus):new THREE.Vector3(state.legends?190:0,state.legends?200:118,state.legends?-65:0);
-   const r=free?clamp(view.orbitDistance*.09,16,90):view.orbitDistance*(state.legends?1.35:1);
+   const focus=view.orbitFocus?new THREE.Vector3(...view.orbitFocus):free?carPosition.clone().add(new THREE.Vector3(0,1,0)):new THREE.Vector3(state.legends?190:0,state.legends?200:118,state.legends?-65:0);
+   const r=free&&!view.orbitFocus?clamp(view.orbitDistance*.09,16,90):view.orbitDistance*(state.legends?1.35:1);
    desiredPosition.set(focus.x+Math.cos(view.orbitYaw)*r,focus.y+Math.sin(view.orbitPitch)*r,focus.z+Math.sin(view.orbitYaw)*r);
    desiredPosition.y=Math.max(1.7,desiredPosition.y);
    desiredTarget.copy(focus);
