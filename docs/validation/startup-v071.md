@@ -64,6 +64,17 @@ Public hash verification remains required and unchanged.
 
 ## Publication status
 
-The corrected full offline build and complete local validation passed. The
-final GitHub validation/publication/public-asset audit is still pending;
-inspect `HANDOFF.md` for the final source revision and workflow result.
+The corrected full offline build and complete local validation passed.
+Workflow [46063404978](https://github.com/TrentSterling/okc/actions/runs/46063404978)
+completed successfully on November 27, 2026 at 20:39 UTC for source
+`2f6f5be966f6239089e9c47e8c8b1cb4f256b969`. CI repeated the complete check
+suite and startup/driving check on Node 22.23.5, then compiled all 18 native
+production shader programs successfully.
+
+Native Pages published the validated artifact as revision
+`d53d93e30a6aa81d867d753c833f16a8a609ae09` at https://tront.xyz/okc/.
+The final public SHA-256 audit matched all 6,200 files and 442,000,047 bytes
+in 624 seconds. Eight transient HTTP 503 responses retried once and passed;
+there were no HTTP 429 rate-limit waves or hash mismatches. Public asset
+identity and JavaScript startup/driving integration are verified; actual
+browser GPU appearance and hardware FPS remain separately unverified.
