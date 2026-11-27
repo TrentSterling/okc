@@ -23,11 +23,11 @@ try{
   if(!supports3D){const {mapFallback}=await discovery;await mapFallback();}
   else{
     const app=await import('./app.js');
-    if(!await app.sceneReady){const {mapFallback}=await discovery;await mapFallback('The 3D scene could not start. Your map and planner are available.');}
+    if(!await app.sceneReady){const {mapFallback}=await discovery;await mapFallback('The 3D scene could not start. Your map and planner are available.',app.sceneStartupError);}
     else{progress.complete('ready','The city is yours');progress.loading.hidden=true;if(mapRequested){const {discoveryReady}=await discovery;(await discoveryReady).explorer.showMap();}}
   }
 }catch(error){
   console.error(error);
-  try{const {mapFallback}=await discovery;await mapFallback('The 3D scene could not start. Your map and planner are available.');}
+  try{const {mapFallback}=await discovery;await mapFallback('The 3D scene could not start. Your map and planner are available.',error);}
   catch(fallbackError){progress.error(fallbackError);}
 }

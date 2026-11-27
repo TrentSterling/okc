@@ -27,7 +27,8 @@ export function createMetroStreamer({scene, manifest, drivingWorld, onStatus = (
     return (x - Math.floor(focus.x / tileSize)) ** 2 + (z - Math.floor(focus.z / tileSize)) ** 2;
   }
   function source(info, id) {
-    const url = filename => new URL(filename.startsWith('geo/') ? '../../' + filename : '../../geo/metro/' + filename, import.meta.url).href;
+    // The deployed module is /okc/metro/streaming.js; stay inside /okc/.
+    const url = filename => new URL(filename.startsWith('geo/') ? '../' + filename : '../geo/metro/' + filename, import.meta.url).href;
     return {url: url(info.url || info.file || 'tiles/' + id + '.json'), gzipUrl: info.gzipUrl ? url(info.gzipUrl) : undefined};
   }
   const options = detail => ({detail, overrides, ...(manifest.coreBounds ? {core: manifest.coreBounds} : {})});

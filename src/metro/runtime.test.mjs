@@ -188,6 +188,40 @@ test('navigation holds destination tiles while the old car keeps producing frame
   assert.equal(stream.stats().loadedTiles,0);stream.dispose();
 });
 
+test('initial metro loading preserves the deployed app subpath for JSON and gzip tiles', async t => {
+  // Run the actual streamer with browser import.meta.url semantics. Node's
+  // filesystem depth otherwise hides regressions in a site hosted at /okc/.
+  const moduleURL = 'https://tront.xyz/okc/metro/streaming.js';
+  const source = fs.readFileSync(new URL('./streaming.js', import.meta.url), 'utf8')
+    .replace(/from (['"])([^'"]+)\1/g, (_, quote, specifier) => `from ${JSON.stringify(import.meta.resolve(specifier))}`)
+    .replaceAll('import.meta.url', JSON.stringify(moduleURL));
+  const {createMetroStreamer: createDeployedStreamer} = await import('data:text/javascript,' + encodeURIComponent(source));
+  const originalDocument = globalThis.document;
+  const context = {createImageData: () => ({data: new Uint8ClampedArray(256 * 256 * 4)}), putImageData() {}, beginPath() {}, moveTo() {}, lineTo() {}, stroke() {}};
+  globalThis.document = {createElement: () => ({getContext: () => context})};
+  t.after(() => { globalThis.document = originalDocument; });
+  const requests = [], compiler = {
+    async load(source) {
+      requests.push(source);
+      return {raw: {roads: []}, result: {meshes: [], buildings: [], lamps: []}};
+    },
+    stats: () => ({workers: 2, active: 0, queued: 0}), dispose() {},
+  };
+  const manifest = {tileSizeMeters: 512, tiles: [
+    {id: '-2_0', url: 'tiles/-2_0.json', gzipUrl: 'tiles/-2_0.json.gz'},
+    {id: '-1_0', url: 'geo/metro/tiles/-1_0.json', gzipUrl: 'geo/metro/tiles/-1_0.json.gz'},
+  ]};
+  const stream = createDeployedStreamer({scene: new THREE.Scene(), manifest,
+    drivingWorld: createDrivingWorld([], {minX: -20000, minZ: -20000, maxX: 20000, maxZ: 20000}), compiler});
+  t.after(() => stream.dispose());
+  await stream.ensure({x: -565, z: 299});
+  assert.equal(stream.stats().loadedTiles, 2);
+  assert.deepEqual(requests, [
+    {url: 'https://tront.xyz/okc/geo/metro/tiles/-2_0.json', gzipUrl: 'https://tront.xyz/okc/geo/metro/tiles/-2_0.json.gz'},
+    {url: 'https://tront.xyz/okc/geo/metro/tiles/-1_0.json', gzipUrl: 'https://tront.xyz/okc/geo/metro/tiles/-1_0.json.gz'},
+  ]);
+});
+
 
 test('nested park, woodland and parking regions have deterministic depth ownership', async t => {
   const compile=await meshCompiler(t),ring=[[3000,0],[3020,0],[3020,20],[3000,20]];

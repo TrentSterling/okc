@@ -1,6 +1,14 @@
 # Prairie Prism handoff
 
-## Active recovered Discover OKC release (v0.7)
+## Active 3D startup repair (v0.7.1)
+
+- User's November 27 real-device screenshot exposed a fatal startup regression despite the successful v0.7 asset publication: the graphics context existed, but initial metro requests escaped `/okc/` and failed.
+- `src/metro/streaming.js` used `../../geo/metro/` from the deployed `/okc/metro/streaming.js`, requesting `/geo/metro/tiles/` instead of `/okc/geo/metro/tiles/`. Both compressed and plain fallback URLs are now fixed. Startup exceptions also retain their actual message in the atlas fallback.
+- The new actual-streamer regression failed before the correction and passed afterward; the metro runtime suite now has 12 passing cases. An independent audit found no second URL escape across 6,024 constructed asset paths.
+- `scripts/check-app-startup.mjs` now runs the actual built boot/app/import map, packed geometry, discovery bridge, streamed tiles and free-drive controls with strict deployment-subpath fetches. Browser DOM/canvas and GPU renderer/PMREM are adapters; this is not a browser or GPU visual test. `npm run check:startup` is part of the required `npm run check` chain.
+- Current next action: finish the corrected build and startup/driving smoke test, commit the repair, then wait for the entire validation/publication/public-hash workflow before marking the hotfix live. The previous v0.7 source and captures remain in Git history.
+
+## Recovered Discover OKC publication (v0.7.0)
 
 - User authorized finishing and publishing directly to `main` at https://tront.xyz/okc/, with incremental recoverable checkpoints and no PRs.
 - Recovered the full interrupted workspace at `/workspace/scratch/bc993b0a4273/okc`, including post-checkpoint data and planner edits. Those recovered edits are remotely preserved as `9c856d12538428fe2a2b66003c20d7a7b024c26d`.

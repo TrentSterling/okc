@@ -1,6 +1,6 @@
 # Prairie Prism
 
-An Oklahoma City atlas, date planner and drivable city for Trent. Geographically grounded reconstruction and exploration prototype, **v0.7.0**.
+An Oklahoma City atlas, date planner and drivable city for Trent. Geographically grounded reconstruction and exploration prototype, **v0.7.1**.
 
 **Live site:** https://tront.xyz/okc/
 
