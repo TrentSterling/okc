@@ -38,11 +38,12 @@ export async function attachSceneBridge(bridge){
   bridge.layers({labels:s.labels,buildings:s.buildings,roads:s.roads,water:s.water,parks:s.parks,visiblePlaceIds:explorer.visiblePlaces.map(p=>p.id)});
   return explorer;
 }
-export async function mapFallback(message){
+export async function mapFallback(message,error=null){
   sceneBridge=null;const {explorer}=await discoveryReady;
   document.body.classList.add('map-only');document.getElementById('errorPanel').hidden=true;document.getElementById('loading').hidden=true;explorer.showMap();
   let banner=document.querySelector('.map-fallback-note');if(!banner){banner=document.createElement('div');banner.className='map-fallback-note';document.body.append(banner);}
-  banner.textContent=message||'3D is unavailable in this browser. The full map and adventure planner are ready.';
+  banner.setAttribute('role','status');
+  banner.textContent=[message||'3D is unavailable in this browser. The full map and adventure planner are ready.',error?.message].filter(Boolean).join(' ');
 }
 export function stopTour(){navigation.stopTour();}
 window.addEventListener('pagehide',event=>{if(event.persisted){navigation.stopTour();return;}cancelAnimationFrame(frameId);navigation.dispose();mapTiles?.dispose();disposeAssetLoader();});

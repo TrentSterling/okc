@@ -214,4 +214,5 @@ window.addEventListener('error',e=>{fail(e.error||Error(e.message));});
 // Public capture API remains at app.js for existing automation and gallery links.
 export function captureView(id,width=1600,height=900){return captures.captureView(id,width,height);}
 export function finishCaptures(){captures.finishCaptures();lastTime=performance.now();}
-export const sceneReady=init().then(()=>true).catch(error=>{fail(error);return false;});
+export let sceneStartupError=null;
+export const sceneReady=init().then(()=>true).catch(error=>{sceneStartupError=error;fail(error);return false;});
