@@ -1,0 +1,26 @@
+{
+  "workflow": {
+    "id": 46071053146,
+    "url": "https://github.com/TrentSterling/okc/actions/runs/46071053146",
+    "conclusion": "success",
+    "completedUTC": "2026-11-27T21:49:47Z"
+  },
+  "nativeShaderPrograms": 18,
+  "metroRuntimeCoverageStreamingTests": 30,
+  "audit": {
+    "verifiedFiles": 6204,
+    "verifiedBytes": 442021589,
+    "revision": "d305d86089b4a633c8d22f7a1c692004072c914b",
+    "sourceRevision": "1b3c11f794be77e4e3a9291e3d416674986e2bc5",
+    "version": "0.7.2",
+    "site": "https://tront.xyz/okc/",
+    "retries": 0,
+    "pacing": {
+      "spacingMilliseconds": 100,
+      "cooldownUntil": 0,
+      "rateLimitWaves": 0
+    },
+    "elapsedSeconds": 624
+  },
+  "scope": "Complete CI build, application/geometry/driving validation, native production shader compilation, GitHub Pages publication and public SHA-256 identity. Browser PBR appearance and physical-device FPS remain separate."
+}

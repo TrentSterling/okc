@@ -61,8 +61,16 @@ This includes all 30 metro runtime/coverage/streaming regressions, packed-data
 and discovery checks, compiler/atlas ownership validation, preserved downtown
 geometry/optics checks, and the rebuilt sustained-input startup gate. The build
 keeps all 272,713 building records, 7,799 places, 3,004 metro tiles and original
-capture downloads. CI native shader compilation and the public artifact audit
-are pending at this pre-publication checkpoint.
+capture downloads. Independent CI then passed the same gates and all 18 native
+production shader programs. [Workflow 46071053146](https://github.com/TrentSterling/okc/actions/runs/46071053146)
+completed successfully at 21:49 UTC on November 27, 2026.
+
+Source `1b3c11f794be77e4e3a9291e3d416674986e2bc5` is deployed as Pages revision
+`d305d86089b4a633c8d22f7a1c692004072c914b` at https://tront.xyz/okc/. The public
+SHA-256 comparison matched **all 6,204 files and 442,021,589 bytes** in 624
+seconds, with zero retries, rate-limit waves or mismatches. The count includes
+6,203 inventory assets plus `release.json`. The exact result is preserved in
+[publication-v072.json](publication-v072.json).
 
 Browser DOM/canvas, animation scheduling and GPU renderer/PMREM are adapters in
 the built-app harness. It executes actual application modules, decompression,
