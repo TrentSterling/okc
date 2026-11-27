@@ -1,8 +1,9 @@
 # Discover OKC v0.7 verification
 
-Candidate checked on November 27, 2026. Publication is independently gated by
-GitHub Actions and the complete public asset verifier; inspect `HANDOFF.md` for
-the final source revision and workflow result.
+Validated and published on November 27, 2026. Workflow
+[46058902219](https://github.com/TrentSterling/okc/actions/runs/46058902219)
+completed validation, publication and the full public asset audit for source
+`619aa1d`. See `HANDOFF.md` for the published revision and recovery history.
 
 ## Preservation and release gates
 
@@ -93,7 +94,21 @@ The first remote run, `46057155818`, passed its complete validation job and
 published source `2c307446` through native Pages. Its final public audit then
 received HTTP 429 after a burst of roughly 3,100 files in 11 seconds. It did not
 report a hash mismatch, but it did not finish the complete inventory either.
-The follow-up verifier retains every file and adds shared request pacing,
-server-directed retry delays and a shared cooldown before another full audit.
-This is a deployment-check correction; the application and atlas passed their
-existing release gates.
+
+The paced verifier correction shipped in source
+`619aa1d95062862f8e276bd2edc0d5bfac35a039`. Workflow `46058902219` completed
+successfully at 20:01 UTC and published `gh-pages` revision
+`d911f474b404a18d95e42dbf7de96b952db21029`. Its final SHA-256 audit matched all
+6,200 files and 441,999,795 bytes against the validated artifact in 624 seconds.
+One HTTP 503 retried successfully after one second; there were no HTTP 429
+rate-limit waves or hash mismatches. Shared request-start spacing remained
+100 milliseconds. All seven deterministic pacing regressions passed in CI.
+
+The complete audit includes the finalized release inventory, runtime assets,
+compressed geography, validation report and historical captures. It does not
+sample or omit binary files. The live destination is https://tront.xyz/okc/.
+
+This confirms publication and public asset identity. The cloud browser received
+a generic 403 at the public custom domain, while the managed preview worked.
+Neither the HTTP audit nor the native diagnostics changes the recorded WebGL2,
+physical-device or browser import-round-trip limitations.
