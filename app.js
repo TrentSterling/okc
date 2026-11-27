@@ -7,14 +7,15 @@ import {createDevon,createLegends} from './tower.js';
 import {createAtmosphere,createGlassMaterial} from './sky.js';
 import {SHOT_BY_ID} from './capture-presets.js';
 import {createDrivingWorld,createDrivingState,advanceDriving,isDrivingPoseClear,nearestRoadPose,snapshotDriving} from './driving.js';
-import {$,toast,fail,focusRoad} from './app/status.js';
+import {toast,fail,focusRoad} from './app/status.js';
+import {getUI} from './ui/runtime.js';
 import {createCameraRig} from './app/camera.js';
 import {createInterface} from './app/interface.js';
 import {bindControls} from './app/controls.js';
 import {createRoadAudio} from './app/audio.js';
 import {defaults,createSetupIO} from './app/setup.js';
 import {createCaptureController} from './app/captures.js';
-import {createRenderer,configureDepthOffsets} from './app/renderer.js';
+import {configureDepthOffsets} from './app/renderer.js';
 
 const clamp=THREE.MathUtils.clamp;
 let state={...defaults};
@@ -39,12 +40,15 @@ function snapshotView(){return {state:{...state},driving:state.driveMode==='free
 function restoreSetup(restored){
  state=restored.state;freeCar=restored.freeCar;clearDrivingInputs();cameraRig.restore(restored.view);actualLane=state.lane;cameraRig.view.firstCamera=true;
  if(freeCar&&!state.driving)freeCar.yawRate=0;
+ discovery?.explorer.dispatch({type:'settings.patch',patch:{quality:state.quality}});
  resize();atmosphere.update(state.progress,state.style,true,performance.now(),state.neutral);syncUI();
 }
 
 async function init(){
- const initialized=createRenderer($('scene'),state.exposure);
+ const initialized=getUI();
  renderer=initialized.renderer;const reversedDepth=initialized.reversedDepth;
+ if(!renderer)throw Error('WebGL2 is unavailable.');
+ initialized.onChange(event=>{if(event.resize&&camera)resize();});
  scene=new THREE.Scene();camera=new THREE.PerspectiveCamera(48,innerWidth/innerHeight,.5,7500);scene.add(camera);
  reportLoad('scene','Building your Oklahoma City');
  await new Promise(resolve=>requestAnimationFrame(resolve));
@@ -64,9 +68,9 @@ async function init(){
  captures=createCaptureController({renderer,scene,camera,getState:()=>state,applyCapturePreset,snapshot:snapshotView,updateCamera,invalidateCamera:()=>{cameraRig.view.firstCamera=true;},resize});
  const setup=createSetupIO({drivingWorld,snapshot:snapshotView,restore:restoreSetup});
  bindControls({getState:()=>state,getSimTime:()=>simTime,view:cameraRig.view,world,keys,touchInputs,ui,setup,actions:{
-   setDriveMode,recoverCar,toggleHud,toggleDrive,setCamera,setPreset,enableAudio,resize,reset,applyCapturePreset,clearDrivingInputs,
+   setDriveMode,recoverCar,toggleHud,toggleDrive,setCamera,setPreset,enableAudio,resize,reset,applyCapturePreset,clearDrivingInputs,manualTakeover:stopTour,
    updateAtmosphere:(...args)=>atmosphere.update(...args),resetLane:()=>{actualLane=-1.75;},photograph:captures.photograph,
-   setQuality:quality=>{state.quality=quality;discovery?.metro.setQuality(quality);resize();},
+   setQuality:quality=>{if(discovery)discovery.explorer.dispatch({type:'settings.patch',patch:{quality}});else{state.quality=quality;resize();}},
  }});resize();
  reportLoad('scene','Nearby city geometry is ready',{complete:true});
  reportLoad('lighting','Catching the western sky');
@@ -80,16 +84,17 @@ async function init(){
  if(renderer.compileAsync)await renderer.compileAsync(scene,camera);
  refreshLocalReflection(true);
  renderer.render(scene,camera);
+ if(!initialized.renderer)throw Error('The graphics context was interrupted during startup.');
  sceneInitialized=true;
+ initialized.setSceneReady(true);initialized.driveFrames(true);
  reportLoad('ready','The city is yours');
- $('loading').hidden=true;
  // Do not include asset construction and first-use shader compilation in FPS.
  fpsTime=lastTime=performance.now();frameCount=0;
  requestAnimationFrame(frame);
  setTimeout(()=>toast('Take the scenic cruise, or choose Drive yourself.'),650);
 }
 
-function setCamera(mode){$('studyView').value='';state.camera=mode;cameraRig.view.lookYaw=0;cameraRig.view.lookPitch=0;cameraRig.view.orbitFocus=null;cameraRig.view.viewFov=null;cameraRig.view.firstCamera=true;syncUI();}
+function setCamera(mode){ui.setStudyView('');state.camera=mode;cameraRig.view.lookYaw=0;cameraRig.view.lookPitch=0;cameraRig.view.orbitFocus=null;cameraRig.view.viewFov=null;cameraRig.view.firstCamera=true;syncUI();}
 
 function refreshLocalReflection(immediate=false,now=performance.now()){
  if(state.quality==='low'){glass.clearLocalReflection();return;}
@@ -101,9 +106,10 @@ function refreshLocalReflection(immediate=false,now=performance.now()){
 }
 
 function frame(now){
+ if(!getUI().renderer){lastTime=now;return;}
  if(captures.isCapturing){lastTime=now;requestAnimationFrame(frame);return;}
  const dt=Math.min((now-lastTime)/1000,.05);lastTime=now;simTime+=dt;
- const sceneVisible=!document.hidden&&!document.body.classList.contains('explorer-map-open');
+ const surface=getUI(),sceneVisible=!document.hidden&&surface.mode!=='map';
  if(state.driveMode==='free'){
    const held=action=>[...touchInputs.values()].includes(action);
    const throttle=Number(keys.has('KeyW')||keys.has('ArrowUp')||held('throttle'))-Number(keys.has('KeyS')||keys.has('ArrowDown')||held('brake'));
@@ -111,7 +117,7 @@ function frame(now){
    if(throttle&&!state.driving){state.driving=true;syncUI();}
    if(state.driving)advanceDriving(freeCar,{throttle,steer,handbrake:keys.has('Space')||held('handbrake')},dt,drivingWorld);
    state.speed=freeCar.travelSpeed;
-   $('gearValue').textContent=freeCar.speed<-.15?'R':'D';
+   ui.setTelemetry({gear:freeCar.speed<-.15?'R':'D'});
    if(freeCar.collided&&now-lastCollisionToast>6000){lastCollisionToast=now;toast('Solid wall or map edge. Reverse out, or press R to return to a road.');}
  }else{
  if(keys.has('KeyW')){const changed=!state.driving||state.cruise;state.driving=true;state.cruise=false;state.speed=Math.min(40,state.speed+dt*5.8);if(changed)syncUI();}
@@ -124,7 +130,7 @@ function frame(now){
  }
  actualLane=THREE.MathUtils.damp(actualLane,state.lane,2.8,dt);
  }
- if(state.sunPlaying){state.progress=Math.min(1,state.progress+dt/150);if(state.progress===1){state.sunPlaying=false;syncUI();} $('timeSlider').value=state.progress;updateTimeLabel();}
+ if(state.sunPlaying){state.progress=Math.min(1,state.progress+dt/150);if(state.progress===1){state.sunPlaying=false;syncUI();}updateTimeLabel();}
  if(sceneVisible&&now-lastEnvironment>180){if(atmosphere.update(state.progress,state.style,false,now,state.neutral))lastEnvironment=now;}
  const night=state.neutral?0:atmosphere.night(state.progress);glass.uniforms.style.value=state.style;glass.uniforms.night.value=state.neutral?0:night;
  player.userData.setNight?.(night);
@@ -136,29 +142,27 @@ function frame(now){
  if(sceneVisible)atmosphere.prepareShadows(cameraRig.carPosition,now,state.traffic||state.speed>.01);
  updateAudio();
  if(sceneVisible)renderer.render(scene,camera);
- $('speedValue').textContent=Math.round(state.speed*2.23694);
- if(!$('settingsPanel').hidden){$('routeSlider').value=state.route;$('routeValue').textContent=Math.round(state.route*100)+'%';}
+ ui.setTelemetry({speedMph:Math.round(state.speed*2.23694)});
+ if(ui.settingsOpen)surface.invalidate();
  if(!sceneVisible){frameCount=0;fpsTime=now;}else frameCount++;
  if(sceneVisible&&now-fpsTime>900){
    const fps=Math.round(frameCount*1000/(now-fpsTime)),info=renderer.info.render;
-   $('fps').textContent=fps+' FPS';
-   $('fps').title=info.calls+' draw calls · '+Math.round(info.triangles/1000)+'k triangles · '+renderer.domElement.dataset.depthMode+' depth';
-   $('fps').dataset.drawCalls=info.calls;$('fps').dataset.triangles=info.triangles;
+   ui.setTelemetry({fps,drawCalls:info.calls,triangles:info.triangles,depthMode:renderer.domElement.dataset.depthMode});
    frameCount=0;fpsTime=now;
  }
+ surface.render();
  requestAnimationFrame(frame);
 }
 
 function setPreset(name){
  const presets={daylight:{progress:0,screen:false,exposure:.95},golden:{progress:.18,screen:false,exposure:1.0},prism:{progress:.63,screen:false,exposure:1.08},blue:{progress:.81,screen:false,exposure:1.15},night:{progress:.97,screen:true,exposure:1.35}};
  Object.assign(state,presets[name]||presets.prism,{neutral:false,sunPlaying:false});
- for(const el of document.querySelectorAll('[data-preset]')){el.classList.toggle('active',el.dataset.preset===name);el.setAttribute('aria-pressed',String(el.dataset.preset===name));}
  atmosphere.update(state.progress,state.style,true,performance.now(),state.neutral);syncUI();
 }
 
 function scenicPose(){const offset=(state.direction===1?0:-2*(world.laneBase??5.25))+actualLane;const p=world.getRoutePoint(state.route,offset),t=world.getRouteTangent(state.route).multiplyScalar(state.direction);return{x:p.x,z:p.z,heading:Math.atan2(t.z,t.x),speed:Math.min(state.speed,28)};}
 
-function clearDrivingInputs(){keys.clear();touchInputs.clear();for(const el of document.querySelectorAll('[data-drive-control]'))el.classList.remove('held');}
+function clearDrivingInputs(){keys.clear();touchInputs.clear();}
 
 function setDriveMode(mode){
  stopTour();
@@ -178,7 +182,7 @@ function setDriveMode(mode){
    state.route=route;state.lane=-1.75;actualLane=state.lane;state.driveMode='scenic';state.driving=false;state.cruise=true;state.speed=0;
    toast('Back on the Reno Avenue scenic route.');
  }
- cameraRig.view.orbitFocus=null;cameraRig.view.viewFov=null;cameraRig.view.lookYaw=0;cameraRig.view.lookPitch=0;cameraRig.view.firstCamera=true;$('studyView').value='';syncUI();focusRoad();
+ cameraRig.view.orbitFocus=null;cameraRig.view.viewFov=null;cameraRig.view.lookYaw=0;cameraRig.view.lookPitch=0;cameraRig.view.firstCamera=true;ui.setStudyView('');syncUI();focusRoad();
 }
 
 function recoverCar(){
@@ -188,15 +192,15 @@ function recoverCar(){
  freeCar=createDrivingState(pose);state.speed=0;state.driving=true;cameraRig.view.lookYaw=0;cameraRig.view.lookPitch=0;cameraRig.view.firstCamera=true;clearDrivingInputs();syncUI();focusRoad();toast('Back on a clear road.');
 }
 
-function reset(){$('studyView').value='';const oldSound=state.sound;cameraRig.view.orbitFocus=null;cameraRig.view.viewFov=null;state={...defaults,sound:oldSound,quality:state.quality};freeCar=null;clearDrivingInputs();actualLane=state.lane;cameraRig.view.lookYaw=0;cameraRig.view.lookPitch=0;cameraRig.view.firstCamera=true;cameraRig.view.orbitYaw=2.25;cameraRig.view.orbitPitch=.19;cameraRig.view.orbitDistance=650;setPreset('prism');resize();toast('Back on the western approach.');}
+function reset(){ui.setStudyView('');const oldSound=state.sound;cameraRig.view.orbitFocus=null;cameraRig.view.viewFov=null;state={...defaults,sound:oldSound,quality:state.quality};freeCar=null;clearDrivingInputs();actualLane=state.lane;cameraRig.view.lookYaw=0;cameraRig.view.lookPitch=0;cameraRig.view.firstCamera=true;cameraRig.view.orbitYaw=2.25;cameraRig.view.orbitPitch=.19;cameraRig.view.orbitDistance=650;setPreset('prism');resize();toast('Back on the western approach.');}
 
 function toggleDrive(){state.driving=!state.driving;state.cruise=state.driveMode==='scenic';if(state.driveMode==='free'&&!state.driving){freeCar.vx=freeCar.vz=freeCar.speed=freeCar.travelSpeed=freeCar.yawRate=0;freeCar.bodyRoll=freeCar.bodyPitch=freeCar.bodyRollVelocity=freeCar.bodyPitchVelocity=0;cameraRig.reset(freeCar);state.speed=0;clearDrivingInputs();}syncUI();focusRoad();}
 
 function resize(){
- if(!renderer)return;
+ if(!renderer||!getUI().renderer)return;
  const cap=state.quality==='high'?1.25:state.quality==='balanced'?1:.7;
- renderer.setPixelRatio(Math.min(devicePixelRatio,cap));renderer.setSize(innerWidth,innerHeight,false);
- camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();
+ const surface=getUI();renderer.setPixelRatio(Math.min(devicePixelRatio,cap));renderer.setSize(surface.width,surface.height,false);
+ camera.aspect=surface.width/surface.height;camera.updateProjectionMatrix();
  atmosphere?.setQuality(state.quality);
  if(sceneInitialized&&localReflectionOptions&&scene.environment)refreshLocalReflection(false);
 }
