@@ -1,0 +1,34 @@
+{
+  "workflow": {
+    "id": 46082603964,
+    "url": "https://github.com/TrentSterling/okc/actions/runs/46082603964",
+    "conclusion": "success",
+    "completedUTC": "2026-11-27T23:43:39Z"
+  },
+  "nativeSceneShaderPrograms": 18,
+  "nativeUIMapShaderPrograms": 8,
+  "nativeUIFixtures": 7,
+  "focusedUIInputExplorerMapTests": 54,
+  "metroRuntimeCoverageStreamingTests": 30,
+  "manifest": {
+    "assetCount": 6229,
+    "assetBytes": 442531063,
+    "note": "The public audit below also verifies release.json itself."
+  },
+  "audit": {
+    "verifiedFiles": 6230,
+    "verifiedBytes": 443341145,
+    "revision": "ff97b5e811b9c1e1ffbedc06d6d4ec0621b3e581",
+    "sourceRevision": "9b75058601d5c9518b04987227130f64984f5913",
+    "version": "0.8.0",
+    "site": "https://tront.xyz/okc/",
+    "retries": 0,
+    "pacing": {
+      "spacingMilliseconds": 100,
+      "cooldownUntil": 0,
+      "rateLimitWaves": 0
+    },
+    "elapsedSeconds": 627
+  },
+  "scope": "Complete CI build, application/geometry/driving validation, native production shader compilation, GitHub Pages publication and public SHA-256 identity. Native UI/map diagnostics used Mesa llvmpipe software rendering. Phone-size desktop-browser interactions used the Canvas2D glyph fallback; physical-phone 3D, hardware GPU performance, FPS and thermal/power testing remain unverified."
+}

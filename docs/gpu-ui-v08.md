@@ -1,5 +1,11 @@
 # GPU UI and phone controls, v0.8.0
 
+## Why the interface changed
+
+The pre-change source at `652cf4f9b26457b289d0479e96aaff3bb60f7ea6` positioned the masthead, scene controls, explorer toolbar, fixed panel and map title independently. Phone CSS relied on fixed offsets such as `top:141px; bottom:214px`, and several secondary controls were small touch targets. Many explorer actions replaced the panel's complete `innerHTML`, then restored focus, caret and scroll. Results grew in batches rather than being limited to visible rows.
+
+Input ownership was split among the panel, map and driving surfaces. The map tracked a single drag pointer and lacked pinch gestures. Each nearby 3D label allocated a 512 × 104 canvas, texture, sprite material and sprite; the old limit was 20 labels. The rewrite replaces those concrete costs with shared layout, visible-row lists, one pointer router and a shared glyph atlas. The old map already cached its base drawing; this release makes no claim that it previously repainted all geography every frame or that DOM rendering alone proved an FPS bottleneck.
+
 ## Rendering boundaries
 
 The visible game interface is drawn on the scene canvas. `src/ui/gpu-surface.js` batches glyphs, panels, borders, lines and clips into one indexed instanced draw. It uses a licensed offline-baked 1024 × 1024 R8 distance-field atlas with 244 glyphs. The decoded atlas is 1 MiB; the gzip transport is 160,361 bytes. Text layout uses font advances and never asks DOM layout or Canvas2D font APIs to measure or paint the active interface.
@@ -29,7 +35,7 @@ A small original pixel alphabet provides a GPU-rendered Retry screen if the prim
 
 The GPU atlas keeps at most seven geographic batches: generic land, parks, water, footprints, and three road classes. Buildings retain supplied correction colors and courtyard holes. Moving the map changes uniforms; it does not rebuild every road or polygon. The geometry worker runs one job at a time, with only the newest queued base and footprint job retained. Close-up tiles keep their existing bounded loader and cancellation rules.
 
-The explorer virtualizes place cards; the focused test uses an 8,000-place catalog without generating every row. Hidden-map preparation remains deferred, and preprocessing yields between small indexing batches. The 3D place labels no longer allocate separate CanvasTextures per venue. UI buffer capacity grows within a fixed maximum and disposes replaced GPU buffers.
+The explorer virtualizes place cards; the focused test uses an 8,000-place catalog without generating every row. Initial/base map preparation is deferred until the atlas opens, and preprocessing yields between small indexing batches. Updated building footprints can still queue geometry while the map is hidden. The 3D place labels no longer allocate separate CanvasTextures per venue. UI buffer capacity grows within a fixed maximum and disposes replaced GPU buffers.
 
 These are implementation/resource bounds. No phone FPS, time-to-interactive improvement percentage, or GPU timing is asserted without hardware measurements.
 
@@ -37,7 +43,7 @@ These are implementation/resource bounds. No phone FPS, time-to-interactive impr
 
 Portrait uses a bottom sheet; short landscape uses a side panel. The scene HUD reserves its own bottom region and keeps Menu available in both orientations. Main touch controls are at least 44 CSS pixels. Safe-area insets and `visualViewport` changes are honored. The active editor retains a scroll anchor while a keyboard reduces the visible area, and physical orientation is used when the browser reports it.
 
-Each pointer keeps its owner until release or cancellation. Steering and a pedal can be held independently, while another scene finger controls the camera. Scrolling a sheet never starts a camera or map drag. Two map fingers pan and pinch around their combined midpoint without producing a tap when one lifts. Coalesced movement, blur, lost capture, mode switches and modal opening release controls correctly.
+Each pointer keeps its owner until release or cancellation. Steering and a pedal can be held independently, while another scene finger controls the camera. Scrolling a sheet never starts a camera or map drag. Two map fingers pan and pinch around their combined midpoint without producing a tap when one lifts. Pointer-up distance checks prevent a drag from becoming a tap. Blur, lost capture, mode switches and modal opening release held controls.
 
 The first manual driving input cancels a guided tour; keyboard repeats and a second held source do not repeatedly pause/reset the car. Tab/Shift+Tab use visible controls in the top active overlay; PageUp/PageDown scroll panels, and Home/End work in focused panels or modals. Editing uses native IME composition while all visible fields and carets are drawn by the UI surface.
 
