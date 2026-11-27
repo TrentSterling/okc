@@ -24,7 +24,7 @@ export const ORIGIN = [-97.51758985376695,35.466887450817715];
 const MX=111320*Math.cos(ORIGIN[1]*Math.PI/180),MZ=111132;
 export const project=(lon,lat)=>({x:(lon-ORIGIN[0])*MX,z:(ORIGIN[1]-lat)*MZ});
 export const unproject=(x,z)=>({lon:ORIGIN[0]+x/MX,lat:ORIGIN[1]-z/MZ});
-export function safeUrl(value){try{const u=new URL(value);return ['https:','http:'].includes(u.protocol)?u.href:null;}catch{return null;}}
+export function safeUrl(value){if(!value)return null;try{const u=new URL(value);return ['https:','http:'].includes(u.protocol)?u.href:null;}catch{return null;}}
 export function escapeHTML(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
 export function layerIds(place){
  const tags=place.tags||{},t=(typeof tags==='object'&&!Array.isArray(tags)?Object.entries(tags).flat().join(' '):[].concat(tags).join(' '));

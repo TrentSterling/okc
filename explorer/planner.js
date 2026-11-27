@@ -18,7 +18,7 @@ export function matchPlace(name,places,address=''){
  if(String(name).toLowerCase()==='bricktown dessert allowance'){name='Bricktown Candy Co';address='';}
  const clean=s=>String(s).toLowerCase().replace(/[^a-z0-9]/g,'');
  const normalizeAddress=s=>clean(String(s).toLowerCase().replace(/\bnorthwest\b/g,'nw').replace(/\bsouthwest\b/g,'sw').replace(/\bnortheast\b/g,'ne').replace(/\bsoutheast\b/g,'se').replace(/\bnorth\b/g,'n').replace(/\bsouth\b/g,'s').replace(/\beast\b/g,'e').replace(/\bwest\b/g,'w').replace(/\bavenue\b/g,'ave').replace(/\bstreet\b/g,'st').replace(/\broad\b/g,'rd').replace(/\bboulevard\b/g,'blvd'));
- const key=clean(name),exact=places.filter(p=>clean(p.name)===key),prefix=places.filter(p=>{const n=clean(p.name);return key.length>=5&&n.length>=5&&(n.startsWith(key)||(key.startsWith(n)&&n.length>=key.length*.6));}),candidates=exact.length?exact:prefix;
+ const key=clean(name),exact=places.filter(p=>clean(p.name)===key),candidates=exact.length?exact:places.filter(p=>{const n=clean(p.name);return key.length>=5&&n.length>=5&&(n.startsWith(key)||(key.startsWith(n)&&n.length>=key.length*.6));});
  if(address){const a=normalizeAddress(address),match=candidates.find(p=>{const b=normalizeAddress(p.address||'');return b.length>=5&&(a===b||b.startsWith(a)||a.startsWith(b));});if(match)return match;if(candidates.length>1||candidates.some(p=>p.address))return null;}
  return candidates.find(p=>p.curated)||candidates[0]||null;
 }

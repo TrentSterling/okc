@@ -10,25 +10,32 @@
     "map boundary graph clipping",
     "valid polygon footprints",
     "road / sidewalk footprint partition",
-    "original downtown geometry ownership",
+    "original downtown and 50 m surface apron ownership",
     "unique building identities",
     "POI source and ID coverage",
     "cross-city graph reachability"
   ],
   "counts": {
     "directedSegments": 455602,
-    "tileBytes": 197918437,
-    "tileGzipBytes": 40896774,
+    "tileBytes": 197890742,
+    "tileGzipBytes": 40882354,
     "buildings": 272713,
     "roads": 107092,
     "surfaces": 16951,
     "details": 26308,
-    "meshes": 67033,
+    "meshes": 66952,
     "reachableFromFirstAnchor": 214591
   },
   "maxTileBytes": 303286,
   "roadSidewalkOverlapSquareMeters": 0.0,
   "newRoadCoreOverlapSquareMeters": 0.0,
+  "newLandCoreOverlapSquareMeters": 0.0,
+  "coreSurfaceBounds": {
+    "minX": -1650,
+    "minZ": -1190,
+    "maxX": 1650,
+    "maxZ": 1170
+  },
   "routeChecks": [
     {
       "from": "Yukon Christmas in the Park",

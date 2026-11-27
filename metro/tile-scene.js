@@ -37,7 +37,11 @@ export function mountTile({parent, materials, drivingWorld, id, result, raw, det
     geometry.setAttribute('position', new THREE.BufferAttribute(meshData.positions, 3));
     geometry.setAttribute('normal', new THREE.BufferAttribute(meshData.normals, 3));
     geometry.setAttribute('uv', new THREE.BufferAttribute(meshData.uvs, 2));
-    geometry.computeBoundingSphere();
+    if (meshData.bounds) {
+      const {min, max, center, radius} = meshData.bounds;
+      geometry.boundingBox = new THREE.Box3(new THREE.Vector3().fromArray(min), new THREE.Vector3().fromArray(max));
+      geometry.boundingSphere = new THREE.Sphere(new THREE.Vector3().fromArray(center), radius);
+    } else geometry.computeBoundingSphere();
     geometryBytes += meshData.positions.byteLength + meshData.normals.byteLength + meshData.uvs.byteLength;
     const mesh = new THREE.Mesh(geometry, materials[meshData.kind] || materials.stone);
     mesh.name = `Metro ${meshData.kind}`;

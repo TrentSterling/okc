@@ -1,7 +1,7 @@
 import * as THREE from 'three';
 import { canvasTexture } from './textures.js';
 import { rngFor } from './random.js';
-import { texturePair, resizeTexture, tileNoise, fillPixels, rgb, dataColor } from './material-textures.js';
+import { texturePair, resizeTexture, tileNoise, fillPixels, writePixel, rgb, dataColor } from './material-textures.js';
 import { BOK_FACADE, facadeFloorBands } from './skyline-profiles.js';
 import { addFacadeOccupancy } from './facade-lighting.js';
 
@@ -40,9 +40,9 @@ export function createFacadeTextures(seed, id, style) {
     }
   }
   const pair = texturePair(width, height, (color, data, w, h) => {
-    fillPixels(color, data, w, h, (u, v) => {
+    fillPixels(color, data, w, h, (u, v, x, y, pixel) => {
       const shade = (broad(u, v) - .5) * 8 + (random() - .5) * 3;
-      return [...family.wall.map(value => value + shade), .54, family.curtain ? .30 : .85, family.curtain ? .55 : 0];
+      return writePixel(pixel, family.wall[0] + shade, family.wall[1] + shade, family.wall[2] + shade, .54, family.curtain ? .30 : .85, family.curtain ? .55 : 0);
     });
     for (const band of bands) {
       const y = height * (1 - band.top / span), cellHeight = (band.top - band.bottom) / span * height;
@@ -132,9 +132,9 @@ export function createFacadeMaterial({ seed = 42, id, style, dynamicLights }) {
 export function createLowriseTextures(seed, id, style, wall) {
   const random = rngFor(seed, `lowrise/${id}`), broad = tileNoise(random, 5);
   return texturePair(256, 256, (color, data, width, height) => {
-    fillPixels(color, data, width, height, (u, v) => {
+    fillPixels(color, data, width, height, (u, v, x, y, pixel) => {
       const grain = random() - .5, shade = (broad(u, v) - .5) * 10 + grain * 3;
-      return [...wall.map(value => value + shade), .60 + grain * .06, .91 + grain * .04];
+      return writePixel(pixel, wall[0] + shade, wall[1] + shade, wall[2] + shade, .60 + grain * .06, .91 + grain * .04);
     });
     if (style === 'stucco') return;
     const columns = style === 'brick' ? 12 : 5, rows = style === 'brick' ? 32 : 4;

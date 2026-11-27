@@ -26,6 +26,7 @@ const keys=new Set();
 const touchInputs=new Map();
 let drivingWorld,freeCar,lastCollisionToast=-10000;
 let localReflectionOptions=null,lastLocalReflection=-10000;
+let sceneInitialized=false;
 const audio=createRoadAudio(()=>state);
 
 function syncUI(){ui.sync();}
@@ -74,8 +75,12 @@ async function init(){
  if(viewId&&SHOT_BY_ID.has(viewId))applyCapturePreset(SHOT_BY_ID.get(viewId));
  else {atmosphere.update(state.progress,state.style,true);updateCamera(.016);syncUI();}
  discovery=await connectDiscovery({scene,camera,world,drivingWorld,cameraRig,renderer,atmosphere,getState:()=>state,getCar:()=>freeCar,setCar:car=>{freeCar=car;},syncUI,resize,clearDrivingInputs,reversedDepth});
+ // Allow parallel shader compilation to finish without blocking the loading UI.
+ // Older renderers still compile normally on first render.
+ if(renderer.compileAsync)await renderer.compileAsync(scene,camera);
  refreshLocalReflection(true);
  renderer.render(scene,camera);
+ sceneInitialized=true;
  reportLoad('ready','The city is yours');
  $('loading').hidden=true;
  // Do not include asset construction and first-use shader compilation in FPS.
@@ -193,7 +198,7 @@ function resize(){
  renderer.setPixelRatio(Math.min(devicePixelRatio,cap));renderer.setSize(innerWidth,innerHeight,false);
  camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();
  atmosphere?.setQuality(state.quality);
- if(localReflectionOptions&&scene.environment)refreshLocalReflection(true);
+ if(sceneInitialized&&localReflectionOptions&&scene.environment)refreshLocalReflection(false);
 }
 
 function applyCapturePreset(preset){
@@ -206,7 +211,7 @@ function applyCapturePreset(preset){
  const night=state.neutral?0:atmosphere.night(state.progress);
  glass.uniforms.style.value=state.style;glass.uniforms.night.value=night;
  player.userData.setNight?.(night);devon.update(simTime,night,state.screen&&!state.neutral);legends.update(simTime,night);
- world.update(0,simTime,night,0);updateCamera(0);refreshLocalReflection(true);
+ world.update(0,simTime,night,0);updateCamera(0);if(sceneInitialized)refreshLocalReflection(true);
 }
 
 window.addEventListener('error',e=>{fail(e.error||Error(e.message));});
