@@ -1,5 +1,12 @@
 # Prairie Prism handoff
 
+## Active road paint depth repair (v0.8.1 candidate)
+
+- User still sees severe lane/crosswalk clipping after v0.8.0. Current work branch `work/paint-depth-v081-20261127`; pre-change source preserved remotely at `backup/pre-paint-depth-v081-20261127` / `15f967c535092592471fb3f8c89289ec91e0d9ce`. The complete original build is preserved locally at `qa/paint-v080-baseline-dist/`.
+- Actual core buffer audit covers 14,391 paint instances and 67,757 ground triangles. The measured paint/road-or-lot gap is 11.9999945–12.0000020 mm, with no coplanar paint/ground pair or uncovered paint. Microscopic adjoining paint endpoint overlaps are below the existing geometry tolerance. Do not claim a newly discovered zero-height core layer or alter the compiler without contrary evidence.
+- The earlier native offset regression used a simple shader with no `gl_FragDepth` and only float depth. It does not test the production logarithmic depth path. New native diagnostics are being prepared from actual Three material programs and original buffers/transforms, including MSAA, visibility-reference and occluder checks. No corrected native result is claimed yet.
+- A shared `world/paint-material.js` now gives core and metro paints the same after-opaque, depth-tested, non-depth-writing decal contract. Previously metro paint was opaque and had no offset. The logarithmic depth repair is still pending measured reproduction; do not publish this intermediate checkpoint as the complete fix.
+
 ## Active GPU UI and phone repair (v0.8.0)
 
 - User requested inspecting the UI, replacing DOM-rendered controls with GPU glyphs, and phone testing. Visible game HUD, Explorer, loading, atlas labels and 3D POI labels now use one instanced GPU surface; only nonvisual native editing/file bridges remain. Gallery stays an ordinary page.

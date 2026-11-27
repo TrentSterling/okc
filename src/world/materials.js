@@ -1,6 +1,7 @@
 import * as THREE from 'three';
 import { createSurfaceTextures } from './surface-textures.js';
 import { createFacadeMaterial, createLowriseMaterial } from './facade-textures.js';
+import { createRoadPaintMaterial } from './paint-material.js';
 
 // Geographic material keys and meter-space UVs remain stable. Each painted
 // texture owns a named random stream, independent of planting and other maps.
@@ -16,14 +17,12 @@ export function createCityMaterials({ group, dynamicLights, seed = 42 }) {
   const steel = new THREE.MeshStandardMaterial({ color: 0x657479, metalness: .64, roughness: .46 });
   const darkSteel = new THREE.MeshStandardMaterial({ color: 0x303a3e, metalness: .45, roughness: .55 });
   const white = new THREE.MeshStandardMaterial({ color: 0xe0dccd, roughness: .94 });
-  // Paint remains an intentional surface decal, drawn after opaque asphalt.
-  // Depth testing and the existing offset prevent paint/road coplanar flicker.
-  const roadPaint = white.clone(); roadPaint.name = 'Road and parking paint decals';
-  Object.assign(roadPaint, { transparent: true, opacity: 1, depthTest: true, depthWrite: false,
-    polygonOffset: true, polygonOffsetFactor: -1, polygonOffsetUnits: -2 });
-  const yellow = new THREE.MeshStandardMaterial({ name: 'Yellow road paint decals', color: 0xd2b66c,
-    roughness: .94, transparent: true, opacity: 1, depthTest: true, depthWrite: false,
-    polygonOffset: true, polygonOffsetFactor: -1, polygonOffsetUnits: -2 });
+  const roadPaint = createRoadPaintMaterial({
+    name: 'Road and parking paint decals', color: 0xe0dccd, roughness: .94,
+  });
+  const yellow = createRoadPaintMaterial({
+    name: 'Yellow road paint decals', color: 0xd2b66c, roughness: .94,
+  });
   const paintGeometry = new THREE.PlaneGeometry(1, 1).rotateX(-Math.PI / 2);
   const roofMat = surface('Weathered mineral roof', textures.roof, .012);
   const lampMat = new THREE.MeshStandardMaterial({ color: 0xffe7bf, emissive: 0xffd69b, emissiveIntensity: .05 });
