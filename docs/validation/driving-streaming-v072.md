@@ -19,7 +19,9 @@ travel and **0.207 m/s** final speed. An isolated overlay of the two corrected
 handlers produced **216.891 m** and **28 m/s**. This is a negative-control
 comparison of application behavior, not a frame-rate benchmark. The release
 startup gate now dispatches through the focused canvas and requires more than
-150 m of sustained travel; a full rebuilt result will be recorded below.
+150 m of sustained travel. The complete rebuilt v0.7.2 application reproduced
+**216.891 m** and **28 m/s**, with 93 actual modules, six packed assets and 16
+completed metro tile requests. See [the exact result](startup-v072-result.json).
 
 ## Camera and loading changes
 
@@ -54,9 +56,13 @@ for the separate geometry/depth repair.
 
 ## Verification status
 
-Focused packed-data, discovery, metro runtime and camera coverage regressions
-pass. Full rebuilt application, streaming integration, complete release checks,
-CI native shaders and public artifact audit are pending at this checkpoint.
+The complete `npm run build` and `npm run check` passed on November 27, 2026.
+This includes all 30 metro runtime/coverage/streaming regressions, packed-data
+and discovery checks, compiler/atlas ownership validation, preserved downtown
+geometry/optics checks, and the rebuilt sustained-input startup gate. The build
+keeps all 272,713 building records, 7,799 places, 3,004 metro tiles and original
+capture downloads. CI native shader compilation and the public artifact audit
+are pending at this pre-publication checkpoint.
 
 Browser DOM/canvas, animation scheduling and GPU renderer/PMREM are adapters in
 the built-app harness. It executes actual application modules, decompression,

@@ -1,0 +1,148 @@
+{
+  "scope": "Isolated Node CPU/container measurements; synthetic canvas command recorder; no browser rendering, GPU timing, FPS or end-to-end startup benchmark.",
+  "baselineSourceRevision": "6ae1e0e2d7a9e3d13e1b83bc8d3f37eaeb746bbb",
+  "optimizedSourceState": "Working tree; exact source hashes below identify the measured changes.",
+  "texture": {
+    "runs": [
+      {
+        "seed": 42,
+        "beforeCpuMilliseconds": 719,
+        "afterCpuMilliseconds": 501.2,
+        "imageDataPixels": 5373952,
+        "imageDataBuffers": 42,
+        "canvases": 81,
+        "pixelAndDrawingSha256": "a40485d46047679c00c3196899471fa256004d262b5e510ac1bbbdcd60db915f",
+        "comparison": "byte-and-operation-identical"
+      },
+      {
+        "seed": 1907,
+        "beforeCpuMilliseconds": 546.9,
+        "afterCpuMilliseconds": 378.1,
+        "imageDataPixels": 5373952,
+        "imageDataBuffers": 42,
+        "canvases": 81,
+        "pixelAndDrawingSha256": "41e093ea615d1e03c60a7bfc18bba2a62488fd2ef6f6cdb10fdcbd97f59a4cb2",
+        "comparison": "byte-and-operation-identical"
+      }
+    ],
+    "imageDataProof": "Every putImageData buffer was SHA-256 hashed; canvas property changes and drawing operations were recorded in order. The aggregate hashes cover the ordered per-canvas dimensions and hashes.",
+    "auditOrder": [
+      42,
+      1907
+    ],
+    "sourceLevelArrayConstructionsBefore": 5177344,
+    "scratchArraysAfter": 21,
+    "originalAuditScriptSha256": "8a2a6ea5e4703cae1c7c7d06ca2b7707eae91503a68ff0a737f4d4e3d54fc86e"
+  },
+  "packedWorld": {
+    "binaryBytes": 45807044,
+    "chunkBytesNoLongerCopied": 45806856,
+    "alignmentPaddingBytes": 188,
+    "meshChunks": 259,
+    "instanceChunks": 56,
+    "sharedViews": 574,
+    "instanceMatrices": 69397,
+    "identityMatrixBytesNoLongerAllocated": 4441408,
+    "unpackCpuMilliseconds": {
+      "before": 11.4,
+      "after": 0.8
+    },
+    "mountCpuMilliseconds": {
+      "before": 64.9,
+      "after": 4.1
+    },
+    "bounds": {
+      "exactMatchesAgainstThree": 259,
+      "offlineComputationCpuMilliseconds": 39.4,
+      "proof": "Computed proposed offline boxes and spheres in memory from the existing packed Float32 production vertices, then compared every component/radius exactly against Three BufferGeometry.computeBoundingBox/computeBoundingSphere.",
+      "packBuildStateAtRecording": "Existing dist layout has no offline bounds yet; the updated packer writes them on the next build."
+    },
+    "geometryScope": "Same vertex/index/instance byte ranges. Legacy base64 decoding remains supported; canonical geometry is not changed."
+  },
+  "atlas": {
+    "overviewRoads": 31613,
+    "overviewSurfaces": 9118,
+    "overviewPoints": 232576,
+    "hiddenMapPreparationCpuMillisecondsBefore": {
+      "normalization": 154.7,
+      "spatialIndex": 55.6
+    },
+    "change": "Preparation is deferred until the first visible map draw, and valid point arrays are reused; it is not removed from the map path.",
+    "poiNormalizationCpuMilliseconds": {
+      "before": 178.9,
+      "after": 123.8
+    }
+  },
+  "observedInputs": [
+    {
+      "path": "dist/geo/base-city-layout.json",
+      "bytes": 53852,
+      "sha256": "d8f20d00e57bb39905d65cd406f7a7bd4324aa08b347953134e96a0471e1d832"
+    },
+    {
+      "path": "dist/geo/base-city.bin.gz",
+      "bytes": 13812341,
+      "sha256": "003562a0fd85f95953980b7aedd14328447af69117fc5734726b64e1e263a539"
+    },
+    {
+      "path": "dist/geo/runtime-pack.json",
+      "bytes": 234,
+      "sha256": "fc115a38867fc0cd52b2aa20e49fe066be6c32150e3b540149db443ae347e1b6"
+    }
+  ],
+  "sourceHashes": [
+    {
+      "path": "scripts/pack-runtime.mjs",
+      "baselineSha256": "6582db91a196a2e9c4f9e0b245dadb5e165fa841e7a0fbca12d579d75c3d1851",
+      "optimizedWorkingTreeSha256": "0186c79b2b9948f23b317657bb2f516b8f684a64ea0a7085c6ec6dc987d9ab59"
+    },
+    {
+      "path": "src/world/runtime-meshes.js",
+      "baselineSha256": "a96b3608c92c8acd85d420c255521167dca48d102f3d12740bfd579f98be71a8",
+      "optimizedWorkingTreeSha256": "2c8355995989bd351f685bce820d333cb119cd717a04463772e17dc52ee2d2c6"
+    },
+    {
+      "path": "src/world/baked-meshes.js",
+      "baselineSha256": "49670df0094d9af756f9793ca43adfa5547355589980e1ff8275279a48c2db9f",
+      "optimizedWorkingTreeSha256": "f9cd1e0056f33795bdee6a44f56d0ccc2e2540b0a2258291252ccc4ce1db70b4"
+    },
+    {
+      "path": "src/world/packed-data.js",
+      "baselineSha256": null,
+      "optimizedWorkingTreeSha256": "e150c6868c295505e75b2608c19a583c1062291ee3c57f332096aeb031eb9a13"
+    },
+    {
+      "path": "src/world/material-textures.js",
+      "baselineSha256": "22aca3c852e8eacc16d13554d75e241583e25f8b7509ce20bf343c12b587692a",
+      "optimizedWorkingTreeSha256": "836dcaa20ffcce861a4144f371d5d22401d080c6ec7365a63ddb343cd39b5693"
+    },
+    {
+      "path": "src/world/surface-textures.js",
+      "baselineSha256": "248a20bc818a1170ae53f4fc0d4208b55807b697289407f6cc5413642e83b3fd",
+      "optimizedWorkingTreeSha256": "96348aa57127998152d9d39603070ace345f615f0433a373960244b3ec10906a"
+    },
+    {
+      "path": "src/world/facade-textures.js",
+      "baselineSha256": "59a62d010dd2fd16d4e09a5c05f63aabf918e1e2fd01fe90400349d6abc5dfd4",
+      "optimizedWorkingTreeSha256": "fb47a50fe4d551946076c8658cce991d9702bb67f775be416a94b1e939061230"
+    },
+    {
+      "path": "public/vendor/three.module.js",
+      "baselineSha256": "c8211c69345d2e9949dc7a8ac969380497aa0600a5a8ac6a459c8cd02dd9cb8a",
+      "optimizedWorkingTreeSha256": "c8211c69345d2e9949dc7a8ac969380497aa0600a5a8ac6a459c8cd02dd9cb8a"
+    }
+  ],
+  "checks": [
+    "node src/world/packed-data.test.mjs",
+    "node src/explorer/atlas.test.mjs",
+    "node src/explorer/planner.test.mjs",
+    "Changed module syntax checks",
+    "git diff --check"
+  ],
+  "limits": [
+    "Timings are individual container observations, not repeated statistical or physical-device benchmarks.",
+    "Texture timings include audit hashing and command recording; Canvas drawing and GPU upload were not performed.",
+    "Removing copies identifies avoided allocation bytes, not a measured browser heap reduction.",
+    "Full integrated build, browser 3D validation and end-to-end startup timing are separate gates."
+  ]
+}

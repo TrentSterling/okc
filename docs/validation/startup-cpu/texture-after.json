@@ -1,0 +1,21 @@
+{
+  "mode": "byte-and-operation-identical",
+  "runs": [
+    {
+      "seed": 42,
+      "cpuMilliseconds": 501.2,
+      "pixels": 5373952,
+      "images": 42,
+      "canvases": 81,
+      "aggregateHash": "a40485d46047679c00c3196899471fa256004d262b5e510ac1bbbdcd60db915f"
+    },
+    {
+      "seed": 1907,
+      "cpuMilliseconds": 378.1,
+      "pixels": 5373952,
+      "images": 42,
+      "canvases": 81,
+      "aggregateHash": "41e093ea615d1e03c60a7bfc18bba2a62488fd2ef6f6cdb10fdcbd97f59a4cb2"
+    }
+  ]
+}

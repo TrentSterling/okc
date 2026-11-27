@@ -1,0 +1,15 @@
+{
+  "passed": true,
+  "baseURL": "https://startup.invalid/okc/",
+  "applicationModules": 93,
+  "packedAssetsRead": 6,
+  "metroTileRequests": 16,
+  "sceneReady": true,
+  "freeDrive": true,
+  "drivingSeconds": 10,
+  "repeatKeyEvents": 285,
+  "distanceUnderThrottleMeters": 216.891,
+  "finalDrivingSpeedMetersPerSecond": 28,
+  "rendererCalls": 610,
+  "scope": "Actual built boot/app/import map, packed geometry, scene construction, discovery bridge, tile decoding/compiler/mount and free driving. Browser DOM/canvas, RAF and GPU renderer/PMREM adapters; worker fallback path. No shader, browser layout, image or FPS verification."
+}
