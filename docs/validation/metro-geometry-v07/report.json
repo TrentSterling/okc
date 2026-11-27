@@ -1,0 +1,635 @@
+{
+  "method": "Actual compileTile production mesh buffers from 3-by-3 tile neighborhoods, mapped footprint/road/water polygons, UVs, native Canvas color-map pixels and production mapped-tree instances. Fixed diagnostic Lambert shading and logarithmic depth. Includes the production prairie ground plane. Excludes Three PBR, sky, shadow maps, point lights, festive instancing, UI, driving and streaming timing. Distant cutoffs are the selected tile sample boundary. Not a browser screenshot, photo replica or FPS benchmark.",
+  "label": "Prairie Prism 0.7 / metro geometry",
+  "renderer": {
+    "vendor": "Mesa",
+    "renderer": "llvmpipe (LLVM 19.1.7, 256 bits)",
+    "version": "OpenGL ES 3.2 Mesa 25.0.7-2+deb13u1"
+  },
+  "geometry": {
+    "vertices": 614523,
+    "triangles": 204841,
+    "meshes": 494,
+    "sha256": "5c615dd030336810ac2e6be3ab31b0f7995d0325ac2f54dba2713833dc13711f",
+    "tiles": 36,
+    "inspectedBuildings": 2960,
+    "mappedTrees": 60,
+    "roofCounts": {
+      "flat / Simplified roof approximation": 2176,
+      "gabled / Inferred residential pitched roof": 685,
+      "flat / OSM tag": 86,
+      "gabled / OSM tag": 13
+    },
+    "finiteBufferValues": true
+  },
+  "sourceHashes": {
+    "geo/metro/manifest.json": "6866325ac8f2e8382079ac8743934144ed8a3aaea307adf7f873e6e134cc46a6",
+    "metro/mesh-builder.js": "3139ae0f1d166e4d64584710142ca0dedbbe0a355208a5f96ae95ac1fb6d6f1d",
+    "metro/roof-shapes.js": "26c45a1688bdc98995d44fe44746d70a5ed373d9179d4330dd4dbcb3f129754e",
+    "metro/materials.js": "03e25bcdce1cb2ed88b0d4dd49dbc18179f4ea03938d5287175f3ffb3d68a382",
+    "metro/tile-scene.js": "cdff79944d3b2137c7fc81a66881f413c295e2017e9c73dababe7483a477ecf1",
+    "world/materials.js": "d1daf5ce884bb86012f0a30d7a1c8b7e3c992712fdc43fd32d5e871ad06d4dd2",
+    "world/surface-textures.js": "248a20bc818a1170ae53f4fc0d4208b55807b697289407f6cc5413642e83b3fd",
+    "world/material-textures.js": "22aca3c852e8eacc16d13554d75e241583e25f8b7509ce20bf343c12b587692a",
+    "world/random.js": "55d641b5d0bfd23a6b762ebade1c46a5fd409e6c5d38c11b91be88cf94031099",
+    "vendor/three.module.js": "c8211c69345d2e9949dc7a8ac969380497aa0600a5a8ac6a459c8cd02dd9cb8a",
+    "vendor/three.core.js": "eb077d2417f61d3e6d9264c317cabc4ea35769ed6b0ab533067292a550784c20"
+  },
+  "views": [
+    {
+      "id": "yukon-park",
+      "name": "Yukon / Christmas in the Park surroundings",
+      "eye": [
+        -20773.44,
+        80,
+        -1649.9
+      ],
+      "target": [
+        -20953.44,
+        0,
+        -1829.9
+      ],
+      "fov": 55,
+      "anchorId": "yukon-christmas-lights",
+      "anchorAccuracy": "osm geometry center; entrance unverified",
+      "tiles": [
+        "-42_-5",
+        "-42_-4",
+        "-42_-3",
+        "-41_-5",
+        "-41_-4",
+        "-41_-3",
+        "-40_-5",
+        "-40_-4",
+        "-40_-3"
+      ],
+      "image": "yukon-park.webp",
+      "width": 1280,
+      "height": 720,
+      "depthOrderChangedPixels": 0,
+      "depthOrderMaxChannelDelta": 0
+    },
+    {
+      "id": "bethany-streets",
+      "name": "Bethany / NW 39th street and neighborhood",
+      "eye": [
+        -10018.26,
+        70,
+        -4752.76
+      ],
+      "target": [
+        -10128.26,
+        3,
+        -4912.76
+      ],
+      "fov": 55,
+      "anchorId": "birrieria-diaz-bethany",
+      "anchorAccuracy": "geo.position",
+      "tiles": [
+        "-21_-11",
+        "-21_-10",
+        "-21_-9",
+        "-20_-11",
+        "-20_-10",
+        "-20_-9",
+        "-19_-11",
+        "-19_-10",
+        "-19_-9"
+      ],
+      "image": "bethany-streets.webp",
+      "width": 1280,
+      "height": 720,
+      "depthOrderChangedPixels": 0,
+      "depthOrderMaxChannelDelta": 0
+    },
+    {
+      "id": "bethany-roof-detail",
+      "name": "Bethany / gable on a mapped footprint",
+      "eye": [
+        -10182.428500000002,
+        26.83199999999961,
+        -4783.6955
+      ],
+      "target": [
+        -10197.9325,
+        2.4,
+        -4801.647499999999
+      ],
+      "fov": 52,
+      "buildingId": "gis:okc/372576",
+      "roofSource": "Inferred residential pitched roof",
+      "footprintSource": "City of Oklahoma City / Esri Community Maps",
+      "tiles": [
+        "-21_-11",
+        "-21_-10",
+        "-21_-9",
+        "-20_-11",
+        "-20_-10",
+        "-20_-9",
+        "-19_-11",
+        "-19_-10",
+        "-19_-9"
+      ],
+      "image": "bethany-roof-detail.webp",
+      "width": 1280,
+      "height": 720,
+      "depthOrderChangedPixels": 0,
+      "depthOrderMaxChannelDelta": 0
+    },
+    {
+      "id": "west-reno",
+      "name": "West Reno / OKC Outlets footprint and access roads",
+      "eye": [
+        -11619.47,
+        110,
+        804.09
+      ],
+      "target": [
+        -11869.47,
+        0,
+        534.09
+      ],
+      "fov": 55,
+      "anchorId": "okc-outlets",
+      "anchorAccuracy": "osm geometry center; entrance unverified",
+      "tiles": [
+        "-25_0",
+        "-25_1",
+        "-25_2",
+        "-24_0",
+        "-24_1",
+        "-24_2",
+        "-23_0",
+        "-23_1",
+        "-23_2"
+      ],
+      "image": "west-reno.webp",
+      "width": 1280,
+      "height": 720,
+      "depthOrderChangedPixels": 0,
+      "depthOrderMaxChannelDelta": 0
+    },
+    {
+      "id": "lake-hefner",
+      "name": "Lake Hefner / Stars & Stripes shoreline",
+      "eye": [
+        -5597.68,
+        100,
+        -9097.73
+      ],
+      "target": [
+        -5777.68,
+        0,
+        -9347.73
+      ],
+      "fov": 55,
+      "anchorId": "stars-stripes",
+      "anchorAccuracy": "osm geometry center; entrance unverified",
+      "tiles": [
+        "-13_-19",
+        "-13_-18",
+        "-13_-17",
+        "-12_-19",
+        "-12_-18",
+        "-12_-17",
+        "-11_-19",
+        "-11_-18",
+        "-11_-17"
+      ],
+      "image": "lake-hefner.webp",
+      "width": 1280,
+      "height": 720,
+      "depthOrderChangedPixels": 0,
+      "depthOrderMaxChannelDelta": 0
+    }
+  ],
+  "depthOrderAudit": "Opaque production geometry drawn in original and reversed object order with 24-bit logarithmic depth. Pixel differences above 2/255 identify potential ties. This is a native diagnostic, not proof of behavior on every WebGL driver.",
+  "diagnosticHashes": {
+    "scripts/visual/prepare-metro-diagnostics.mjs": "536eb5579a636794f43337a34067b3f1d3f4b7b8ff51dddb1ee522ba453a5d82",
+    "scripts/visual/render-city-diagnostics.py": "7371c37064269fdbcc5db4f16669cdbfb394285a87cad2747f75395fbb296195",
+    "scripts/visual/gles_context.py": "385f2459144f6587946ee5b66489f9de726c43958a578cea3323d0d1159a9ff7"
+  },
+  "sourceTiles": [
+    {
+      "id": "-42_-5",
+      "bytes": 41931,
+      "sha256": "00ded4c5ba7d47341f5de8fc4189dd4e1a7482ffb0777b26ba1021a62fd3dec7",
+      "buildings": 4
+    },
+    {
+      "id": "-42_-4",
+      "bytes": 43440,
+      "sha256": "7fbd25a89c3f449584daaa43e9049a8b653c1f9270de4274d74025bf9324049c",
+      "buildings": 5
+    },
+    {
+      "id": "-42_-3",
+      "bytes": 42488,
+      "sha256": "42d7e5b0e5770a1e1ccd13c137e645ddbcc46acb81cff9ecfffc0a143dda2a8b",
+      "buildings": 33
+    },
+    {
+      "id": "-41_-5",
+      "bytes": 55715,
+      "sha256": "809b825ff648897123454c3c07702ed314ea8f8cb28761793e1109b71fa81ba4",
+      "buildings": 1
+    },
+    {
+      "id": "-41_-4",
+      "bytes": 56297,
+      "sha256": "413944d76bb62f416589a45454d7b42e5165bd74982544785d102ee16e081bc3",
+      "buildings": 51
+    },
+    {
+      "id": "-41_-3",
+      "bytes": 53356,
+      "sha256": "5db6896a365d8549713f316de25bfe408aa8be2f85446c73b7cfee50b7baca97",
+      "buildings": 13
+    },
+    {
+      "id": "-40_-5",
+      "bytes": 15270,
+      "sha256": "c2c7d58ebe41df0bfa95c50ac2e83ed4d2ab2bdade44e63df3e4b26f40e415f8",
+      "buildings": 2
+    },
+    {
+      "id": "-40_-4",
+      "bytes": 19638,
+      "sha256": "0f704ed26706f2f53e74f7a759d54eb51de7e5f9e97334b210c62f31668d4765",
+      "buildings": 11
+    },
+    {
+      "id": "-40_-3",
+      "bytes": 46825,
+      "sha256": "e34e7f20e65ae9870c8254c93280c0d3fa7609c06aec1c90545c01995f8eaf1f",
+      "buildings": 6
+    },
+    {
+      "id": "-21_-11",
+      "bytes": 155626,
+      "sha256": "04557c5477af1759173f0a27b864a7aba6e3c1e9d91144ae2a8323199be91554",
+      "buildings": 244
+    },
+    {
+      "id": "-21_-10",
+      "bytes": 103775,
+      "sha256": "91e6ee6e1f73979fb142c5c8af049fae1e6e9b0a78b6218244a84056ad6bddb4",
+      "buildings": 120
+    },
+    {
+      "id": "-21_-9",
+      "bytes": 134516,
+      "sha256": "fed8605a8cde37b63199062df988646e9a063998705fcd79b005e052fddcead9",
+      "buildings": 257
+    },
+    {
+      "id": "-20_-11",
+      "bytes": 147729,
+      "sha256": "5a9d376cfbf4b920c9048b531eb3c8e530d1ec4144f53dffad78acc2a7c79693",
+      "buildings": 268
+    },
+    {
+      "id": "-20_-10",
+      "bytes": 121780,
+      "sha256": "11042ce7a890bcd79160e3ddeccef7946b66d65cb13ec87d829f8ce7c6727fc2",
+      "buildings": 168
+    },
+    {
+      "id": "-20_-9",
+      "bytes": 156387,
+      "sha256": "36647f5fa6535cfa22fc6c544b5a8084dd4767878b7334c53a9459a1269d5baa",
+      "buildings": 306
+    },
+    {
+      "id": "-19_-11",
+      "bytes": 147673,
+      "sha256": "ae36019e8910757949f5ef12081e015a227637da6943d2970c181ab28ff13ff5",
+      "buildings": 297
+    },
+    {
+      "id": "-19_-10",
+      "bytes": 106946,
+      "sha256": "c37d8c9abd4c71db9baba6f608505b1f45da287286b20e7a848e0c795a711baa",
+      "buildings": 134
+    },
+    {
+      "id": "-19_-9",
+      "bytes": 133330,
+      "sha256": "0baa33a4d9749c4e9eeffe3112aeca8e58b922da59a5a8daaf826b6300e1b766",
+      "buildings": 252
+    },
+    {
+      "id": "-25_0",
+      "bytes": 86342,
+      "sha256": "ff0665fd5152fe4dd6b5b1286d58de73fc8c7090df6451d3adb80c9588119f9b",
+      "buildings": 40
+    },
+    {
+      "id": "-25_1",
+      "bytes": 49235,
+      "sha256": "7addfab5e4123aecc490b63a150131b58665fedff75565527ccc12c4b3f7845c",
+      "buildings": 21
+    },
+    {
+      "id": "-25_2",
+      "bytes": 53725,
+      "sha256": "1a81087b9ae3a244b2bf994b668ac7a7f71e5384f368e84c8a7a8f466d5ae8ab",
+      "buildings": 72
+    },
+    {
+      "id": "-24_0",
+      "bytes": 68439,
+      "sha256": "c0b9d570e04c999b62f373c42239aa9a4acbc3739933e8eb42dd99552a807940",
+      "buildings": 10
+    },
+    {
+      "id": "-24_1",
+      "bytes": 25504,
+      "sha256": "693b7da51e1d6acf40e3dfea43a8e5ccdfd275cce19cf5fe24c2a2f258ef7599",
+      "buildings": 6
+    },
+    {
+      "id": "-24_2",
+      "bytes": 10087,
+      "sha256": "1f5fcc8e78ef7ae7617cefed9bcfc47988f41468006904e09153f908820f40bb",
+      "buildings": 0
+    },
+    {
+      "id": "-23_0",
+      "bytes": 48501,
+      "sha256": "64afb9e8de9d3511c9a918b5ce1bb1ae4379d58e727a6e9a82ece9c4910860d8",
+      "buildings": 10
+    },
+    {
+      "id": "-23_1",
+      "bytes": 27071,
+      "sha256": "a018f9157e2cf9fde200de7955cc14ec97825d9a0302982d4550e9c1e392f2da",
+      "buildings": 3
+    },
+    {
+      "id": "-23_2",
+      "bytes": 6275,
+      "sha256": "3631c4abc00dc179434fbd19912d534856e3f43c7af66312cb2603ff6daac77e",
+      "buildings": 0
+    },
+    {
+      "id": "-13_-19",
+      "bytes": 12233,
+      "sha256": "507e8b8208a589d1197fcf4a57a5620822ee019686c3623ae4fae85e33ef07bd",
+      "buildings": 3
+    },
+    {
+      "id": "-13_-18",
+      "bytes": 25909,
+      "sha256": "7605f4d55fa69e10cb182d0ba0352db80c17d3750da790252d5e8dfa709f3f0a",
+      "buildings": 2
+    },
+    {
+      "id": "-13_-17",
+      "bytes": 118280,
+      "sha256": "5cff72594b5358760e10812515d244bca18fa96d8870ddae0c4eb96a5ff32449",
+      "buildings": 202
+    },
+    {
+      "id": "-12_-19",
+      "bytes": 43654,
+      "sha256": "2e2caeb5115adc7922f618004592533912b71343638cc93d13086d8f95fb6a62",
+      "buildings": 2
+    },
+    {
+      "id": "-12_-18",
+      "bytes": 41675,
+      "sha256": "6eb64dd9c41f191904211a5d49eafaa36da082efc41e80d121d0433443c20258",
+      "buildings": 13
+    },
+    {
+      "id": "-12_-17",
+      "bytes": 134665,
+      "sha256": "9a06e3159d2cf45988db124e34a45e3b18b8618ab85fc51bfd4a9412ce0a215b",
+      "buildings": 238
+    },
+    {
+      "id": "-11_-19",
+      "bytes": 28183,
+      "sha256": "6ea5bc1d4eb86b67f8f6781222fcede4678c5cce24a27cfa2336cde8c43d86a1",
+      "buildings": 20
+    },
+    {
+      "id": "-11_-18",
+      "bytes": 36468,
+      "sha256": "58b13364b9e2fcdb72514f21358480f32b86b63c951c1435f5182d6a286317fd",
+      "buildings": 13
+    },
+    {
+      "id": "-11_-17",
+      "bytes": 99728,
+      "sha256": "4c49d3508c13c8564306a090554a7bf0d551d9b936df6285261a14ac16e35a52",
+      "buildings": 133
+    }
+  ],
+  "textureHashes": [
+    {
+      "file": "texture-0.png",
+      "bytes": 65314,
+      "sha256": "8120a5a9949716fa76622af1fa3de646160bb6970b886a1beb9ec66133b30e8b"
+    },
+    {
+      "file": "texture-1.png",
+      "bytes": 64516,
+      "sha256": "7d0fcfc990dd689e95be29bac7d35e4c2e3ed6b5dea8a54f4d03c3e875430234"
+    },
+    {
+      "file": "texture-2.png",
+      "bytes": 64954,
+      "sha256": "c680df7f1f2aa1bc95419bc3b055a226fb6337071e46bf64178e02fdde280c8d"
+    },
+    {
+      "file": "texture-4.png",
+      "bytes": 64570,
+      "sha256": "37052dca8b22d907dc547d160a75c3dfc4c33753af27cd4e5d2868c597ce8f89"
+    },
+    {
+      "file": "texture-5.png",
+      "bytes": 64666,
+      "sha256": "90b3134eccb0376b6fcf9e0e5aed97d4b09b326b823ddcc5bf0fd883ab3d7c63"
+    },
+    {
+      "file": "texture-6.png",
+      "bytes": 64525,
+      "sha256": "4a3df374dbe30a2e9007acbd55bc9c3c2a74968e83eaef2ec73e2500f0dbc449"
+    },
+    {
+      "file": "texture-7.png",
+      "bytes": 75600,
+      "sha256": "6cc4406c05b0b2a8710fecf45255b1316ac59cbe6e3c7479e7f171b03cc7e6b3"
+    },
+    {
+      "file": "texture-10.png",
+      "bytes": 64600,
+      "sha256": "a54b5e0d6c06186bdf1d073486c97838817fb9d736d7b3b9f4dfac767ee4a466"
+    },
+    {
+      "file": "texture-11.png",
+      "bytes": 65074,
+      "sha256": "5edee1352365251873ba453b7f3b23f53d8433a412bcd099ca336183ebeaa94f"
+    },
+    {
+      "file": "texture-14.png",
+      "bytes": 73383,
+      "sha256": "50556ad63470d9b1f480f2c29c730dd646349ce5bc9d86abca5cf4bc1e571515"
+    },
+    {
+      "file": "texture-16.png",
+      "bytes": 75655,
+      "sha256": "d513da17ef2ccba5b406273c30b76fd48647b14e65d893e72d3d8485ed924252"
+    },
+    {
+      "file": "texture-18.png",
+      "bytes": 75535,
+      "sha256": "26443752933ba397d39a2db2b6b601904771d5de22f57df1985d68ec4efb6be3"
+    }
+  ],
+  "atlasValidation": {
+    "passed": true,
+    "checks": [
+      "finite source geometry",
+      "tile inventory",
+      "raw and compressed payload identity",
+      "source provenance",
+      "graph source identity",
+      "one-way graph contracts",
+      "map boundary graph clipping",
+      "valid polygon footprints",
+      "road / sidewalk footprint partition",
+      "original downtown geometry ownership",
+      "unique building identities",
+      "POI source and ID coverage",
+      "cross-city graph reachability"
+    ],
+    "counts": {
+      "directedSegments": 455602,
+      "tileBytes": 197918437,
+      "tileGzipBytes": 40896774,
+      "buildings": 272713,
+      "roads": 107092,
+      "surfaces": 16951,
+      "details": 26308,
+      "meshes": 67033,
+      "reachableFromFirstAnchor": 214591
+    },
+    "maxTileBytes": 303286,
+    "roadSidewalkOverlapSquareMeters": 0.0,
+    "newRoadCoreOverlapSquareMeters": 0.0,
+    "routeChecks": [
+      {
+        "from": "Yukon Christmas in the Park",
+        "to": "Cactus Jack\u2019s Family Fun Center",
+        "reachable": true
+      },
+      {
+        "from": "Yukon Christmas in the Park",
+        "to": "Brickopolis",
+        "reachable": true
+      },
+      {
+        "from": "Yukon Christmas in the Park",
+        "to": "AMF Windsor Lanes",
+        "reachable": true
+      },
+      {
+        "from": "Yukon Christmas in the Park",
+        "to": "Subway \u2014 8022 NW 39th Expressway",
+        "reachable": true
+      }
+    ],
+    "failures": [],
+    "limits": [
+      "CPU / geographic contract check only. Browser screenshots and actual runtime behavior require separate verification.",
+      "Source map accuracy, current business operation and facade resemblance are not established by this check."
+    ]
+  },
+  "atlasSummary": {
+    "counts": {
+      "buildings": 272713,
+      "roads": 82114,
+      "routableRoads": 57907,
+      "networkNodes": 218875,
+      "surfaces": 11592,
+      "pois": 7799,
+      "curatedPois": 91,
+      "unlocatedCuratedPois": 0,
+      "mergedPoiDuplicates": 35,
+      "tiles": 3004,
+      "heights": {
+        "Estimated context height": 65853,
+        "Estimated commercial height": 1634,
+        "OSM levels \u00d7 estimated 3.2 m floor pitch": 2160,
+        "Estimated multi-storey height": 1889,
+        "OSM height": 50,
+        "Estimated low-rise height": 201127
+      },
+      "poiCategories": {
+        "education": 261,
+        "services": 390,
+        "park": 550,
+        "other": 1040,
+        "landmark": 47,
+        "museum": 27,
+        "fast_food": 280,
+        "arcade": 11,
+        "cafe": 73,
+        "restaurant": 303,
+        "health": 163,
+        "entertainment": 72,
+        "parking": 2642,
+        "fuel": 184,
+        "transit": 114,
+        "shopping": 998,
+        "bar": 60,
+        "dessert": 22,
+        "grocery": 168,
+        "asian": 64,
+        "hotel": 161,
+        "mexican": 41,
+        "market": 10,
+        "outlet": 12,
+        "subway": 33,
+        "discount": 32,
+        "thrift": 23,
+        "aquarium": 2,
+        "bowling": 4,
+        "breakfast": 2,
+        "seasonal": 4,
+        "garden": 2,
+        "buffet": 1,
+        "nature": 2,
+        "scenic": 1
+      }
+    },
+    "totalTileBytes": 197918437,
+    "totalTileGzipBytes": 40896774,
+    "tileCompressionSavedPercent": 79.34
+  },
+  "artifactHashes": {
+    "yukon-park.webp": {
+      "bytes": 67906,
+      "sha256": "becee95e62b32004128458ab7d38cca137d52f1c06d712f29867d8ed8bbf5c24"
+    },
+    "bethany-streets.webp": {
+      "bytes": 131890,
+      "sha256": "60c6d0d36c4188649861bb430e72f604848f81056558f8b79f477634af14f74d"
+    },
+    "bethany-roof-detail.webp": {
+      "bytes": 49216,
+      "sha256": "fa6c2a1d4c8c4292e8c95ce365864d0f29be5c9ee8fb6d60f20730332d2e4ce7"
+    },
+    "west-reno.webp": {
+      "bytes": 107870,
+      "sha256": "18c2353cec29e5627dd4b852b49cf1328430974fd61df6efb39293a54e0eac46"
+    },
+    "lake-hefner.webp": {
+      "bytes": 46036,
+      "sha256": "f596591f4492abdac0b02304f208ac3e0ffc2bfef3f96bac8d6c8dd423726490"
+    }
+  }
+}

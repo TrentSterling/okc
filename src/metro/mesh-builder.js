@@ -4,6 +4,9 @@ import {ShapeUtils,Vector2} from '../vendor/three.module.js';
 import {interpretRoof} from './roof-shapes.js';
 const cross=(a,b,c)=>(b[0]-a[0])*(c[1]-a[1])-(b[1]-a[1])*(c[0]-a[0]);
 const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
+// Render precedence for nested mapped regions, not surveyed terrain elevations.
+// A park may contain woodland and parking; all remain below the .14 m road deck.
+const surfaceHeight={water:-.02,grass:.008,forest:.04,parking:.08};
 const hash=s=>{let h=2166136261;for(const c of String(s)){h^=c.charCodeAt(0);h=Math.imul(h,16777619);}return h>>>0;};
 const clean=p=>{const a=p.filter((q,i)=>!i||Math.hypot(q[0]-p[i-1][0],q[1]-p[i-1][1])>.02);if(a.length>2&&Math.hypot(a[0][0]-a.at(-1)[0],a[0][1]-a.at(-1)[1])<.02)a.pop();return a;};
 export function compileTile(tile,{detail=true,overrides={},core={minX:-1600,maxX:1600,minZ:-1140,maxZ:1120}}={}){
@@ -15,7 +18,7 @@ export function compileTile(tile,{detail=true,overrides={},core={minX:-1600,maxX
  function box(k,x,y,z,w,h,d,rot=0){const cs=Math.cos(rot),sn=Math.sin(rot);const v=(a,b,c)=>[x+a*cs-c*sn,y+b,z+a*sn+c*cs];const a=v(-w/2,0,-d/2),b=v(w/2,0,-d/2),c=v(w/2,0,d/2),e=v(-w/2,0,d/2),A=v(-w/2,h,-d/2),B=v(w/2,h,-d/2),C=v(w/2,h,d/2),E=v(-w/2,h,d/2);quad(k,a,A,B,b);quad(k,b,B,C,c);quad(k,c,C,E,e);quad(k,e,E,A,a);quad(k,A,E,C,B);}
  const inCore=p=>p[0]>=core.minX&&p[0]<=core.maxX&&p[1]>=core.minZ&&p[1]<=core.maxZ;
  for(const s of tile.meshes||[]){const kind=s.kind==='sidewalk'?'concrete':s.kind==='road'?'asphalt':s.kind;flat(kind,s.p,s.y??.02,s.holes||[]);}
- for(const s of tile.surfaces||[]){if(s.skipCore)continue;const kind=/water|river|lake/.test(s.kind)?'water':/parking/.test(s.kind)?'parking':/wood|forest/.test(s.kind)?'forest':'grass';layer=kind==='water'?'water':kind==='parking'?'roads':'parks';flat(kind,s.p,kind==='water'?-.02:.008,s.holes||[]);}
+ for(const s of tile.surfaces||[]){if(s.skipCore)continue;const kind=/water|river|lake/.test(s.kind)?'water':/parking/.test(s.kind)?'parking':/wood|forest/.test(s.kind)?'forest':'grass';layer=kind==='water'?'water':kind==='parking'?'roads':'parks';flat(kind,s.p,surfaceHeight[kind],s.holes||[]);}
  layer='roads';
  // If a dataset has no precompiled road union, render its centerline ribbons.
  if(!tile.meshes?.some(m=>m.kind==='road'))for(const r of tile.roads||[]){const p=r.p||[],w=r.w||7,y=.14+Math.max(r.bridge?1:0,r.layer||0)*5;for(let i=1;i<p.length;i++){const a=p[i-1],b=p[i];if(inCore(a)&&inCore(b))continue;const dx=b[0]-a[0],dz=b[1]-a[1],l=Math.hypot(dx,dz);if(l<.01)continue;const nx=-dz/l*w/2,nz=dx/l*w/2;flat('asphalt',[[a[0]+nx,a[1]+nz],[b[0]+nx,b[1]+nz],[b[0]-nx,b[1]-nz],[a[0]-nx,a[1]-nz]],y);}}

@@ -22,7 +22,12 @@ export function matchPlace(name,places,address=''){
  if(address){const a=normalizeAddress(address),match=candidates.find(p=>{const b=normalizeAddress(p.address||'');return b.length>=5&&(a===b||b.startsWith(a)||a.startsWith(b));});if(match)return match;if(candidates.length>1||candidates.some(p=>p.address))return null;}
  return candidates.find(p=>p.curated)||candidates[0]||null;
 }
-export function defaultPlan(places=[]){return {version:1,name:'OKC Christmas Date',budget:200,reserve:13,date:'2026-12-12',planningNote:CHRISTMAS_PLANNING_NOTE,stops:DEFAULT_DATE.map(([name,cost,time,note,address=''],i)=>{const place=matchPlace(name,places,address);return{id:`stop-default-${i}`,placeId:place?.id||null,name:place?.name||name,address:place?.address||address,cost,time,note,priceKind:'allowance'};})};}
+const DEFAULT_CURATED_IDS={0:'hatch-automobile-alley',4:'bricktown-brewery'};
+function defaultPlace(index,places){const [name,,,,address='']=DEFAULT_DATE[index];return places.find(p=>p.curated&&p.id===DEFAULT_CURATED_IDS[index])||matchPlace(name,places,address);}
+function isUneditedDefault(payload){
+ return payload.name==='OKC Christmas Date'&&Number(payload.budget)===200&&Number(payload.reserve??(payload.total===200?13:NaN))===13&&(!payload.date||payload.date==='2026-12-12')&&(!payload.planningNote||payload.planningNote===CHRISTMAS_PLANNING_NOTE)&&payload.stops.length===DEFAULT_DATE.length&&payload.stops.every((s,i)=>{const [name,cost,time,note]=DEFAULT_DATE[i];return s?.id===`stop-default-${i}`&&s.name===name&&Number(s.cost)===cost&&s.time===time&&s.note===note;});
+}
+export function defaultPlan(places=[]){return {version:1,name:'OKC Christmas Date',budget:200,reserve:13,date:'2026-12-12',planningNote:CHRISTMAS_PLANNING_NOTE,stops:DEFAULT_DATE.map(([name,cost,time,note,address=''],i)=>{const place=defaultPlace(i,places);return{id:`stop-default-${i}`,placeId:place?.id||null,name:place?.name||name,address:place?.address||address,cost,time,note,priceKind:'allowance'};})};}
 export function allowanceFor(p){
  if(Number.isFinite(Number(p.cost))&&p.cost!=null)return finite(p.cost);
  const price=p.price;if(price&&typeof price==='object'&&price.amount!=null&&Number.isFinite(Number(price.amount))&&(/two|shared|vehicle|per car|couple/i.test(price.basis||'')||Number(price.amount)===0))return finite(price.amount);
@@ -40,14 +45,19 @@ export function allowanceFor(p){
 export function addPlace(plan,p){if(plan.stops.some(s=>s.placeId===p.id))return false;plan.stops.push({id:`stop-${p.id}-${Date.now().toString(36)}`,placeId:p.id,name:p.name,address:p.address||'',cost:allowanceFor(p),time:'',note:'Planning allowance for two',priceKind:'allowance'});return true;}
 export function importPlan(payload,places=[]){
  if(!payload||typeof payload!=='object'||!Array.isArray(payload.stops)||payload.stops.length>100)throw Error('Choose an itinerary JSON file with up to 100 stops.');
- const used=new Set(),byId=new Map(places.map(p=>[p.id,p]));
+ const used=new Set(),byId=new Map(places.map(p=>[p.id,p])),repairDefault=isUneditedDefault(payload);
  const stops=payload.stops.map((raw,i)=>{
   if(!raw||typeof raw.name!=='string'||!raw.name.trim())throw Error(`Stop ${i+1} needs a name.`);
   if(raw.cost!=null&&(!Number.isFinite(Number(raw.cost))||Number(raw.cost)<0))throw Error(`Stop ${i+1} has an invalid cost.`);
-  const place=byId.get(String(raw.placeId))||matchPlace(raw.name,places,raw.address||'');
+  // Repair only the untouched canonical preset; an edited/imported adventure
+  // keeps its selected branch even if another location has the same name.
+  const previous=byId.get(String(raw.placeId)),originalAddress=String(raw.address||'');
+  const repairAddress=!originalAddress||originalAddress===previous?.address||originalAddress===DEFAULT_DATE[i]?.[4];
+  const canonical=repairDefault&&repairAddress&&DEFAULT_CURATED_IDS[i]?defaultPlace(i,places):null;
+  const place=canonical||previous||matchPlace(raw.name,places,raw.address||'');
   let id=String(raw.id||`imported-${i}`).slice(0,160);while(used.has(id))id=`${id}-${i}`;used.add(id);
   let time=String(raw.time||'');const match=time.match(/^(\d{1,2}):(\d{2})\s*(AM|PM)$/i);if(match){let h=Number(match[1])%12+(match[3].toUpperCase()==='PM'?12:0);time=`${String(h).padStart(2,'0')}:${match[2]}`;}
-  return {id,placeId:place?.id||null,name:raw.name.trim().slice(0,160),address:String(raw.address||place?.address||'').slice(0,300),cost:finite(raw.cost),time:/^([01]\d|2[0-3]):[0-5]\d$/.test(time)?time:'',note:String(raw.note||'').slice(0,500),priceKind:'allowance'};
+  return {id,placeId:place?.id||null,name:raw.name.trim().slice(0,160),address:String(canonical?.address||raw.address||place?.address||'').slice(0,300),cost:finite(raw.cost),time:/^([01]\d|2[0-3]):[0-5]\d$/.test(time)?time:'',note:String(raw.note||'').slice(0,500),priceKind:'allowance'};
  });
  const budget=finite(payload.budget,200);
  // Original exported itinerary listed $200 but its stops total $187. Preserve that $13 as reserve.

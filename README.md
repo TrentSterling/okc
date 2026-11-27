@@ -1,16 +1,32 @@
 # Prairie Prism
 
-An Oklahoma City sunset drive for Trent. Geographically grounded reconstruction, v0.4.0.
+An Oklahoma City atlas, date planner and drivable city for Trent. Geographically grounded reconstruction and exploration prototype, **v0.7.0**.
 
 **Live site:** https://tront.xyz/okc/
 
 **Gallery:** https://tront.xyz/okc/gallery/ · **Repository:** https://github.com/TrentSterling/okc
 
-Static Three.js application. No sign-in or service credentials are required to run it.
+Static Three.js application with a canvas map fallback. No sign-in or service credentials are required to run it. The 3D scene needs WebGL2; places, the map, the planner and local discoveries remain available without it.
+
+## v0.7: Discover OKC
+
+The original downtown drive and Devon reflection study now sit inside a wider, tiled city atlas spanning Yukon, Bethany, west OKC, downtown, South OKC and Quail Springs. Geographic inputs are saved snapshots, not a live business or navigation service. The generated [`geo/metro/manifest.json`](https://tront.xyz/okc/geo/metro/manifest.json) records the current coverage, source dates and build counts; [`release.json`](https://tront.xyz/okc/release.json) identifies the source revision and deployed file inventory.
+
+The successful v0.7 build contains **272,713 building footprints, 82,114 source road records, 11,592 surfaces and 7,799 places**, including **91 curated places**, across **3,004 metro tiles**. The driving graph contains 57,907 routable ways and 218,875 nodes. These are compiled snapshot counts, not a claim that every building or business in the region has been mapped or independently verified.
+
+- **Find a place.** Search names, addresses, categories and chains; filter mapped restaurants, Subway, sit-down Mexican food, arcades, bowling, bargain shops, aquariums, parks and seasonal outings. Curated venue details include source links and retrieval dates. Imported map records remain distinguishable from reviewed venue information.
+- **Build a $200 day for two.** Reorder stops, set times, edit spending allowances and reserves, and export or import an itinerary. The supplied Christmas plan has $187 of stops plus a $13 reserve. Prices and allowances are labeled separately; taxes, tips and unlisted extras need to fit the editable budget. Schedule warnings identify conflicts with the saved 2026 event dates.
+- **Explore the same geography.** Switch between the atlas and 3D, inspect linked buildings, follow connected-road routes or start a guided itinerary leg. Pause and resume a tour; changing the itinerary invalidates its old route. The map distinguishes its straight-line itinerary preview from a computed road route.
+- **Keep your discoveries.** Favorites, visit status, notes, photo links and building corrections are stored in this browser. JSON backups carry them to another device. No account or cloud synchronization is implied.
+- **Try a city challenge.** Pizza delivery, taxi pickup, finding a named place and photo expeditions are simple exploration prototypes. They select real mapped destinations; they are not complete jobs, a traffic simulation or a GTA-style campaign.
+
+Loading is split by responsibility. Atlas assets can load alongside 3D startup; the routing graph loads only when needed. A bounded worker pool fetches, decompresses and compiles nearby 512 m metro tiles, while the scene keeps a limited neighborhood around the car or inspected building. The map caches its static background, clusters overview markers and requests close-up footprints only while visible. Gzip assets have a plain-file fallback, and unavailable workers have a main-thread fallback. These are implemented resource limits, not a measured FPS claim.
+
+The interrupted November 27 workspace was recovered and checkpointed at `11885be` before integration continued. Earlier source and gallery assets were preserved. See [Discover OKC release notes](docs/discovery-v07.md) for module boundaries, data accuracy, recovery and current verification limits.
 
 ## Source and build workflow
 
-Editable JavaScript is in `src/`, with focused modules for app controls/cameras/setup, city construction, traffic, and landmark geometry. Original static assets and references are in `public/`. The generated `dist/` directory is ignored by Git and rebuilt from the preserved map inputs.
+Editable JavaScript is in `src/`, with focused modules for loading, discovery, the explorer, metro streaming, app controls/cameras/setup, city construction, traffic and landmark geometry. Original static assets and references are in `public/`. The generated `dist/` directory is ignored by Git and rebuilt from the preserved map inputs.
 
 Install the pinned Python compiler with `python -m pip install -r requirements-build.txt`, then run `npm run build` and `npm run check` using Node 22 or newer. Set `OKC_PYTHON` to select your Python interpreter. A failed build preserves the previous `dist/` output. No live map service or npm package download is required for the build.
 
@@ -18,7 +34,7 @@ GitHub Actions validates work branches under `refactor/` and pull requests. Upda
 
 See [Architecture and release process](docs/architecture.md) for module ownership, local development, validation, and recovery. Read [AGENTS.md](AGENTS.md) before automated edits.
 
-## v0.4: a lived-in city and more physical driving
+## Earlier release: v0.4 — a lived-in city and more physical driving
 
 The city uses warmer masonry, cooler glazing, restrained asphalt repairs, jointed paving, and distinct facade families. Planting has varied canopy silhouettes; a bounded set of parked cars and street furniture gives the main driving area more activity. Added lane markings follow mapped lane counts and one-way flags outside Reno. Props stay within valid surfaces and have separate collision footprints; the original mapped building and ground geometry remains unchanged.
 
@@ -26,11 +42,11 @@ Free driving now keeps world velocity independent of body heading, with front/re
 
 Independent named random streams make later visual changes predictable. See [City art direction](docs/city-art-direction.md). The pre-art release is retained at `backup/pre-city-art-20261124-0408b4b`.
 
-## v0.3: a larger city you can drive
+## Earlier release: v0.3 — a larger city you can drive
 
 Choose **Drive yourself** to steer freely, or keep the original **Scenic cruise**. The car has acceleration, braking, reverse, a handbrake, building collision and recovery to a nearby road. The chase camera follows the car heading and shortens before solid walls. Touch steering and pedals are available on small/touch screens.
 
-The static map covers **3.20 × 2.26 km (7.232 km²)**, about **28% more area** than the previous release. It contains 1,301 source building outlines/parts, 1,710 street segments, 517 land/parking/water polygons and 719 mapped trees. The original 2.55 km Reno cruise and saved camera links remain available.
+That release's downtown map covered **3.20 × 2.26 km (7.232 km²)**, about **28% more area** than the preceding release. It contained 1,301 source building outlines/parts, 1,710 street segments, 517 land/parking/water polygons and 719 mapped trees. These are historical downtown counts, not the v0.7 metro totals. The original 2.55 km Reno cruise and saved camera links remain available.
 
 ### Surface and building repair
 
@@ -63,7 +79,7 @@ This pass fixes coplanar geometry before the first GitHub Pages release:
 
 The surface compiler runs offline; the shipped app needs no GIS library or map-service request. After changing map inputs, rebuild with `npm run build:map` (Python requires Shapely 2.1.2). The generated surface audit is in `dist/geo/surface-audit.json`.
 
-## What changed in v0.2
+## Earlier release: v0.2
 
 The city is rebuilt around a saved geographic dataset rather than randomly placed city blocks. The local origin is the mapped Devon tower footprint at longitude **-97.5175898538**, latitude **35.4668874508**; +X is east and +Z is south, in meters. Reno is now a roughly 2.55 km at-grade corridor following mapped centerline geometry. The drivable approximation uses two through lanes each way.
 
@@ -74,6 +90,14 @@ Directional shadows are enabled. The facade combines the infinite HDR sky with a
 This is a **mapped visual reconstruction in progress**. It does not claim surveyed terrain, construction-model accuracy, a solved photographic camera, measured glazing, live weather, or a live data connection.
 
 ## Try this first
+
+1. Open **Explore OKC**, switch to **Map**, and search for a restaurant, park or familiar street. Pan and zoom to see the relationship between neighborhoods.
+2. Select a place to inspect its address, source details and map position, then add it to **Our date**.
+3. Adjust the itinerary's times, costs and reserve. Check any date warnings before using the plan for a real outing.
+4. On a WebGL2 device, use **Explore in 3D** or start an itinerary tour. Pause to look around, then resume the same leg.
+5. Open **Layers** to change place categories, season, simulated weather and rendering quality. Use **Back up discoveries** to preserve your local journal and corrections.
+
+For the original Devon reflection study:
 
 1. Start with **Daylight** to inspect the rebuilt geometry, then select **Afterglow** with the crown screen switched off.
 2. Choose **Drive yourself** and use W/S and A/D, or press **Start cruise** for the guided route.
@@ -91,7 +115,7 @@ This is a **mapped visual reconstruction in progress**. It does not claim survey
 
 Open **Gallery** in the scene header or visit `https://tront.xyz/okc/gallery/`. The preserved v0.2 reconstruction pass contains ten interface-free 1600 × 900 PNGs: four matching street-height Reno lighting states, a south-side daylight tower study, a campus overview, the western skyline, a crown detail, an eastbound driver view, and the opening chase view. The gallery also retains all 19 earlier captures.
 
-Filter by reconstruction pass or earlier work, enlarge a capture, browse with the arrow keys, or compare any two images side by side. **Open this view** restores a current capture's camera and lighting. Earlier prototype captures retain their original pixels and are no longer presented as replays of the changed world. Current and earlier capture packs have separate ZIP downloads so both remain manageable.
+All **29 preserved captures are historical**, not a new v0.7 visual validation set. Filter by reconstruction pass or earlier work, enlarge a capture, browse with the arrow keys, or compare any two images side by side. **Open this view**, where available, restores the saved camera and lighting in the current scene; changed geometry can make the result differ from the original photograph. Earlier prototype captures retain their original pixels and are not presented as replays of the changed world. The two historical capture packs have separate ZIP downloads.
 
 ### Capture provenance and reproduction
 
@@ -120,7 +144,7 @@ The PNGs are rendered by the actual Three.js application. Loading the public sce
 | M | Toggle synthesized road ambience |
 | Escape | Close panels and restore controls |
 
-Driving and time of day are independent. Reversing direction does not move the sun. Scenic cruise is a bounded stretch; free driving explores the larger map and stops at its boundary.
+Driving and time of day are independent. Reversing direction does not move the sun. Scenic cruise is a bounded stretch; free driving explores the larger map and stops at its coverage boundary. In the focused map canvas, arrows pan, +/− zoom and Home fits the map; dragging, the wheel and visible zoom buttons also work. Explorer text fields and planner inputs do not trigger driving controls.
 
 ## What is implemented
 
@@ -133,10 +157,13 @@ Driving and time of day are independent. Reversing direction does not move the s
 - Daylight, golden hour, afterglow, blue hour, and night presets; continuous time scrubbing.
 - Approximate Legends Tower massing as an optional, clearly labeled proposed skyline.
 - Adjustable render resolution, roughness, exposure, traffic motion, sound, neutral lighting, canvas photos, and setup import/export.
+- A searchable atlas, browser-local date planner and journal, building inspection/corrections, connected-road routing and guided tour controls.
+- Nearby metro tile streaming with bounded worker compilation, level-of-detail choices, tile eviction and collision cleanup.
+- Seasonal decoration and weather presets, plus simple destination-based exploration challenges.
 
 ## Rendering model
 
-The sky is authored as directional **linear HDR radiance**. It is captured into a Three.js PMREM texture, which provides roughness-dependent filtered image-based lighting. The visible background uses the same cached environment, so the source sky and facade reflections agree. The expensive procedural cloud calculation runs when the sky changes, rather than across the screen every frame.
+The sky is authored as directional **linear HDR radiance**. Its shared radiance model supplies the visible sky and the cached Three.js PMREM environment used for roughness-dependent image-based lighting. A height-dependent horizon correction lets the camera and facade sample the appropriate sky above a spherical Earth. The expensive environment capture is refreshed when the sky changes.
 
 Facade reflections come from the surface normal and the direction to the camera. Different positions, heights, and faces sample different parts of the sky. The warm/cool pattern is not painted in facade UVs. The western cloud shelf is part of that same environment, so its reflected position responds to movement.
 
@@ -144,7 +171,9 @@ The facade uses a metallic-coating approximation rather than pretending uncoated
 
 The crown display is separate emissive geometry. Turning it off removes the screen and spine strips. Neutral mode removes the colored environment, direct sun, facade room emission, and screen emission.
 
-Color flow is linear HDR capture, PBR lighting, ACES tone mapping, then sRGB display output. The sun disc is displayed separately; the small solar disc is excluded from the PMREM capture to avoid an unstable undersampled reflection.
+Color flow is linear HDR capture, PBR lighting, ACES tone mapping, then sRGB display output. The visible solar disc belongs to the shared sky shader and is clipped by its height-aware horizon. Its small bright disc is excluded from the PMREM capture to avoid an unstable undersampled reflection; direct sunlight supplies its shadowed specular contribution.
+
+Earth-curvature horizon dip, partial solar-disc visibility and an explicit approximate atmospheric-refraction correction are implemented in `src/atmosphere/`. Higher surfaces can retain sunlight after lower ones. The slider still follows an authored solar-altitude sequence: it is not a location/date ephemeris, a measured atmosphere or a prediction of real sunset time.
 
 ### Local city reflections
 
@@ -159,29 +188,32 @@ One box approximates city depth, so this is not ray tracing and cannot reproduce
 - Principal skyline heights: mapped tags and the Council on Tall Buildings and Urban Habitat city listing. Untagged context heights are estimates.
 - Devon architecture and crown: supplied photographs, Pickard Chilton, Thornton Tomasetti, and the crown lighting manufacturer's project description.
 
-See `dist/geo/provenance.json` for URLs, bounds, dates, coordinate system, and limitations. Compressed map snapshots are checked in under `scripts/data/`; `scripts/build-city-data.py` regenerates `dist/city-data.js`. There is no runtime map service dependency. The map attribution is visible in the scene.
+See `dist/geo/provenance.json` for the downtown source register, and `dist/geo/metro/manifest.json` for the wider metro coverage, counts and provenance. Compressed map snapshots are checked in under `scripts/data/`; the build regenerates the downtown buffers and metro tiles offline. There is no runtime map service dependency. The map attribution is visible in the scene.
+
+Metro footprints combine the preserved municipal and OpenStreetMap inputs. Buildings retain source identifiers; height, roof and facade inference remain explicit approximations. A procedural gable inferred for an unmeasured residential footprint is not evidence of its actual roof. Curated businesses carry source URLs and retrieval dates, while imported businesses have not all been reviewed with their operators. Some positions are interpolated along a street or placed at a shopping center, not a confirmed storefront or entrance. Opening hours, prices, event dates and road access can change after the saved snapshot.
 
 ## Project structure
 
-| File | Responsibility |
+| Source or generated output | Responsibility |
 |---|---|
-| `dist/app.js` | Scene assembly, state, camera, input, frame loop, import/export, audio |
-| `dist/sky.js` | HDR sky, cached PMREM environment, lighting, facade material |
-| `dist/tower.js` | Devon geometry, independent display, conceptual Legends Tower |
-| `dist/world.js` | Mapped streets, city footprints, landmarks, park, vehicles, traffic instancing |
-| `dist/city-data.js` | Compiled geographic snapshot with height provenance |
-| `dist/world-surfaces.js` | Generated, non-overlapping ground surface polygons |
-| `scripts/build-world-surfaces.py` | Rebuilds surface ownership from the map snapshot |
-| `dist/geo/provenance.json` | Geographic sources, attribution, coordinate origin, and limitations |
-| `dist/index.html` | Accessible controls and panels |
-| `dist/style.css` | Responsive interface and presentation |
-| `dist/capture-presets.js` | Repeatable camera and lighting presets for the gallery |
-| `dist/gallery/` | Static capture gallery, original PNGs, thumbnails, and bulk download |
-| `dist/vendor/` | Vendored Three.js 0.180.0 ES modules and MIT license |
-| `.github/workflows/pages.yml` | GitHub Pages deployment from `dist/` |
-| `scripts/build-downloads.py` | Builds both downloadable capture archives |
+| `src/boot.js`, `src/loading/` | WebGL capability fallback, startup stages, compressed asset fetching, cancellation and parsing worker |
+| `src/discovery.js`, `src/discovery/` | Explorer/scene composition, map footprint loading, navigation, tour and challenge state |
+| `src/explorer/` | Catalog queries, canvas map, spatial index, planner, views, schedule warnings and local persistence |
+| `src/metro/` | Bounded tile workers, mesh/roof compilation, scene mounting, routing, road lookup and seasonal actors |
+| `src/app.js`, `src/app/` | Scene and frame loop, camera, controls, renderer, audio, setup files, photos and discovery bridge |
+| `src/sky.js`, `src/atmosphere/` | Shared HDR sky, Earth-horizon/solar geometry, PMREM, reflected glass and surface-height sunlight |
+| `src/tower.js`, `src/tower/` | Devon geometry, independent crown display and conceptual Legends Tower |
+| `src/world.js`, `src/world/` | Downtown city, streets, landmarks, park, vehicles and traffic instancing |
+| `src/capture-presets.js`, `public/gallery/` | Repeatable views and the preserved historical gallery assets |
+| `public/` | HTML/CSS, vendor files, licenses and geographic reference contracts |
+| `scripts/data/` | Preserved compressed source snapshots; no live import is needed for a normal build |
+| `scripts/build-city-data.py`, `scripts/build-world-surfaces.py` | Downtown map compilation and surface ownership |
+| `scripts/build-metro.py`, `scripts/metro_geometry.py`, `scripts/metro_output.py` | Offline metro preparation, geometry repair, road graph, tiles and provenance |
+| `scripts/build.mjs`, `scripts/write-release.mjs` | Staged build, generated asset inventory and source revision |
+| `dist/geo/metro/` | Generated manifest, overview, places, lazy road graph and 512 m tiles |
+| `dist/`, `.github/workflows/pages.yml` | Disposable runnable output and validation/publication workflow |
 
-There is no runtime CDN dependency, asset API, or account database. The scene ships as static files with checked-in baked geometry; deployment builds the downloadable screenshot archives and validates the baked data. Textures and sounds are generated locally in the browser. Supplied reference photos are not included in the deployment.
+There is no runtime CDN dependency, external asset API or account database. The scene ships as static files generated from checked-in geographic inputs. Downtown geometry is baked offline; metro tiles are prepared offline and turned into nearby render meshes by workers at runtime. Deployment builds the downloadable historical screenshot archives and validates the generated data. Textures and sounds are generated locally in the browser. Supplied reference photos are not included in the deployment.
 
 GitHub Pages publishes the root of `gh-pages`. Each push to `main` rebuilds the two capture ZIPs, runs the static and geometry checks, and commits the complete `dist/` output to that publishing branch. The workflow explicitly requests GitHub's native Pages build and checks the public scene, gallery, and both downloadable archives against the source bytes. Source and map inputs stay on `main`; the publishing branch contains the runnable site.
 
@@ -193,33 +225,32 @@ Serve `dist/` with any static HTTP server. For example, from the project root:
 python3 -m http.server 8080 --directory dist
 ```
 
-Then open `http://localhost:8080`. ES modules require HTTP; opening `index.html` directly as a file is not supported. Use a browser with WebGL2 and working graphics acceleration.
+Then open `http://localhost:8080`. ES modules require HTTP; opening `index.html` directly as a file is not supported. Use a browser with WebGL2 and working graphics acceleration for 3D. The atlas and planner provide a map-only path when WebGL2 is unavailable.
 
 Run `python3 scripts/build-downloads.py` to generate both gallery downloads before serving locally. Three.js is pinned in `package-lock.json`; the deployed runtime uses the checked-in vendor files. No npm installation is required just to serve the site.
 
 ## Verification and limits
 
-The checked-in validation commands are:
+Build first, then run the checked-in release gate:
 
 ```sh
-python3 scripts/build-downloads.py
-node scripts/check-static.mjs
-node scripts/check-tower-surfaces.mjs
-node scripts/check-world-surfaces.mjs
-node scripts/check-building-shells.mjs
-node scripts/check-driving.mjs
-node scripts/bake-world-geometry.mjs --check
+npm run build
+npm run check
 ```
+
+`package.json` is the complete command list. The gate covers source/build safety, packaging, downtown geometry, driving, sunset optics, metro compiler/runtime behavior, planner/catalog/map logic, compressed loading and navigation cancellation. `npm run check:explorer` and `npm run check:metro` run the corresponding focused subsets after a build. The loading regression suite can be run with `node src/loading/assets.test.mjs`.
 
 The tower checker constructs the production Three.js meshes and verifies zero coplanar campus wall overlaps, no duplicate beam instances, finite vertices/normals, and three independent crown displays. The world checker constructs the production ground meshes, compares triangle coverage with the compiled polygons, checks excluded areas, and samples 5,950 lane positions against the road. These are geometry and packaging checks, not a substitute for a GPU interaction test.
 
 Earlier development passes also executed 33 control/state checks against the production modules with real Three.js geometry and canvas textures. That development harness substituted browser services and the GPU renderer; it was not a browser-layout test and is not included as a release gate.
 
-The shader audit assembles the actual Three.js 0.180 shader prefixes/includes and compiles eight vertex/fragment stages offline. Hosted Site captures render the actual production scene and materials. Independent visual reviews identified an incorrect crown silhouette, exaggerated unknown building heights, two invalid capture views, a discontinuous reflected horizon, and noisy night lighting. These findings drove the reconstruction and corrective passes. The reviewers still distinguish landmark recognition from full architectural and streetscape fidelity.
+Earlier shader audits assembled the actual Three.js 0.180 shader prefixes/includes and compiled eight vertex/fragment stages offline. Historical hosted captures rendered the production scene and materials of their recorded revisions. Independent visual reviews identified an incorrect crown silhouette, exaggerated unknown building heights, two invalid capture views, a discontinuous reflected horizon, and noisy night lighting. Those findings drove the reconstruction and corrective passes. They do not establish the current release's browser-rendered appearance.
 
-For v0.3, the interactive preview browser reported its WebGL driver disabled before scene creation. Geometry, shader and controller checks are separate from a rendered browser test. Existing gallery PNGs are older GPU captures and do not verify v0.3 appearance. No v0.3 hardware FPS benchmark or complete GPU interaction pass is claimed. Settings provides actual FPS on the device running the game; touch, audio, fullscreen and photo downloads still need a real-device pass.
+The managed browser used during v0.7 integration reports WebGL2 unavailable. Its atlas and planner screenshots can show browser UI behavior, but cannot validate 3D materials, shadows, scenery or GPU performance. Geometry, shader, worker and controller checks are separate evidence. All 29 gallery PNGs are older GPU captures. No v0.7 hardware FPS benchmark or complete browser 3D interaction pass is claimed. Settings reports diagnostics on the device running the game; driving, touch controls, audio, fullscreen and photo downloads still need a renderer-enabled real-device pass.
 
-This is an **arcade driving and reflection prototype**. Static building collision and free steering are implemented. There is no suspension, wheel-ground physics, damage or traffic AI; decorative traffic is noncollidable. Building footprints and street placement now use map data. Terrain is flattened; unrecorded heights, facade details, road widths, turn pockets, and traffic signal behavior remain approximations. Legends is conceptual massing. The sky is authored, not calculated from a date, geographic solar ephemeris, measured atmosphere, or spectral glass simulation. The higher-tower/later-sunset effect from Earth curvature is not modeled yet.
+This is a **mapped city, planning and arcade-driving prototype**, not a surveyed digital twin or a complete open-world game. Static building collision and free steering are implemented. There is no suspension, wheel-ground physics, damage or traffic AI; decorative traffic is noncollidable. Terrain remains broadly flat, with simplified road bridge/layer offsets rather than surveyed elevation. Unrecorded heights, roofs, facade details, road widths, turn pockets and traffic signal behavior remain approximations. Legends is conceptual massing. Connected-road routing honors mapped one-way directions but does not claim complete turn restrictions, current closures, live traffic or exact entrance access. Use a live navigation service for actual travel.
+
+Season and weather controls simulate a scene; they do not report current conditions. Business data is a dated snapshot. Budget allowances are editable estimates, and published prices may omit tax, tips or other costs. The planner warns against known saved-schedule conflicts, but it does not verify that every stop is open on an arbitrary date. Browser-local discoveries and corrections need exported backups if you want them to survive clearing site data or moving devices.
 
 ## Focused route to 1.0
 
@@ -231,7 +262,8 @@ This is an **arcade driving and reflection prototype**. Static building collisio
 - [ ] Evaluate traffic interaction and stronger vehicle handling through playtesting.
 - [x] Add a separate local city reflection probe with box projection.
 - [ ] Validate its depth/occlusion approximation against multiple real street-level photographs.
-- [ ] Add a location/date sun path and horizon-height demonstration if the optics experiment becomes the main product.
+- [x] Implement a shared height-dependent Earth horizon and partial solar-disc visibility.
+- [ ] Add a location/date solar ephemeris if the optics experiment becomes the main product.
 - [ ] Run the final friend playtest on the public GitHub Pages deployment.
 
 ## References

@@ -37,7 +37,7 @@ const examples = [
 fs.mkdirSync(output, {recursive: true});
 const manifest = {
   label, directory, views: [], materials: [], draws: [], stride: 11, sourceTiles: [],
-  scope: 'Actual compileTile production mesh buffers, mapped footprint/road/water polygons, UVs, native Canvas color-map pixels and production mapped-tree instances. Fixed diagnostic Lambert shading and logarithmic depth. Includes the production prairie ground plane. Excludes Three PBR, sky, shadow maps, point lights, festive instancing, UI, driving and streaming timing. Not a browser screenshot, photo replica or FPS benchmark.',
+  scope: 'Actual compileTile production mesh buffers from 3-by-3 tile neighborhoods, mapped footprint/road/water polygons, UVs, native Canvas color-map pixels and production mapped-tree instances. Fixed diagnostic Lambert shading and logarithmic depth. Includes the production prairie ground plane. Excludes Three PBR, sky, shadow maps, point lights, festive instancing, UI, driving and streaming timing. Distant cutoffs are the selected tile sample boundary. Not a browser screenshot, photo replica or FPS benchmark.',
 };
 const materials = createMetroMaterials();
 const materialIds = new Map();
@@ -48,10 +48,11 @@ function materialId(material) {
   if (material.map?.image?.getContext) {
     const texture = material.map;
     const file = `texture-${id}.png`;
-    fs.writeFileSync(path.join(output, file), texture.image.toBuffer('image/png'));
+    const pixels = texture.image.toBuffer('image/png');
+    fs.writeFileSync(path.join(output, file), pixels);
     map = {file, width: texture.image.width, height: texture.image.height, flipY: texture.flipY,
       wrapS: texture.wrapS, wrapT: texture.wrapT, repeat: texture.repeat.toArray(),
-      offset: texture.offset.toArray(), colorSpace: texture.colorSpace};
+      offset: texture.offset.toArray(), colorSpace: texture.colorSpace, bytes: pixels.length, sha256: hash(pixels)};
   }
   materialIds.set(material.uuid, id);
   manifest.materials.push({id, name: material.name || material.type, color: material.color?.toArray() || [1, 1, 1],
@@ -150,19 +151,29 @@ for (const example of examples) {
     anchorId: poi.id, anchorAccuracy: poi.coordinateAccuracy || poi.coordinateSource || 'source map pin', tiles: neighborhood});
   if (example.id === 'bethany-streets') {
     const buildings = neighborhood.flatMap(id => compiled.get(id)?.buildings || []);
-    const pitched = buildings.filter(b => b.renderedRoof === 'gabled' && b.h < 12)
+    const area = p => Math.abs(p.reduce((sum, point, i) => sum + point[0] * p[(i + 1) % p.length][1] - point[1] * p[(i + 1) % p.length][0], 0)) / 2;
+    const pitched = buildings.filter(b => b.renderedRoof === 'gabled' && b.h < 12 && area(b.p) >= 70)
       .sort((a, b) => (a.x - poi.x) ** 2 + (a.z - poi.z) ** 2 - (b.x - poi.x) ** 2 - (b.z - poi.z) ** 2)[0];
-    if (pitched) manifest.views.push({id: 'bethany-roof-detail', name: 'Bethany / gable on a mapped footprint',
-      eye: [pitched.x + 35, 21, pitched.z + 43], target: [pitched.x, pitched.h * .5, pitched.z], fov: 52,
-      buildingId: pitched.id, roofSource: pitched.renderedRoofSource, footprintSource: pitched.footprintSource, tiles: neighborhood});
+    if (pitched) {
+      const span = Math.max(Math.max(...pitched.p.map(p => p[0])) - Math.min(...pitched.p.map(p => p[0])),
+        Math.max(...pitched.p.map(p => p[1])) - Math.min(...pitched.p.map(p => p[1])));
+      manifest.views.push({id: 'bethany-roof-detail', name: 'Bethany / gable on a mapped footprint',
+        eye: [pitched.x + span * .95, pitched.h + span * 1.35, pitched.z + span * 1.1],
+        target: [pitched.x, pitched.h * .5, pitched.z], fov: 52,
+        buildingId: pitched.id, roofSource: pitched.renderedRoofSource, footprintSource: pitched.footprintSource, tiles: neighborhood});
+    }
   }
 }
 fs.closeSync(file);
 manifest.geometry = {vertices: vertexCount, triangles: vertexCount / 3, meshes: manifest.draws.length,
   sha256: geometryHash.digest('hex'), tiles: compiled.size, inspectedBuildings, mappedTrees, roofCounts, finiteBufferValues: true};
 manifest.sourceHashes = Object.fromEntries(['geo/metro/manifest.json', 'metro/mesh-builder.js', 'metro/roof-shapes.js',
-  'metro/materials.js', 'metro/tile-scene.js', 'world/materials.js', 'world/surface-textures.js']
+  'metro/materials.js', 'metro/tile-scene.js', 'world/materials.js', 'world/surface-textures.js',
+  'world/material-textures.js', 'world/random.js', 'vendor/three.module.js', 'vendor/three.core.js']
   .filter(name => fs.existsSync(path.join(directory, name)))
   .map(name => [name, hash(fs.readFileSync(path.join(directory, name)))]));
+manifest.diagnosticHashes = Object.fromEntries(['scripts/visual/prepare-metro-diagnostics.mjs',
+  'scripts/visual/render-city-diagnostics.py', 'scripts/visual/gles_context.py']
+  .map(name => [name, hash(fs.readFileSync(path.join(root, name)))]));
 fs.writeFileSync(path.join(output, 'manifest.json'), JSON.stringify(manifest, null, 2) + '\n');
 console.log(JSON.stringify({output, label, views: manifest.views.map(view => view.id), ...manifest.geometry}, null, 2));

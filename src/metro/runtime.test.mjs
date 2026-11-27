@@ -187,3 +187,13 @@ test('navigation holds destination tiles while the old car keeps producing frame
   stream.updatePosition({x:0,z:0});
   assert.equal(stream.stats().loadedTiles,0);stream.dispose();
 });
+
+
+test('nested park, woodland and parking regions have deterministic depth ownership', async t => {
+  const compile=await meshCompiler(t),ring=[[3000,0],[3020,0],[3020,20],[3000,20]];
+  const result=compile({id:'6_0',surfaces:[{kind:'park',p:ring},{kind:'forest',p:ring},{kind:'parking',p:ring}]});
+  const heights=Object.fromEntries(result.meshes.map(mesh=>[mesh.kind,mesh.positions[1]]));
+  assert.ok(Math.abs(heights.grass-.008)<1e-6);assert.ok(Math.abs(heights.forest-.04)<1e-6);assert.ok(Math.abs(heights.parking-.08)<1e-6);
+  assert.ok(heights.grass<heights.forest&&heights.forest<heights.parking&&heights.parking<.14);
+  assert.equal(result.meshes.length,3,'semantic offsets do not split existing material buckets');
+});

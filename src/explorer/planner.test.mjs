@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
-import {defaultPlan,planTotals,importPlan,exportPlan,moveStop,addPlace,surprisePlan,loadState,saveState,matchPlace} from './planner.js';
+import {defaultPlan,createPreset,planTotals,importPlan,exportPlan,moveStop,addPlace,surprisePlan,loadState,saveState,matchPlace} from './planner.js';
 import {normalizePlace,project,unproject,safeUrl,layerIds} from './catalog.js';
+import {plannerView} from './planner-view.js';
 
 const base=defaultPlan();
 assert.deepEqual(planTotals(base),{subtotal:187,reserve:13,total:200,remaining:0});
@@ -14,6 +15,28 @@ assert.equal(matchPlace('Hatch Early Mood Food',[{name:'Hatch Early Mood Food Au
 assert.equal(matchPlace('Bricktown Brewery',[{name:'Bricktown Brewery',id:'wrong',address:'5516 West Memorial Road'}],'1 N Oklahoma Ave'),null,'An explicit address must not resolve to another chain location.');
 assert.equal(matchPlace('Bricktown Brewery',[{name:'Bricktown Brewery',id:'right',address:'1 North Oklahoma Avenue'}],'1 N Oklahoma Ave').id,'right');
 assert.equal(matchPlace('Bricktown dessert allowance',[{name:'Bricktown Candy Co.',id:'dessert',address:'100 East California Avenue'}],'Choose a dessert shop').id,'dessert');
+const presetSelect=plannerView(base).match(/<select id="exPreset"[^>]*>([\s\S]*?)<\/select>/)?.[1];
+assert.ok(presetSelect,'The planner must render its preset selector.');
+assert.match(presetSelect,/<option value="christmas">Christmas super date<\/option>/,'The Christmas preset needs a complete option element to be selectable.');
+const branches=[
+ {id:'wrong-hatch',name:'Hatch Early Mood Food',address:'13230 Pawnee Drive'},
+ {id:'wrong-brewery',name:'Bricktown Brewery',address:'5516 West Memorial Road'},
+ {id:'hatch-automobile-alley',name:'Hatch Early Mood Food',address:'1101 N Broadway Ave, Suite 100, Oklahoma City, OK 73103',curated:true},
+ {id:'bricktown-brewery',name:'Bricktown Brewery',address:'1 N Oklahoma Ave, Oklahoma City, OK 73104',curated:true},
+];
+const christmas=createPreset('christmas',branches);
+assert.equal(christmas.stops[0].placeId,'hatch-automobile-alley');
+assert.equal(christmas.stops[4].placeId,'bricktown-brewery','A fresh Christmas preset must use the curated downtown Brewery.');
+const legacy=structuredClone(base);
+for(const [index,branch]of [[0,branches[0]],[4,branches[1]]])Object.assign(legacy.stops[index],{placeId:branch.id,address:branch.address});
+const repaired=importPlan(legacy,branches);
+assert.equal(repaired.stops[0].placeId,'hatch-automobile-alley');
+assert.equal(repaired.stops[4].placeId,'bricktown-brewery');
+assert.equal(repaired.stops[4].address,branches[3].address,'An untouched legacy preset must repair its branch address with its place ID.');
+const edited=structuredClone(legacy);edited.stops[4].cost=55;
+assert.equal(importPlan(edited,branches).stops[4].placeId,'wrong-brewery','Migration must preserve edited adventures.');
+const editedAddress=structuredClone(legacy);editedAddress.stops[4].address='My saved entrance';
+assert.equal(importPlan(editedAddress,branches).stops[4].address,'My saved entrance','Migration must preserve custom address edits.');
 assert.deepEqual(planTotals(importPlan(exportPlan(imported))),planTotals(imported));
 assert.throws(()=>importPlan({stops:[{name:'Bad cost',cost:-1}]}));
 assert.throws(()=>importPlan({stops:[{name:'NaN',cost:'nonsense'}]}));

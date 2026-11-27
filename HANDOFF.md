@@ -7,13 +7,15 @@
 - Pre-discovery production remains recoverable at `backup/pre-discovery-20261127` / `75b1502b1bdf965bac032220b07742689d3d59b2`. Original built baseline remains in ignored `qa/baseline-dist/`.
 - Runtime work separates startup asset decode, geometry worker jobs, bounded tile residency, route calculation, atlas drawing, catalog search, planner state and persistent corrections. Worker geometry is never baked on every render frame.
 - Full build now runs independent metro and downtown compiler pipelines concurrently, joins before replacing output, and writes `release.json` with exact hashes for every deployed asset, including compressed tile and geometry files.
-- The data audit found rounded road/sidewalk overlaps and duplicate multipart building identities in the interrupted build. Fixes retain strict validation; a fresh atlas bake and all release gates are required.
+- The fresh atlas passes every raw/gzip hash and decoded-identity check: 272,713 unique building IDs, 7,799 places and 3,004 tiles. Road/sidewalk and metro/core road overlaps are both 0.0 m². Compressed tiles total 40,896,774 bytes versus 197,918,437 raw bytes.
+- Modular integration is checkpointed remotely at `368692b5e9522c964e11d3f264f3a2a198b005e8`. The complete first build/check passed, alongside all 18 native production shader programs, both depth-offset modes and original downtown world parity for seeds 42 and 1907. The final rebuild incorporates browser-found Christmas preset/default-branch repairs and native-found land-surface depth separation.
 - Use `OKC_PYTHON=/workspace/scratch/bc993b0a4273/okc-build-env/bin/python` and put that virtual environment's `bin` on `PATH` for the local Python checks. System Python lacks Shapely. CI installs the pinned requirement normally.
 - Direct shell Git can fetch public source but cannot authenticate pushes here. Use the authorized GitHub connector for content-addressed blobs, trees and fast-forward commits; do not extract credentials. Keep local HEAD/tree synchronized after each connector checkpoint.
 - Browser preview is managed through `sites-preview`; WebGL2 remains unavailable in the provided browser. Atlas/planner UI is browser-tested separately from actual geometry and native production-shader tests. Do not claim a browser 3D capture or measured FPS.
-- Current next action: finish integration, rebuild from preserved inputs, validate, push final release, wait for Actions publish and full live hash verification. Inspect the actual remote head and workflow before declaring completion.
+- Final full rebuild and complete checks passed with all 11 runtime regressions. Five native metro views and all their source/data hashes match the final build. Browser checks verified the repaired Christmas preset and its correct downtown addresses, budget changes and export; the file chooser lost its tab during the import attempt, so browser import round-trip remains unverified.
+- Current next action: push the validated release and wait for Actions publication plus the complete public asset hash check. CI finalizes `release.json` after validation so the emitted metro validation report is included too.
 
-## Active street geometry and building massing correction (v0.6)
+## Archived street geometry and building massing correction (v0.6)
 
 - Work branch: `refactor/street-massing-20261124`, checkout `/workspace/okc-modular`.
 - Preserved production baseline: `0aa810f316e7f808f6d75355d07c10aa045afba5`, remote `backup/pre-street-massing-20261124-0aa810f`, separate checkout/build `/workspace/okc-v05-baseline`.
@@ -27,7 +29,7 @@
 - Native diagnostic graphics use actual production mesh transforms and texture pixels with simple depth-tested shading. They are not browser/PBR screenshots and do not measure FPS. Browser WebGL2 was unavailable in the preceding baseline checks.
 - Source snapshots, existing29 images/capture ZIPs, sunset shader and zero-emission Devon contracts remain preserved. Do not overwrite `main` or delete any backup to resolve a failure.
 
-## Active Devon reflection and skyline correction
+## Archived Devon reflection and skyline correction
 
 - Work branch: `refactor/devon-sunset-20261124` in `/workspace/okc-modular`.
 - Baseline: `86d755224793319cc48ae276af084267f9a8baf9`, remotely preserved on `backup/pre-devon-sunset-20261124-86d7552` and the existing v0.4 recovery branch.
@@ -41,7 +43,7 @@
 - Browser check November 24: unchanged v0.4 still cannot create WebGL2 in the cloud browser; one reload confirmed it. Native shader and geometry diagnostics must be labeled honestly, never as a live browser screenshot or full-scene playtest.
 - Resume by inspecting Git status, main, this work branch and Actions. Keep checkpoints additive. Full-scene WebGL2 visual review is still outstanding; native diagnostic images do not replace it.
 
-## Active city art and handling pass
+## Archived city art and handling pass
 
 Trent selected a believable, slightly worn city with strong color and lighting. See `docs/city-art-direction.md` for the accepted direction and scope.
 
