@@ -3,6 +3,7 @@ import {loadMetroAsset,disposeAssetLoader} from './loading/asset-client.js';
 import {reportLoad} from './metro/download.js';
 import {createNavigation,getRouter} from './discovery/navigation.js';
 import {createMapTileLoader} from './discovery/map-tiles.js';
+import {getUI} from './ui/runtime.js';
 export {getRouter};
 let explorer,sceneBridge=null,mapTiles=null,places=[];
 let position={x:-565,z:299,heading:0,street:'Reno Avenue',district:'Downtown'};
@@ -40,10 +41,8 @@ export async function attachSceneBridge(bridge){
 }
 export async function mapFallback(message,error=null){
   sceneBridge=null;const {explorer}=await discoveryReady;
-  document.body.classList.add('map-only');document.getElementById('errorPanel').hidden=true;document.getElementById('loading').hidden=true;explorer.showMap();
-  let banner=document.querySelector('.map-fallback-note');if(!banner){banner=document.createElement('div');banner.className='map-fallback-note';document.body.append(banner);}
-  banner.setAttribute('role','status');
-  banner.textContent=[message||'3D is unavailable in this browser. The full map and adventure planner are ready.',error?.message].filter(Boolean).join(' ');
+  const ui=getUI();ui.setSceneReady(false);explorer.showMap();
+  ui.toast([message||'3D is unavailable in this browser. The map and adventure planner are ready.',error?.message].filter(Boolean).join(' '));
 }
 export function stopTour(){navigation.stopTour();}
 window.addEventListener('pagehide',event=>{if(event.persisted){navigation.stopTour();return;}cancelAnimationFrame(frameId);navigation.dispose();mapTiles?.dispose();disposeAssetLoader();});

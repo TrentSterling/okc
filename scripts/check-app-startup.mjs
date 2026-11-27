@@ -14,7 +14,7 @@ if (typeof vm.SourceTextModule !== 'function') {
   const child = spawnSync(process.execPath, ['--experimental-vm-modules', ...process.argv.slice(1)], {stdio: 'inherit'});
   process.exit(child.status ?? 1);
 }
-const {values} = parseArgs({options: {'dist': {type: 'string'}, 'base-url': {type: 'string'}}, strict: true});
+const {values} = parseArgs({options: {'dist': {type: 'string'}, 'base-url': {type: 'string'}, 'ui-snapshots': {type: 'string'}}, strict: true});
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const directory = path.resolve(values.dist || path.join(root, 'dist'));
 const base = new URL(values['base-url'] || 'https://startup.invalid/okc/');
@@ -25,7 +25,9 @@ assert(imports?.three, 'Built HTML must supply its browser import map.');
 const importMap = new Map(Object.entries(imports).map(([key, value]) => [key.startsWith('.') ? new URL(key, base).href : key, new URL(value, base).href]));
 const RealThree = await import(pathToFileURL(path.join(directory, new URL(importMap.get('three')).pathname.slice(base.pathname.length))).href);
 const errors = [], requests = [], escaped = [], blobs = new Map(), frames = new Map(), timers = new Set();
-let clock = 0, frameSerial = 0, lastScene = null, renders = 0;
+let clock = 0, frameSerial = 0, lastScene = null, renders = 0, worldRenders = 0, uiRenders = 0;
+const viewport = {width: 1280, height: 720, insets: {top: 0, right: 0, bottom: 0, left: 0}};
+let gameUI = null, pointerSerial = 500;
 const noop = () => {};
 
 class Events {
@@ -38,12 +40,13 @@ class Events {
   removeEventListener(type, fn) { this.listeners.get(type)?.delete(fn); }
   dispatchEvent(event) {
     event.target ||= this; event.currentTarget = this;
-    for (const fn of this.listeners.get(event.type) || []) fn(event);
+    for (const fn of this.listeners.get(event.type) || []) { fn(event); if (event.immediatePropagationStopped) break; }
     if (event.bubbles && !event.cancelBubble) this.parentNode?.dispatchEvent(event);
     return !event.defaultPrevented;
   }
   emit(type, extra = {}) { return this.dispatchEvent({type, bubbles: true, defaultPrevented: false,
-    preventDefault() { this.defaultPrevented = true; }, stopPropagation() { this.cancelBubble = true; }, ...extra}); }
+    preventDefault() { this.defaultPrevented = true; }, stopPropagation() { this.cancelBubble = true; },
+    stopImmediatePropagation() { this.immediatePropagationStopped = true; this.cancelBubble = true; }, ...extra}); }
 }
 function canvasContext(canvas) {
   const context = {canvas, createImageData: (w, h) => ({width: w, height: h, data: new Uint8ClampedArray(w * h * 4)}),
@@ -63,7 +66,7 @@ class Element extends Events {
     super(); this.tagName = tag.toUpperCase(); this.children = []; this.attributes = {}; this.dataset = {};
     this.style = {setProperty: noop}; this.value = ''; this.textContent = ''; this.hidden = false; this.checked = false;
     this.disabled = false; this.scrollTop = 0; this.width = 300; this.height = 150; this.clientWidth = 1280; this.clientHeight = 720;
-    this.classes = new Set();
+    this.classes = new Set(); this.capturedPointers = new Set();
     this.classList = {add: (...names) => names.forEach(n => this.classes.add(n)), remove: (...names) => names.forEach(n => this.classes.delete(n)),
       contains: n => this.classes.has(n), toggle: (n, on = !this.classes.has(n)) => { on ? this.classes.add(n) : this.classes.delete(n); return on; }};
     for (const [name, value] of Object.entries(attrs)) this.setAttribute(name, value);
@@ -101,9 +104,11 @@ class Element extends Events {
   querySelectorAll(selector) { const out = []; const visit = el => { for (const child of el.children) { if (child.matches(selector)) out.push(child); visit(child); } }; visit(this); return out; }
   querySelector(selector) { return this.querySelectorAll(selector)[0] || null; }
   closest(selector) { return this.matches(selector) ? this : this.parentNode?.closest?.(selector) || null; }
-  focus() { document.activeElement = this; }
-  setPointerCapture() {} releasePointerCapture() {} setSelectionRange() {} scrollIntoView() {}
-  getBoundingClientRect() { return {x: 0, y: 0, left: 0, top: 0, right: 1280, bottom: 720, width: 1280, height: 720}; }
+  focus() { document.activeElement = this; this.emit('focusin'); }
+  blur() { if (document.activeElement === this) document.activeElement = document.body; this.emit('blur', {bubbles: false}); }
+  setPointerCapture(id) { this.capturedPointers.add(id); } releasePointerCapture(id) { this.capturedPointers.delete(id); }
+  hasPointerCapture(id) { return this.capturedPointers.has(id); } setSelectionRange() {} scrollIntoView() {}
+  getBoundingClientRect() { return {x: 0, y: 0, left: 0, top: 0, right: viewport.width, bottom: viewport.height, width: viewport.width, height: viewport.height}; }
   getContext(kind) { if (kind === 'webgl2') return {getExtension: () => null}; if (kind === '2d') return this.context2D ||= canvasContext(this); return null; }
   toDataURL() { return 'data:image/png;base64,c21va2U='; }
   click() { this.emit('click'); }
@@ -126,11 +131,13 @@ document.getElementById = id => document.querySelector('#' + id);
 document.createElement = tag => new Element(tag); document.createElementNS = (_, tag) => new Element(tag);
 document.documentElement.requestFullscreen = async () => {}; document.exitFullscreen = async () => {};
 const window = new Events(); document.parentNode = window;
+window.visualViewport = Object.assign(new Events(), {width: viewport.width, height: viewport.height, offsetLeft: 0, offsetTop: 0});
+window.matchMedia = () => ({matches: false, addEventListener: noop, removeEventListener: noop});
 const storage = new Map();
 const localStorage = {getItem: key => storage.get(key) ?? null, setItem: (key, value) => storage.set(key, String(value)), removeItem: key => storage.delete(key)};
 class SmokeURL extends URL { static createObjectURL(blob) { const id = 'blob:startup-' + blobs.size; blobs.set(id, blob); return id; } static revokeObjectURL() {} }
 class Renderer {
-  constructor({canvas}) { this.domElement = canvas; this.capabilities = {reversedDepthBuffer: false}; this.shadowMap = {}; this.debug = {}; this.xr = {enabled: false}; this.info = {render: {calls: 0, triangles: 0}}; this.coordinateSystem = RealThree.WebGLCoordinateSystem; this.clearColor = new RealThree.Color(); this.viewport = new RealThree.Vector4(0, 0, 1280, 720); this.scissor = this.viewport.clone(); this.target = null; this.autoClear = true; }
+  constructor({canvas}) { this.domElement = canvas; this.capabilities = {reversedDepthBuffer: false}; this.shadowMap = {}; this.debug = {}; this.xr = {enabled: false}; this.info = {render: {calls: 0, triangles: 0}, reset: noop}; this.coordinateSystem = RealThree.WebGLCoordinateSystem; this.clearColor = new RealThree.Color(); this.viewport = new RealThree.Vector4(0, 0, viewport.width, viewport.height); this.scissor = this.viewport.clone(); this.target = null; this.autoClear = true; }
   setClearColor(c, a = 1) { this.clearColor.set(c); this.clearAlpha = a; } getClearColor(out) { return out.copy(this.clearColor); } getClearAlpha() { return this.clearAlpha ?? 1; }
   setPixelRatio(v) { this.pixelRatio = v; } getPixelRatio() { return this.pixelRatio; }
   setSize(w, h) { this.width = w; this.height = h; } getSize(out) { return out.set(this.width, this.height); }
@@ -139,8 +146,12 @@ class Renderer {
   setScissorTest(v) { this.scissorTest = v; } getScissorTest() { return !!this.scissorTest; }
   setRenderTarget(target, face = 0, mip = 0) { this.target = target; this.face = face; this.mip = mip; }
   getRenderTarget() { return this.target; } getActiveCubeFace() { return this.face || 0; } getActiveMipmapLevel() { return this.mip || 0; }
-  resetState() {} clear() {} compile() {} dispose() {}
-  render(scene, camera) { scene.updateMatrixWorld(true); camera.updateMatrixWorld(true); lastScene = scene; renders++; }
+  resetState() {} clear() {} clearDepth() {} compile() {} async compileAsync() {} dispose() {}
+  render(scene, camera) {
+    scene.updateMatrixWorld(true); camera.updateMatrixWorld(true); renders++;
+    if (scene.getObjectByName('GPU UI batch')) uiRenders++;
+    else { lastScene = scene; worldRenders++; }
+  }
 }
 class PMREMGenerator { constructor() {} fromScene() { return {texture: new RealThree.Texture(), dispose: noop}; } dispose() {} }
 function localPath(url) {
@@ -159,11 +170,13 @@ async function localFetch(value, options = {}) {
 }
 const platformTimers = (fn, delay = 0, ...args) => { const timer = setTimeout(() => { timers.delete(timer); fn(...args); }, delay); timer.unref(); timers.add(timer); return timer; };
 const context = vm.createContext({console: {...console, error: (...args) => errors.push(args.map(a => a?.stack || String(a)).join(' '))},
-  document, window, localStorage, location: {href: base.href, search: '', reload: noop}, navigator: {hardwareConcurrency: 4},
+  document, window, localStorage, location: {href: base.href, search: '', reload: noop}, navigator: {hardwareConcurrency: 4, maxTouchPoints: 2},
   performance: {now: () => clock}, innerWidth: 1280, innerHeight: 720, devicePixelRatio: 1,
   requestAnimationFrame: fn => { const id = ++frameSerial; frames.set(id, fn); return id; }, cancelAnimationFrame: id => frames.delete(id),
   setTimeout: platformTimers, clearTimeout: timer => { clearTimeout(timer); timers.delete(timer); },
   ResizeObserver: class { observe() {} disconnect() {} },
+  getComputedStyle: () => ({getPropertyValue: key => String(viewport.insets[key.replace('--safe-', '')] || 0)}),
+  matchMedia: window.matchMedia,
   dispatchEvent: event => window.dispatchEvent(event), addEventListener: (...args) => window.addEventListener(...args),
   CustomEvent: class { constructor(type, init = {}) { this.type = type; this.detail = init.detail; } },
   URL: SmokeURL, URLSearchParams, Blob, Response, Request, Headers, AbortController, DOMException,
@@ -198,10 +211,57 @@ async function settle(promise, label) {
   while (!done) { assert(Date.now() < deadline, `${label} timed out`); await pump(); await new Promise(resolve => setTimeout(resolve, 2)); }
   if (failure) throw failure; return value;
 }
+function visibleTarget(id) {
+  const target = gameUI.debugSnapshot().targets.find(t => t.id === id && !t.disabled);
+  if (!target) return null;
+  const r = target.rect, clip = target.clip || {x: 0, y: 0, w: gameUI.width, h: gameUI.height};
+  const x = Math.max(r.x, clip.x, 0), y = Math.max(r.y, clip.y, 0);
+  const right = Math.min(r.x + r.w, clip.x + clip.w, gameUI.width), bottom = Math.min(r.y + r.h, clip.y + clip.h, gameUI.height);
+  return right > x && bottom > y ? {...target, center: {x: (x + right) / 2, y: (y + bottom) / 2}} : null;
+}
+function tapTarget(id) {
+  gameUI.render(); const target = visibleTarget(id); assert(target, 'Visible GPU control missing: ' + id);
+  const hit = gameUI.router.hit(target.center.x, target.center.y);
+  assert.equal(hit?.id, id, 'GPU control is obscured by another input target: ' + id);
+  const canvas = document.getElementById('scene'), pointerId = ++pointerSerial;
+  const event = {pointerId, clientX: target.center.x, clientY: target.center.y, pointerType: 'touch', button: 0};
+  canvas.emit('pointerdown', {...event, buttons: 1}); canvas.emit('pointerup', {...event, buttons: 0});
+  gameUI.render(); return target;
+}
 async function snapshot() {
-  document.getElementById('exportBtn').click();
+  const before = blobs.size;
+  tapTarget('scene-settings');
+  for (let step = 0; !visibleTarget('setting-setup-0') && step < 15; step++) {
+    const scroll = gameUI.debugSnapshot().targets.find(t => t.id === 'scene-settings-scroll-scroll');
+    assert(scroll, 'GPU scene settings must expose a real scroll region.');
+    document.getElementById('scene').emit('wheel', {clientX: scroll.rect.x + scroll.rect.w / 2, clientY: scroll.rect.y + scroll.rect.h / 2, deltaY: 320});
+    gameUI.render();
+  }
+  tapTarget('setting-setup-0');
+  assert(blobs.size > before, 'The GPU Save setup action must produce a new download.');
   const blob = [...blobs.values()].at(-1); assert(blob, 'Setup export must provide an inspectable state snapshot.');
-  return JSON.parse(await blob.text());
+  const result = JSON.parse(await blob.text());tapTarget('scene-panel-close');return result;
+}
+async function phoneSnapshots() {
+  const results=[];
+  for (const [width,height,insets] of [[390,844,{top:47,right:0,bottom:34,left:0}],[844,390,{top:0,right:44,bottom:21,left:44}]]) {
+    Object.assign(viewport,{width,height,insets});context.innerWidth=width;context.innerHeight=height;
+    Object.assign(window.visualViewport,{width,height});window.emit('resize');gameUI.render();
+    const data=gameUI.debugSnapshot(),holds=data.targets.filter(t=>t.kind==='hold');
+    assert.equal(holds.length,5,'Phone GPU HUD must expose steering, brake, gas and handbrake.');
+    for(const id of ['scene-settings','scene-drive-mode','scene-pause','scene-camera','scene-recover',...holds.map(t=>t.id)]) {
+      const target=visibleTarget(id);assert(target,'Phone control missing: '+id);
+      assert(target.rect.w>=44&&target.rect.h>=44,'Phone touch target smaller than44px: '+id);
+      assert(target.rect.x>=insets.left&&target.rect.y>=insets.top&&target.rect.x+target.rect.w<=width-insets.right&&target.rect.y+target.rect.h<=height-insets.bottom,'Phone control escaped safe area: '+id);
+      assert.equal(gameUI.router.hit(target.center.x,target.center.y)?.id,id,'Phone control is covered: '+id);
+    }
+    if(values['ui-snapshots']) {
+      const output=path.resolve(values['ui-snapshots']);await fs.mkdir(output,{recursive:true});
+      await fs.writeFile(path.join(output,`ui-${width}x${height}.json`),JSON.stringify({scope:'Actual built GPU UI layout, targets and draw buffers under a synthetic viewport/platform. Not browser pixels or GPU rendering.',...data}));
+    }
+    results.push({width,height,syntheticSafeInsets:insets,heldControls:holds.length,menuReachable:true});
+  }
+  return results;
 }
 try {
   // Prelink shared graphs once, then let the actual boot module evaluate them.
@@ -211,9 +271,10 @@ try {
   await settle(evaluate(await moduleFor(new URL('boot.js', base).href)), 'Built application startup');
   const app = await moduleFor(new URL('app.js', base).href);
   assert.equal(await settle(app.namespace.sceneReady, '3D scene ready'), true, `3D startup failed:\n${errors.join('\n')}`);
+  const uiModule=await moduleFor(new URL('ui/runtime.js',base).href);gameUI=uiModule.namespace.getUI();gameUI.render();
   assert.equal(escaped.length, 0, `Escaped deployment paths: ${escaped.join(', ')}`);
   assert.equal(document.body.classList.contains('map-only'), false, 'Supported 3D startup must not fall back to atlas.');
-  assert.equal(document.getElementById('loading').hidden, true, 'Loading overlay must finish.');
+  assert.equal(gameUI.sceneReady,true,'GPU UI must leave the loading state.');
   // Core collision is already baked, so sceneReady must not wait for distant
   // camera tiles. Pump the real background loader until one visible tile mounts.
   await settle((async () => {
@@ -222,16 +283,15 @@ try {
     }
   })(), 'First background geographic tile');
   const downloaded = requests.filter(r => r.status === 200).map(r => new URL(r.url).pathname);
-  for (const suffix of ['geo/base-city.bin.gz', 'geo/base-city-layout.json', 'geo/base-surfaces.json.gz', 'geo/metro/manifest.json.gz', 'geo/metro/overview.json.gz', 'geo/metro/pois.json.gz']) assert(downloaded.some(name => name.endsWith(suffix)), `Actual packed asset not consumed: ${suffix}`);
+  for (const suffix of ['geo/base-city.bin.gz', 'geo/base-city-layout.json', 'geo/base-surfaces.json.gz', 'geo/metro/manifest.json.gz', 'geo/metro/overview.json.gz', 'geo/metro/pois.json.gz', 'ui/glyphs.json', 'ui/glyphs.r8.gz']) assert(downloaded.some(name => name.endsWith(suffix)), `Actual packed asset not consumed: ${suffix}`);
   assert(downloaded.some(name => /\/geo\/metro\/tiles\/.*\.json\.gz$/.test(name)), 'Real metro tile loading must be reached through discovery bridge.');
   assert(lastScene?.getObjectByName('West OKC geographic streaming')?.children.length > 0, 'Streamed geometry must be mounted.');
   const initial = await snapshot(); assert.equal(initial.state.driveMode, 'scenic');
-  const button = document.querySelector('[data-drive-mode="free"]'); assert(button, 'Free-drive control missing'); button.click();
+  tapTarget('scene-drive-mode');
   await pump(); const before = await snapshot();
   assert.equal(before.state.driveMode, 'free', 'Free drive must enter from its real control.');
   // Real keyboard events start on the focused canvas, then bubble through the
-  // bridge and window controls. Held W repeats after the OS's initial delay.
-  // A window-only event misses the bridge's tour-interruption listener.
+  // shared UI and window controls. Held W repeats after the OS's initial delay.
   const sceneCanvas = document.getElementById('scene');
   sceneCanvas.focus(); sceneCanvas.emit('keydown', {code: 'KeyW', repeat: false});
   const drivingSeconds = 10; let repeatKeyEvents = 0;
@@ -245,13 +305,15 @@ try {
   const distance = Math.hypot(after.driving.x - before.driving.x, after.driving.z - before.driving.z);
   assert(distance > 150, `Held throttle with keyboard repeats must drive along the initial clear road: ${distance.toFixed(3)} m in ${drivingSeconds} s; final speed ${after.driving.speed.toFixed(3)} m/s.`);
   assert(after.driving.speed > 20, 'Held throttle must retain momentum after the keyboard starts repeating.');
+  const phoneLayouts=await phoneSnapshots();
   assert.equal(errors.length, 0, errors.join('\n'));
   const completedDownloads = requests.filter(r => r.status === 200).map(r => new URL(r.url).pathname);
   console.log(JSON.stringify({passed: true, baseURL: base.href, applicationModules: modules.size,
     packedAssetsRead: completedDownloads.filter(name => !name.includes('/tiles/')).length, metroTileRequests: completedDownloads.filter(name => name.includes('/tiles/')).length,
     sceneReady: true, freeDrive: true, drivingSeconds, repeatKeyEvents,
-    distanceUnderThrottleMeters: +distance.toFixed(3), finalDrivingSpeedMetersPerSecond: +after.driving.speed.toFixed(3), rendererCalls: renders,
-    scope: 'Actual built boot/app/import map, packed geometry, scene construction, discovery bridge, tile decoding/compiler/mount and free driving. Browser DOM/canvas, RAF and GPU renderer/PMREM adapters; worker fallback path. No shader, browser layout, image or FPS verification.'}, null, 2));
+    distanceUnderThrottleMeters: +distance.toFixed(3), finalDrivingSpeedMetersPerSecond: +after.driving.speed.toFixed(3), rendererCalls: renders, worldRendererCalls:worldRenders, uiRendererCalls:uiRenders,
+    gpuControls:true,phoneLayouts,
+    scope: 'Actual built boot/app/import map, packed geometry, scene construction, discovery bridge, tile decoding/compiler/mount, GPU UI target routing/setup export and free driving. Browser DOM/canvas, viewport, RAF and GPU renderer/PMREM adapters; worker fallback path. Phone layout checks are synthetic target/buffer checks. No shader, browser layout, image or FPS verification.'}, null, 2));
 } catch (error) {
   console.error(JSON.stringify({passed: false, message: error.message, errors, escapedURLs: [...new Set(escaped)], failedRequests: requests.filter(r => r.status !== 200)}, null, 2));
   process.exitCode = 1;

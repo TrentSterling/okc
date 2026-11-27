@@ -135,7 +135,7 @@ for (const study of REFLECTION_SHOT_PRESETS) {
   assert.equal(study.state.exposure, 1.08, 'Optical comparisons keep exposure fixed');
   assert.equal(study.state.screen, false, 'Optical comparisons exclude the crown display');
   assert.ok(!manifest.shots.some(shot => shot.viewId === study.id), 'Do not label an old photograph as a new optical study');
-  assert.ok(text(path.join(dist, 'index.html')).includes('value="' + study.id + '"'), 'Live optical study must be available in the viewpoint control');
+  assert.ok(text(path.join(dist, 'app', 'settings-view.js')).includes("'" + study.id + "'"), 'Live optical study must be available in the GPU viewpoint control');
 }
 assert.equal(STREET_SHOT_PRESETS.length,3);
 for(const study of STREET_SHOT_PRESETS){
@@ -144,7 +144,7 @@ for(const study of STREET_SHOT_PRESETS){
   assert.equal(study.state.screen,false);
   assert.equal(study.state.exposure,.95);
   assert.ok(!manifest.shots.some(shot=>shot.viewId===study.id),'Street studies must not reuse an older capture as a new image');
-  assert.ok(text(path.join(dist,'index.html')).includes('value="'+study.id+'"'));
+  assert.ok(text(path.join(dist,'app','settings-view.js')).includes("'"+study.id+"'"),'Street study must remain in the GPU viewpoint control');
 }
 for (const shot of manifest.shots) {
   assert.ok(/^[a-z0-9-]+$/.test(shot.id), 'Unsafe capture ID');
