@@ -29,6 +29,14 @@ export const byte = value => Math.max(0, Math.min(255, Math.round(value)));
 export const rgb = (color, offset = 0) => `rgb(${color.map(value => byte(value + offset)).join(',')})`;
 export const dataColor = (height, roughness, metalness = 0) => rgb([height * 255, roughness * 255, metalness * 255]);
 
+// Pixel callbacks write into one reusable sample. A full city texture set used
+// to allocate millions of map/spread result arrays while painting these values.
+export function writePixel(out, red, green, blue, height, roughness, metalness = 0) {
+  out[0] = red; out[1] = green; out[2] = blue;
+  out[3] = height; out[4] = roughness; out[5] = metalness;
+  return out;
+}
+
 // Periodic, smoothly interpolated fields keep low-frequency age variation
 // continuous across repeating UVs. The field is generated once per texture.
 export function tileNoise(random, cells) {
@@ -46,8 +54,9 @@ export function tileNoise(random, cells) {
 export function fillPixels(colorContext, dataContext, width, height, sample) {
   const color = colorContext.createImageData(width, height);
   const data = dataContext.createImageData(width, height);
+  const scratch = [0, 0, 0, 0, 0, 0];
   for (let y = 0; y < height; y++) for (let x = 0; x < width; x++) {
-    const at = (y * width + x) * 4, pixel = sample(x / width, y / height, x, y);
+    const at = (y * width + x) * 4, pixel = sample(x / width, y / height, x, y, scratch);
     for (let channel = 0; channel < 3; channel++) color.data[at + channel] = byte(pixel[channel]);
     data.data[at] = byte(pixel[3] * 255);
     data.data[at + 1] = byte(pixel[4] * 255);

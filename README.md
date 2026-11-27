@@ -1,11 +1,14 @@
 # Prairie Prism
 
-An Oklahoma City atlas, date planner and drivable city for Trent. Geographically grounded reconstruction and exploration prototype, **v0.7.1**.
+An Oklahoma City atlas, date planner and drivable city for Trent. Geographically grounded reconstruction and exploration prototype, **v0.7.2**.
 
-The v0.7.1 repair restores 3D startup under the `/okc/` hosting path and adds a
-required built-app startup and free-driving regression gate. See the
-[startup repair evidence](docs/validation/startup-v071.md) for the cause and
-verification scope.
+The v0.7.2 repair keeps held driving input from resetting velocity, gives downtown
+and streamed roads separate surface ownership, and follows the actual camera
+view when loading city tiles. Startup reuses packed geometry buffers and offline
+bounds, defers hidden-map indexing, and removes millions of temporary texture
+arrays without changing their pixels. See [driving and streaming repair evidence](docs/validation/driving-streaming-v072.md),
+[surface ownership](docs/validation/metro-surface-ownership/README.md), and
+[startup CPU evidence](docs/validation/startup-cpu/README.md) for verification scope.
 
 **Live site:** https://tront.xyz/okc/
 
@@ -25,7 +28,7 @@ The successful v0.7 build contains **272,713 building footprints, 82,114 source 
 - **Keep your discoveries.** Favorites, visit status, notes, photo links and building corrections are stored in this browser. JSON backups carry them to another device. No account or cloud synchronization is implied.
 - **Try a city challenge.** Pizza delivery, taxi pickup, finding a named place and photo expeditions are simple exploration prototypes. They select real mapped destinations; they are not complete jobs, a traffic simulation or a GTA-style campaign.
 
-Loading is split by responsibility. Atlas assets can load alongside 3D startup; the routing graph loads only when needed. A bounded worker pool fetches, decompresses and compiles nearby 512 m metro tiles, while the scene keeps a limited neighborhood around the car or inspected building. The map caches its static background, clusters overview markers and requests close-up footprints only while visible. Gzip assets have a plain-file fallback, and unavailable workers have a main-thread fallback. These are implemented resource limits, not a measured FPS claim.
+Loading is split by responsibility. Atlas assets can load alongside 3D startup; the routing graph loads only when needed. A bounded worker pool fetches, decompresses and compiles nearby 512 m metro tiles, while the scene keeps collision coverage around the car and a bounded set of tiles in the actual camera view. Completed tile uploads are paced to one per display frame; stale view requests are cancelled, and recent tiles are retained within a quality-dependent residency cap. The map caches its static background, clusters overview markers and requests close-up footprints only while visible. Gzip assets have a plain-file fallback, and unavailable workers have a main-thread fallback. These are implemented resource limits, not a measured FPS claim.
 
 The interrupted November 27 workspace was recovered and checkpointed at `11885be` before integration continued. Earlier source and gallery assets were preserved. See [Discover OKC release notes](docs/discovery-v07.md) for module boundaries, data accuracy, recovery and current verification limits.
 

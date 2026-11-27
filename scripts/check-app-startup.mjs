@@ -214,6 +214,13 @@ try {
   assert.equal(escaped.length, 0, `Escaped deployment paths: ${escaped.join(', ')}`);
   assert.equal(document.body.classList.contains('map-only'), false, 'Supported 3D startup must not fall back to atlas.');
   assert.equal(document.getElementById('loading').hidden, true, 'Loading overlay must finish.');
+  // Core collision is already baked, so sceneReady must not wait for distant
+  // camera tiles. Pump the real background loader until one visible tile mounts.
+  await settle((async () => {
+    while (!(lastScene?.getObjectByName('West OKC geographic streaming')?.children.length > 0)) {
+      await new Promise(resolve => context.requestAnimationFrame(resolve));
+    }
+  })(), 'First background geographic tile');
   const downloaded = requests.filter(r => r.status === 200).map(r => new URL(r.url).pathname);
   for (const suffix of ['geo/base-city.bin.gz', 'geo/base-city-layout.json', 'geo/base-surfaces.json.gz', 'geo/metro/manifest.json.gz', 'geo/metro/overview.json.gz', 'geo/metro/pois.json.gz']) assert(downloaded.some(name => name.endsWith(suffix)), `Actual packed asset not consumed: ${suffix}`);
   assert(downloaded.some(name => /\/geo\/metro\/tiles\/.*\.json\.gz$/.test(name)), 'Real metro tile loading must be reached through discovery bridge.');
@@ -222,17 +229,28 @@ try {
   const button = document.querySelector('[data-drive-mode="free"]'); assert(button, 'Free-drive control missing'); button.click();
   await pump(); const before = await snapshot();
   assert.equal(before.state.driveMode, 'free', 'Free drive must enter from its real control.');
-  document.getElementById('scene').focus(); window.emit('keydown', {code: 'KeyW', repeat: false});
-  for (let i = 0; i < 60; i++) await pump();
-  window.emit('keyup', {code: 'KeyW', repeat: false});
+  // Real keyboard events start on the focused canvas, then bubble through the
+  // bridge and window controls. Held W repeats after the OS's initial delay.
+  // A window-only event misses the bridge's tour-interruption listener.
+  const sceneCanvas = document.getElementById('scene');
+  sceneCanvas.focus(); sceneCanvas.emit('keydown', {code: 'KeyW', repeat: false});
+  const drivingSeconds = 10; let repeatKeyEvents = 0;
+  for (let i = 0; i < drivingSeconds * 60; i++) {
+    if (i >= 30 && i % 2 === 0) { sceneCanvas.emit('keydown', {code: 'KeyW', repeat: true}); repeatKeyEvents++; }
+    await pump();
+  }
+  sceneCanvas.emit('keyup', {code: 'KeyW', repeat: false});
   const after = await snapshot();
   assert(['x', 'z', 'heading', 'speed'].every(key => Number.isFinite(after.driving[key])), 'Free-drive state must remain finite.');
   const distance = Math.hypot(after.driving.x - before.driving.x, after.driving.z - before.driving.z);
-  assert(distance > .05, 'Throttle must advance the actual collision-aware free-drive state.');
+  assert(distance > 150, `Held throttle with keyboard repeats must drive along the initial clear road: ${distance.toFixed(3)} m in ${drivingSeconds} s; final speed ${after.driving.speed.toFixed(3)} m/s.`);
+  assert(after.driving.speed > 20, 'Held throttle must retain momentum after the keyboard starts repeating.');
   assert.equal(errors.length, 0, errors.join('\n'));
+  const completedDownloads = requests.filter(r => r.status === 200).map(r => new URL(r.url).pathname);
   console.log(JSON.stringify({passed: true, baseURL: base.href, applicationModules: modules.size,
-    packedAssetsRead: downloaded.filter(name => !name.includes('/tiles/')).length, metroTileRequests: downloaded.filter(name => name.includes('/tiles/')).length,
-    sceneReady: true, freeDrive: true, distanceUnderThrottleMeters: +distance.toFixed(3), rendererCalls: renders,
+    packedAssetsRead: completedDownloads.filter(name => !name.includes('/tiles/')).length, metroTileRequests: completedDownloads.filter(name => name.includes('/tiles/')).length,
+    sceneReady: true, freeDrive: true, drivingSeconds, repeatKeyEvents,
+    distanceUnderThrottleMeters: +distance.toFixed(3), finalDrivingSpeedMetersPerSecond: +after.driving.speed.toFixed(3), rendererCalls: renders,
     scope: 'Actual built boot/app/import map, packed geometry, scene construction, discovery bridge, tile decoding/compiler/mount and free driving. Browser DOM/canvas, RAF and GPU renderer/PMREM adapters; worker fallback path. No shader, browser layout, image or FPS verification.'}, null, 2));
 } catch (error) {
   console.error(JSON.stringify({passed: false, message: error.message, errors, escapedURLs: [...new Set(escaped)], failedRequests: requests.filter(r => r.status !== 200)}, null, 2));

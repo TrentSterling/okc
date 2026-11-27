@@ -1,0 +1,439 @@
+{
+  "passed": true,
+  "scope": "Actual core/metro triangle ownership plus native ordinary/log/reversed depth.\n\nDiagnostic owner colors make equal-depth draws measurable. No browser, PBR,\nshadow or FPS claim; the original production compiler is the negative control.\n",
+  "renderer": {
+    "vendor": "Mesa",
+    "renderer": "llvmpipe (LLVM 19.1.7, 256 bits)",
+    "version": "OpenGL ES 3.2 Mesa 25.0.7-2+deb13u1"
+  },
+  "geometry": {
+    "before": {
+      "coplanarRoadOverlapSquareMeters": 22035.71642951371,
+      "metroSurfaceOwnerIntrusionSquareMeters": 1828486.6954518831,
+      "vertices": 435666,
+      "finite": true
+    },
+    "after": {
+      "coplanarRoadOverlapSquareMeters": 0.0,
+      "metroSurfaceOwnerIntrusionSquareMeters": 0.0,
+      "vertices": 402330,
+      "finite": true
+    }
+  },
+  "results": [
+    {
+      "variant": "before",
+      "mode": "ordinary24",
+      "view": "west-reno-eye",
+      "changedPixels": 0
+    },
+    {
+      "variant": "before",
+      "mode": "ordinary24",
+      "view": "west-reno-overhead",
+      "changedPixels": 1165
+    },
+    {
+      "variant": "before",
+      "mode": "ordinary24",
+      "view": "northwest-seam",
+      "changedPixels": 23
+    },
+    {
+      "variant": "after",
+      "mode": "ordinary24",
+      "view": "west-reno-eye",
+      "changedPixels": 0
+    },
+    {
+      "variant": "after",
+      "mode": "ordinary24",
+      "view": "west-reno-overhead",
+      "changedPixels": 0
+    },
+    {
+      "variant": "after",
+      "mode": "ordinary24",
+      "view": "northwest-seam",
+      "changedPixels": 0
+    },
+    {
+      "variant": "before",
+      "mode": "log24",
+      "view": "west-reno-eye",
+      "changedPixels": 0
+    },
+    {
+      "variant": "before",
+      "mode": "log24",
+      "view": "west-reno-overhead",
+      "changedPixels": 1507
+    },
+    {
+      "variant": "before",
+      "mode": "log24",
+      "view": "northwest-seam",
+      "changedPixels": 25146
+    },
+    {
+      "variant": "after",
+      "mode": "log24",
+      "view": "west-reno-eye",
+      "changedPixels": 0
+    },
+    {
+      "variant": "after",
+      "mode": "log24",
+      "view": "west-reno-overhead",
+      "changedPixels": 0
+    },
+    {
+      "variant": "after",
+      "mode": "log24",
+      "view": "northwest-seam",
+      "changedPixels": 0
+    },
+    {
+      "variant": "before",
+      "mode": "reversed24",
+      "view": "west-reno-eye",
+      "changedPixels": 0
+    },
+    {
+      "variant": "before",
+      "mode": "reversed24",
+      "view": "west-reno-overhead",
+      "changedPixels": 1841
+    },
+    {
+      "variant": "before",
+      "mode": "reversed24",
+      "view": "northwest-seam",
+      "changedPixels": 31801
+    },
+    {
+      "variant": "after",
+      "mode": "reversed24",
+      "view": "west-reno-eye",
+      "changedPixels": 0
+    },
+    {
+      "variant": "after",
+      "mode": "reversed24",
+      "view": "west-reno-overhead",
+      "changedPixels": 0
+    },
+    {
+      "variant": "after",
+      "mode": "reversed24",
+      "view": "northwest-seam",
+      "changedPixels": 0
+    },
+    {
+      "variant": "before",
+      "mode": "reversed32f",
+      "view": "west-reno-eye",
+      "changedPixels": 0
+    },
+    {
+      "variant": "before",
+      "mode": "reversed32f",
+      "view": "west-reno-overhead",
+      "changedPixels": 547
+    },
+    {
+      "variant": "before",
+      "mode": "reversed32f",
+      "view": "northwest-seam",
+      "changedPixels": 4018
+    },
+    {
+      "variant": "after",
+      "mode": "reversed32f",
+      "view": "west-reno-eye",
+      "changedPixels": 0
+    },
+    {
+      "variant": "after",
+      "mode": "reversed32f",
+      "view": "west-reno-overhead",
+      "changedPixels": 0
+    },
+    {
+      "variant": "after",
+      "mode": "reversed32f",
+      "view": "northwest-seam",
+      "changedPixels": 0
+    }
+  ],
+  "source": {
+    "baselineRevision": "6ae1e0e",
+    "sourceHashes": {
+      "atlas": "6866325ac8f2e8382079ac8743934144ed8a3aaea307adf7f873e6e134cc46a6",
+      "baseLayout": "d8f20d00e57bb39905d65cd406f7a7bd4324aa08b347953134e96a0471e1d832",
+      "baselineCompiler": "3139ae0f1d166e4d64584710142ca0dedbbe0a355208a5f96ae95ac1fb6d6f1d",
+      "compiler": "cf61566dd2937431f737c1d22ea50931be57da1d0b69fc9d3d5a907c8109d3c2",
+      "ownership": "941e1b2470b79c2cf3f0685585dd0ec9d31d942229fd12c3bb9cf1a6206ef68f",
+      "meshBounds": "a912eea4f68770db850a6ae53c75c5d5417abd0ca998d2acf18df10b8695adff"
+    },
+    "tiles": [
+      {
+        "id": "-1_-1",
+        "sha256": "67f5cf1133ad757e5bac5a24b48fd33f77b992bbaa5a22fe49d8718aa59dbe7e"
+      },
+      {
+        "id": "-1_-2",
+        "sha256": "a2c47c7016e70cefe3d142cab10bef0897af66a37e321c13e83e5eaf7e00e626"
+      },
+      {
+        "id": "-1_-3",
+        "sha256": "e840c07c37e3ee029da5df5aa18a3ed6fa64629b027bf88cd56d3409a9886bfa"
+      },
+      {
+        "id": "-1_0",
+        "sha256": "ef2a488f589eec92af9eb43dcad360e0c1f69e5285d978cc3a9576b47ea1b5e7"
+      },
+      {
+        "id": "-1_1",
+        "sha256": "31bb869693deef2fb0ea45238d8298a4dbb3fc465dee63250158314391c88a7c"
+      },
+      {
+        "id": "-1_2",
+        "sha256": "caa0f57382ececfac9eeac5731ba05ade54ba67e08f15a76be0cac6d36d1d76e"
+      },
+      {
+        "id": "-2_-1",
+        "sha256": "f24fb9295c26079473d27ecc1f30fbcf9fc6ea77db48c09e3928a0e3f0faa21d"
+      },
+      {
+        "id": "-2_-2",
+        "sha256": "d029aef153a6e91c3eb6bd7eaf7e1a0afef01a834468d5097e2bdf55a7aaf713"
+      },
+      {
+        "id": "-2_-3",
+        "sha256": "99a1b87d0fabf1426f086c63cb04e0da48fe1e00e36513faabed7c77383b1888"
+      },
+      {
+        "id": "-2_0",
+        "sha256": "e5aba502b5462fb46fddf233d75d862c5b888feb994c6417ef067aa6205fcb08"
+      },
+      {
+        "id": "-2_1",
+        "sha256": "04ec8f4ed874dfb0f3197482466163dddbb2d60c1238d09595fd8a25e16a1ae6"
+      },
+      {
+        "id": "-2_2",
+        "sha256": "ab1b1d362e30a68ba7d9970cfe093c061d1b18e2a29eb4d97774cda3fa62997b"
+      },
+      {
+        "id": "-3_-1",
+        "sha256": "a48550e7d75c44bab089b216a70bcb59ce06e226cc7b1a43773a081fa7b648ab"
+      },
+      {
+        "id": "-3_-2",
+        "sha256": "e97a5ca151099e66568e00c09bd61da2e7ec3f9cc57f8b6d6d6f7af0aeaf518c"
+      },
+      {
+        "id": "-3_-3",
+        "sha256": "24c39490eeef0541e008f92da9fc8807af2ad6c88a842d397d6bb75e9ac323ff"
+      },
+      {
+        "id": "-3_0",
+        "sha256": "727eb08673b58d432eb539fca9f94547827266a2bfbb0fbfaa2391ca6ee95b2b"
+      },
+      {
+        "id": "-3_1",
+        "sha256": "e7109f3c05aa0335f52c9e25099b2af9a0ecdd8677de2058d69d8ae0cbb7ec9c"
+      },
+      {
+        "id": "-3_2",
+        "sha256": "be23f0fca7d48be2f324ed11b48b1a92cba81a9ebac4d904ad9fcece6cd6b2ad"
+      },
+      {
+        "id": "-4_-1",
+        "sha256": "b6828edfb6e9ff1ceb2bee0db663f4573606c20329b8674d659c339474d579c2"
+      },
+      {
+        "id": "-4_-2",
+        "sha256": "9c7c8f8f3b272c75875ffdc4bca218e21d7117f959b9189af3920e7ce0323566"
+      },
+      {
+        "id": "-4_-3",
+        "sha256": "d6d22eafe9a8f5aaeebb449b16093c7b34ba06281471e27bb6f5407cf7554194"
+      },
+      {
+        "id": "-4_0",
+        "sha256": "b5e80ea3538e462aa9e01702fe88e98c65d2db4f9261d0e4bd97b83c238d5942"
+      },
+      {
+        "id": "-4_1",
+        "sha256": "faa16af8d964740e1d0ae2ed0d81ea9e8e815eb4b29ae58f46e70df8488f1d74"
+      },
+      {
+        "id": "-4_2",
+        "sha256": "65f2cbf35c8a20a2d4464ad2949aae25e67e23e2440015f4457b6217343692ce"
+      },
+      {
+        "id": "0_-1",
+        "sha256": "ddf0caad3c800103b8979c28879ce84c8150d4fd892bba5782c477c23cc3a938"
+      },
+      {
+        "id": "0_-2",
+        "sha256": "05c98b7163176fdb863b7d10acedc66e75b71acc8ca7ddf052dcaf8a617becc0"
+      },
+      {
+        "id": "0_-3",
+        "sha256": "fb25f502196e5f496de07c88ae0b2de37dfa0f5c55e7f6adda03d73f23550052"
+      },
+      {
+        "id": "0_0",
+        "sha256": "01ebf716667c5eac75b761a88b9ca386657612d9377e86bf2cec0d86d054c94c"
+      },
+      {
+        "id": "0_1",
+        "sha256": "0949153645eedec054a00c4f1ae99c60482299000a042d9095f06cc11596e8b3"
+      },
+      {
+        "id": "0_2",
+        "sha256": "05be17630154f6ab727e7e06f6e281577cc0187704f4329b8cd1cb2771963041"
+      },
+      {
+        "id": "1_-1",
+        "sha256": "b0d4bf7f2b0d17f0396d65acbf96fc1183010aba49246e4bc1fc42beeb45ae69"
+      },
+      {
+        "id": "1_-2",
+        "sha256": "07acadafbfeaf085860a99bea5af86a9eca721ca17a87949b242284a7e1be3e9"
+      },
+      {
+        "id": "1_-3",
+        "sha256": "668244051cfe63893f5e1857c29af8166185bf665cf31815ef64ec3fdebd9c48"
+      },
+      {
+        "id": "1_0",
+        "sha256": "0e4abc1b12d5e8eeed7c1c35af627795d7096145a3175deb71a8b8815aaf13c5"
+      },
+      {
+        "id": "1_1",
+        "sha256": "65ccbb97a43c6e4283c0b6859b11ea52253eb3a575142683484c43a7422f5772"
+      },
+      {
+        "id": "1_2",
+        "sha256": "bd172ac78e1100d7da0922d8b13f0bfc82a46da1d7506e833f6f4d23e3e44fa5"
+      },
+      {
+        "id": "2_-1",
+        "sha256": "98b0941e1d89baaf2b5b03e30207815f5501c575e0b757baac5edca59bddaa53"
+      },
+      {
+        "id": "2_-2",
+        "sha256": "114672479213593fdb214d4bb4c1ccf3c0b9bc44ab158cb262bd0da91d5f936b"
+      },
+      {
+        "id": "2_-3",
+        "sha256": "b74c4d86d19837fc4623d2d70e6702f0f47578549e419fa7cb4d173126361a9e"
+      },
+      {
+        "id": "2_0",
+        "sha256": "6db04a11bd73a6704db60a33445cad7f2eac3ac401fcd601369aa70b7e45ffaf"
+      },
+      {
+        "id": "2_1",
+        "sha256": "48ffffe98a93b60e3e378e717381f789bf847314496cc2eb4bf49684ee9d2fe0"
+      },
+      {
+        "id": "2_2",
+        "sha256": "ef7d1feb65bcf34890257f20343317d6182da9f2d811bb219b26ba494ab21c99"
+      },
+      {
+        "id": "3_-1",
+        "sha256": "3edd301cdae7ca7946fbca990be831ba707699e16bd3acca3b48ddf1ed257d92"
+      },
+      {
+        "id": "3_-2",
+        "sha256": "7e5d3ea67f608c70ffe50269304b040de5a8f11748d58782932e1fde96dceadb"
+      },
+      {
+        "id": "3_-3",
+        "sha256": "55ef44137af6908c69779b4bfec0eaa8d720abb9511088a56c83d0f3a3531875"
+      },
+      {
+        "id": "3_0",
+        "sha256": "6a25405d5191d283549a2d9f7d6240426f7110966d0b761845ed23226b15537e"
+      },
+      {
+        "id": "3_1",
+        "sha256": "fd5f9e281a467fea7ae97d9afcbcba7bae8a6ac6c98081f62cea8192e838e21e"
+      },
+      {
+        "id": "3_2",
+        "sha256": "24ceaea288568092b2183f7bfdebbb4aec2c19a829b573b5e4bf205cf1482c24"
+      }
+    ],
+    "core": {
+      "minX": -1600,
+      "minZ": -1140,
+      "maxX": 1600,
+      "maxZ": 1120
+    },
+    "coreSurfaceBounds": {
+      "minX": -1650,
+      "maxX": 1650,
+      "minZ": -1190,
+      "maxZ": 1170
+    },
+    "views": [
+      {
+        "id": "west-reno-eye",
+        "eye": [
+          -1608,
+          2.1,
+          293.5
+        ],
+        "target": [
+          -1725,
+          0.14,
+          293.5
+        ],
+        "fov": 55
+      },
+      {
+        "id": "west-reno-overhead",
+        "eye": [
+          -1625,
+          70,
+          365
+        ],
+        "target": [
+          -1625,
+          0.14,
+          291.7
+        ],
+        "fov": 55
+      },
+      {
+        "id": "northwest-seam",
+        "eye": [
+          -1610,
+          3,
+          -560
+        ],
+        "target": [
+          -1690,
+          0.14,
+          -560
+        ],
+        "fov": 55
+      }
+    ]
+  },
+  "geometryBufferHashes": {
+    "before": "048c037eea204b9bb7ec149bb52284627dc566789136e0dfe2eb9075b71bbcd5",
+    "after": "dbd5cf92d66bdb69522084986b610f0d708f589d1b17b225176d5a67354c6082"
+  },
+  "diagnosticHashes": {
+    "scripts/visual/prepare-metro-surface-probe.mjs": "8fcf0c4010dabd4a0b9ccfb8f2f80b4954dc124a52e478fa0c35ba26355546b9",
+    "scripts/visual/check-metro-surface-depth.py": "a1c466059c0322f6ec239dc5210e2f762093ba2f859f2dfae3d5c071d8ba657d"
+  },
+  "imageSha256": "55d085b0d3719f5d7551825f0baac629f2fdb4a02e70b0c179b3a2af49ad2227"
+}

@@ -39,7 +39,11 @@ globalThis.document={createElement:()=>({width:0,height:0,getContext:()=>baseCon
 globalThis.ResizeObserver=class{observe(){}disconnect(){}};
 globalThis.requestAnimationFrame=fn=>(queued.push(fn),queued.length);globalThis.cancelAnimationFrame=noOp;
 const flush=()=>{const frames=queued;queued=[];frames.forEach(f=>f());};
-const map=createMap(canvas);map.setData({bounds:[-100,-100,100,100],roads:[{name:'Reno',p:[[-100,0],[100,0]]}],surfaces:[]});map.show();flush();const firstPaints=basePaints;
+let geometryReads=0;const road={name:'Reno',get p(){geometryReads++;return [[-100,0],[100,0]];}};
+const map=createMap(canvas);map.setData({bounds:[-100,-100,100,100],roads:[road],surfaces:[]});
+assert.equal(geometryReads,0,'A hidden map must not prepare and index its entire overview during 3D startup.');
+map.show();flush();const firstPaints=basePaints,firstReads=geometryReads;assert.ok(firstReads>0,'The first visible draw prepares its actual geography.');
 map.setPosition({x:1,z:2});flush();map.setPosition({x:2,z:3});flush();assert.equal(basePaints,firstPaints,'Car updates reuse the cached base.');
+assert.equal(geometryReads,firstReads,'Moving the car must not normalize map geometry again.');
 map.zoom(2);flush();assert.ok(basePaints>firstPaints,'Zoom invalidates cached map pixels.');map.destroy();
 console.log('Atlas checks passed: spatial equivalence, cached base rendering, catalog search, canonical categories, source allowances, indoors filtering, unique imports, date warnings, and malformed local storage.');

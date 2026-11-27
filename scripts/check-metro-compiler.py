@@ -9,7 +9,7 @@ import tempfile
 import unittest
 from shapely.geometry import LineString, Polygon, box
 from shapely.ops import unary_union
-from metro_geometry import partition_street_surfaces
+from metro_geometry import partition_street_surfaces, surface_core_bounds, add_surface_render_patches
 from metro_output import write_json
 
 
@@ -56,6 +56,22 @@ class MetroCompilerTests(unittest.TestCase):
             packed = first.with_name(first.name + '.gz').read_bytes()
             self.assertEqual(gzip.decompress(packed), first.read_bytes())
             self.assertEqual(json.loads(gzip.decompress(packed)), payload)
+
+    def test_downtown_apron_ownership_retains_raw_atlas_polygon(self):
+        core_bounds={'minX':-10,'maxX':10,'minZ':-10,'maxZ':10}
+        bounds=surface_core_bounds(core_bounds)
+        self.assertEqual(bounds, {'minX':-60,'maxX':60,'minZ':-60,'maxZ':60})
+        owner=box(bounds['minX'],bounds['minZ'],bounds['maxX'],bounds['maxZ'])
+        original={'id':'mapped-park','kind':'park','p':[[-80,-80],[80,-80],[80,80],[-80,80]],
+                  'holes':[[[-5,-5],[-5,5],[5,5],[5,-5]]]}
+        patched=add_surface_render_patches(original,owner)
+        self.assertEqual({k:patched[k] for k in original},original)
+        rendered=unary_union([Polygon(p['p'],p.get('holes',[])) for p in patched['renderPatches']])
+        self.assertLess(rendered.intersection(owner).area,1e-8)
+        self.assertAlmostEqual(rendered.area,11200)
+        self.assertEqual(add_surface_render_patches({'p':[[0,0],[5,0],[5,5],[0,5]]},owner)['renderPatches'],[])
+        outside={'p':[[100,100],[105,100],[105,105],[100,105]]}
+        self.assertIs(add_surface_render_patches(outside,owner),outside,'unaffected records carry no redundant patches')
 
 
 if __name__ == '__main__':

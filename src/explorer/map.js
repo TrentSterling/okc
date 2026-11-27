@@ -4,11 +4,12 @@ import {drawMapBase} from './map-base.js';
 const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
 const point=v=>Array.isArray(v)?v:[v.x,v.z];
 const finitePoint=p=>Array.isArray(p)&&p.length>=2&&Number.isFinite(p[0])&&Number.isFinite(p[1]);
-const geometry=r=>({...r,p:(r.p||r.points||[]).map(point).filter(finitePoint),holes:(r.holes||[]).map(h=>h.map(point).filter(finitePoint)).filter(h=>h.length>2)});
+const points=values=>values.every(finitePoint)?values:values.map(point).filter(finitePoint);
+const geometry=r=>({...r,p:points(r.p||r.points||[]),holes:(r.holes||[]).map(points).filter(h=>h.length>2)});
 export function createMap(canvas,{onSelect=()=>{},onMove=()=>{},onView=()=>{},onSelectBuilding=()=>{}}={}){
  const ctx=canvas.getContext('2d',{alpha:false}),baseCanvas=document.createElement('canvas'),baseContext=baseCanvas.getContext('2d',{alpha:false});
  if(!ctx||!baseContext)throw Error('The city atlas needs a 2D canvas.');
- let baseDirty=true,roadIndex=createSpatialIndex([]),surfaceIndex=createSpatialIndex([]),buildingIndex=createSpatialIndex([]),visibleBuildings=[];
+ let baseDirty=true,pendingData=null,roadIndex=createSpatialIndex([]),surfaceIndex=createSpatialIndex([]),buildingIndex=createSpatialIndex([]),visibleBuildings=[];
  const abort=new AbortController(),listen=(type,fn,opts={})=>canvas.addEventListener(type,fn,{...opts,signal:abort.signal});
  let width=1,height=1,dpr=1,visible=false,dirty=true,frame=0,places=[],buildings=[],selectedBuilding=null,selected=null,route=[],roadRoute=null,position=null,data={roads:[],surfaces:[],districts:[]},bounds=[-27000,-17000,7000,8000],center={x:-10000,z:-3000},scale=.025,baseScale=.025,targets=[],labels=true,layers={roads:true,water:true,parks:true,buildings:true},drag=null,hover=null,viewTimer;
  const resize=()=>{const r=canvas.getBoundingClientRect();if(!r.width||!r.height)return;width=r.width;height=r.height;dpr=Math.min(globalThis.devicePixelRatio||1,2);const w=Math.round(width*dpr),h=Math.round(height*dpr);if(canvas.width!==w||canvas.height!==h){canvas.width=baseCanvas.width=w;canvas.height=baseCanvas.height=h;invalidate();emitView();}};
@@ -21,16 +22,23 @@ export function createMap(canvas,{onSelect=()=>{},onMove=()=>{},onView=()=>{},on
  function emitView(){clearTimeout(viewTimer);viewTimer=setTimeout(()=>onView(getView()),100);}
  function setData(next={}){
   const b=next.bounds;if(Array.isArray(b))bounds=b;else if(b)bounds=[b.minX,b.minZ,b.maxX,b.maxZ];
+  // A hidden atlas should not block 3D startup by cloning and indexing the full
+  // metro overview. Keep the source until the map actually needs its first draw.
+  pendingData=next;data={...next,roads:next.roads||[],surfaces:next.surfaces||[],districts:next.districts||[]};invalidate();
+ }
+ function prepareData(){
+  if(!pendingData)return;const next=pendingData;pendingData=null;
   const roads=(next.roads||[]).map(geometry).filter(r=>r.p.length>1);
   const surfaces=(next.surfaces||[...(next.waters||[]).map(w=>({...w,kind:'water'})),...(next.parks||[]).map(w=>({...w,kind:'park'}))]).map(geometry).filter(r=>r.p.length>2);
-  for(const r of [...roads,...surfaces])r.b=boundsOf(r.p);
-  data={...next,roads,surfaces,districts:next.districts||[]};roadIndex=createSpatialIndex(roads);surfaceIndex=createSpatialIndex(surfaces);invalidate();
+  for(const r of roads)r.b=boundsOf(r.p);for(const r of surfaces)r.b=boundsOf(r.p);
+  data={...next,roads,surfaces,districts:next.districts||[]};roadIndex=createSpatialIndex(roads);surfaceIndex=createSpatialIndex(surfaces);
  }
  function fit(){const panel=document.querySelector('.ex-panel'),r=panel&&!panel.hidden?panel.getBoundingClientRect():null,left=width>760&&r?Math.min(width*.45,r.right+35):50,right=60,top=155,bottom=80;baseScale=Math.min((width-left-right)/(bounds[2]-bounds[0]),(height-top-bottom)/(bounds[3]-bounds[1]));scale=Math.max(.002,baseScale);center={x:(bounds[0]+bounds[2])/2-(left-right)/2/scale,z:(bounds[1]+bounds[3])/2-(top-bottom)/2/scale};invalidate();emitView();}
  function zoom(factor,pivot={x:width/2,y:height/2}){const a=world(pivot.x,pivot.y);scale=clamp(scale*factor,.002,4);const b=world(pivot.x,pivot.y);center.x+=a.x-b.x;center.z+=a.z-b.z;invalidate();emitView();}
  function focus(p,targetScale=.32){if(!Number.isFinite(p?.x)||!Number.isFinite(p?.z))return;center={x:p.x,z:p.z};scale=Math.max(scale,targetScale);selected=p.id||selected;invalidate();emitView();}
  function path(points,close=false){ctx.beginPath();for(let i=0;i<points.length;i++){const s=screen(...points[i]);if(!i)ctx.moveTo(...s);else ctx.lineTo(...s);}if(close)ctx.closePath();}
  function draw(){
+  prepareData();
   ctx.setTransform(dpr,0,0,dpr,0,0);targets=[];
   const a=world(0,0),b=world(width,height),view=[a.x,a.z,b.x,b.z];
   if(baseDirty){

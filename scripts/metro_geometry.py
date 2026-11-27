@@ -5,10 +5,26 @@ two independently exported outlines afterward creates small overlapping wedges
 at angled intersections even when their full-precision inputs were disjoint.
 """
 from shapely import make_valid, set_precision
+from shapely.geometry import Polygon
 from shapely.ops import unary_union
 
 GRID_METERS = .01
 STREET_EDGE_GUARD_METERS = GRID_METERS * 2
+DOWNTOWN_SURFACE_APRON = 50
+
+
+def surface_core_bounds(core_bounds):
+    """Match the preserved downtown compiler's 50 m camera apron."""
+    return {key: value + (-DOWNTOWN_SURFACE_APRON if key.startswith('min') else DOWNTOWN_SURFACE_APRON)
+            for key, value in core_bounds.items()}
+
+
+def add_surface_render_patches(record, surface_core):
+    """Retain the raw atlas polygon; bake only its exposed 3D pieces if needed."""
+    polygon = Polygon(record['p'], record.get('holes', []))
+    if polygon.intersection(surface_core).area <= 1e-8:
+        return record
+    return {**record, 'renderPatches': polygon_records(polygon.difference(surface_core))}
 
 
 def polygons(geometry):

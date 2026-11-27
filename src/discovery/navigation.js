@@ -7,7 +7,13 @@ export function getRouter(){
 const tourSignature=stops=>JSON.stringify((stops||[]).map(stop=>[stop.stopId||stop.id,stop.id,stop.x,stop.z,stop.itineraryIndex]));
 export function createNavigation({getExplorer,getBridge,getPosition,setPosition,getPlaces,routerProvider=getRouter}){
   let tour=null,mission=null,request=0;
-  function stopTour(){request++;if(tour)tour.paused=true;getBridge()?.pauseTour();getExplorer()?.setTourState({playing:false});}
+  function stopTour(){
+    request++;
+    // Manual input cancels pending route work, but only an active guided tour
+    // owns velocity. Repeated keys must never brake a freely driven car.
+    if(!tour||tour.paused)return;
+    tour.paused=true;getBridge()?.pauseTour();getExplorer()?.setTourState({playing:false});
+  }
   function cancelTour(){stopTour();tour=null;getExplorer()?.setRoadRoute(null);getBridge()?.setRoute(null);getExplorer()?.setTourState({index:-1,playing:false,finished:false});}
   async function planRoute(place){
     if(!Number.isFinite(place?.x)||!Number.isFinite(place?.z))throw Error('This venue has no verified map coordinate yet. Its address and website are available.');

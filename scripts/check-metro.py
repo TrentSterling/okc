@@ -9,6 +9,7 @@ from collections import Counter, deque
 import gzip, hashlib, json, math, os
 from shapely.geometry import Polygon, box
 from shapely.ops import unary_union
+from metro_geometry import surface_core_bounds
 
 ROOT=Path(__file__).resolve().parents[1]
 DATA=Path(os.environ.get('OKC_BUILD_OUTPUT',ROOT/'dist'))/'geo/metro'
@@ -17,7 +18,9 @@ network=json.loads((DATA/'network.json').read_text())
 pois=json.loads((DATA/'pois.json').read_text())['pois']
 b=manifest['bounds'];bounds=box(b['minX'],b['minZ'],b['maxX'],b['maxZ'])
 cb=manifest['coreBounds'];core=box(cb['minX'],cb['minZ'],cb['maxX'],cb['maxZ'])
-failures=[];stats=Counter();surface_overlap=0;core_overlap=0;max_tile_bytes=0
+surface_cb=manifest.get('coreSurfaceBounds',surface_core_bounds(cb))
+surface_core=box(surface_cb['minX'],surface_cb['minZ'],surface_cb['maxX'],surface_cb['maxZ'])
+failures=[];stats=Counter();surface_overlap=0;core_overlap=0;land_core_overlap=0;max_tile_bytes=0
 building_ids=set()
 
 def check(condition,message):
@@ -48,6 +51,17 @@ def asset(meta, label):
 
 
 check(manifest['tileSize']==512,'tile size contract')
+check(manifest.get('coreSurfaceBounds')==surface_core_bounds(cb),'downtown surface ownership must include its 50 m apron')
+base_surfaces_path=DATA.parent/'base-surfaces.json.gz'
+check(base_surfaces_path.is_file(),'original downtown surface contract missing')
+if base_surfaces_path.is_file():
+    with gzip.open(base_surfaces_path,'rt') as source:base_surfaces=json.load(source)
+    check(base_surfaces['drivingBounds']==cb,'metro core and original downtown driving bounds differ')
+    for layer in base_surfaces['layers']:
+        for p in layer['polygons']:
+            check(all(surface_cb['minX']-.0001<=x<=surface_cb['maxX']+.0001 and
+                      surface_cb['minZ']-.0001<=z<=surface_cb['maxZ']+.0001 for x,z in p['outer']),
+                  f'original downtown {layer["kind"]} exceeds reserved surface ownership')
 check(len(manifest['tiles'])==manifest['counts']['tiles'],'tile inventory count mismatch')
 check(len({tile['id'] for tile in manifest['tiles']})==len(manifest['tiles']),'duplicate tile IDs')
 for name,meta in manifest['assets'].items():asset(meta,name)
@@ -92,13 +106,23 @@ for meta in manifest['tiles']:
         if not p.is_valid:continue
         if r['kind']=='road' and r['y']<1:roads.append(p)
         if r['kind']=='sidewalk':walks.append(p)
-        core_overlap+=p.intersection(core).area
+        core_overlap+=p.intersection(surface_core).area
+    for r in tile.get('surfaces',[]):
+        raw_polygon=polygon(r)
+        for patch in r.get('renderPatches',[r]):
+            p=polygon(patch)
+            check(p.is_valid and p.area>0,f'invalid land render patch {meta["id"]}/{r["id"]}')
+            if not p.is_valid:continue
+            land_core_overlap+=p.intersection(surface_core).area
+            if 'renderPatches' in r:
+                check(p.difference(raw_polygon.buffer(.015)).area<.05,f'land render patch escaped source polygon {r["id"]}')
     if roads and walks:
         overlap=unary_union(roads).intersection(unary_union(walks)).area
         surface_overlap+=overlap
         check(overlap<.05,f'road/sidewalk overlap {meta["id"]}: {overlap}')
 
-check(core_overlap<.05,f'new road mesh overlaps original downtown {core_overlap}')
+check(core_overlap<.05,f'new road mesh overlaps original downtown surface apron {core_overlap}')
+check(land_core_overlap<.05,f'metro land patches overlap original downtown surface apron {land_core_overlap}')
 check(stats['buildings']==manifest['counts']['buildings'],'building manifest count mismatch')
 check(stats['tileBytes']==manifest['totalTileBytes'],'tile payload bytes mismatch')
 check(stats['tileGzipBytes']==manifest.get('totalTileGzipBytes'),'compressed tile payload bytes mismatch')
@@ -130,9 +154,9 @@ if anchors:
 
 report={'passed':not failures,'checks':['finite source geometry','tile inventory','raw and compressed payload identity','source provenance','graph source identity',
   'one-way graph contracts','map boundary graph clipping','valid polygon footprints','road / sidewalk footprint partition',
-  'original downtown geometry ownership','unique building identities','POI source and ID coverage','cross-city graph reachability'],
+  'original downtown and 50 m surface apron ownership','unique building identities','POI source and ID coverage','cross-city graph reachability'],
   'counts':dict(stats),'maxTileBytes':max_tile_bytes,'roadSidewalkOverlapSquareMeters':round(surface_overlap,4),
-  'newRoadCoreOverlapSquareMeters':round(core_overlap,4),'routeChecks':route_checks,'failures':failures,
+  'newRoadCoreOverlapSquareMeters':round(core_overlap,4),'newLandCoreOverlapSquareMeters':round(land_core_overlap,4),'coreSurfaceBounds':surface_cb,'routeChecks':route_checks,'failures':failures,
   'limits':['CPU / geographic contract check only. Browser screenshots and actual runtime behavior require separate verification.',
             'Source map accuracy, current business operation and facade resemblance are not established by this check.']}
 (DATA/'validation.json').write_text(json.dumps(report,indent=2)+'\n')

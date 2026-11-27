@@ -1,6 +1,16 @@
 # Prairie Prism handoff
 
-## Active 3D startup repair (v0.7.1)
+## Active driving, surface and loading repair (v0.7.2)
+
+- User reported instantly stuck driving, flickering streets, slow startup/processing and camera views that did not load. Continue through a complete validated direct-main publication; earlier authorization and recoverable backups still apply.
+- Sustained focused-canvas keyboard repeat reproduced the velocity reset: idle tour interruption called pauseTour on each key event. Navigation now only pauses a playing tour; repeated keydown is ignored by its canvas interrupt handler. The actual app overlay improves 10-second travel from 2.015 m to 216.891 m; the full startup gate is being extended accordingly.
+- Downtown's original surface bake has a 50 m apron. New coreSurfaceBounds and clipped renderPatches reserve that owner, with legacy runtime triangle clipping as well. Actual old/current buffers across 48 tiles reduce 22,035.7164 m² of coplanar road overlap to zero, with zero corrected draw-order differences in 12 native view/depth combinations.
+- Camera-frustum selection keeps the car collision bubble while streaming visible tiles, reacts to projection changes, cancels obsolete jobs and bounds cached tiles. Completed geometry mounts one tile per animation frame. Core-only startup avoids duplicate metro waits.
+- Packed city buffers now share storage and use offline bounds; metro bounds come from the worker. Texture generation preserves exact pixels with fewer temporary arrays, and hidden atlas indexing is deferred. Startup uses async shader compilation when supported and avoids duplicate reflection captures.
+- Source integration and focused checks are complete; streaming integration harness, full build/check, CI and publication audit are the next gates. Do not report live until the release workflow completes. Do not run the full build and full-app harness concurrently in this container.
+- Evidence: [driving/streaming](docs/validation/driving-streaming-v072.md), [surface ownership](docs/validation/metro-surface-ownership/README.md), [startup CPU](docs/validation/startup-cpu/README.md). CPU/native/headless checks are not browser PBR playtesting or device FPS.
+
+## Earlier 3D startup repair (v0.7.1)
 
 - User's November 27 real-device screenshot exposed a fatal startup regression despite the successful v0.7 asset publication: the graphics context existed, but initial metro requests escaped `/okc/` and failed.
 - `src/metro/streaming.js` used `../../geo/metro/` from the deployed `/okc/metro/streaming.js`, requesting `/geo/metro/tiles/` instead of `/okc/geo/metro/tiles/`. Both compressed and plain fallback URLs are now fixed. Startup exceptions also retain their actual message in the atlas fallback.

@@ -12,7 +12,7 @@ from shapely import make_valid
 from shapely.geometry import Polygon, MultiPolygon, LineString, Point, box, shape
 from shapely.ops import unary_union, polygonize
 from shapely.strtree import STRtree
-from metro_geometry import polygons, polygon_records, partition_street_surfaces
+from metro_geometry import polygons, polygon_records, partition_street_surfaces, surface_core_bounds, add_surface_render_patches
 from metro_output import write_json
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -26,6 +26,8 @@ MZ = 111132
 TILE = CONFIG['tileSizeMeters']
 CB = CONFIG['coreBoundsMeters']
 CORE = box(CB['minX'], CB['minZ'], CB['maxX'], CB['maxZ'])
+SURFACE_CB = surface_core_bounds(CB)
+SURFACE_CORE = box(SURFACE_CB['minX'], SURFACE_CB['minZ'], SURFACE_CB['maxX'], SURFACE_CB['maxZ'])
 REGION = box((BBOX[0]-ORIGIN[0])*MX, -(BBOX[3]-ORIGIN[1])*MZ,
              (BBOX[2]-ORIGIN[0])*MX, -(BBOX[1]-ORIGIN[1])*MZ)
 BOUNDS = dict(zip(('minX','minZ','maxX','maxZ'), [round(n,2) for n in REGION.bounds]))
@@ -504,7 +506,8 @@ print(f'Metro: {len(pois)} POIs incl {curated_count} curated, {curated_replaced}
 # Union each elevation layer once; sidewalk meshes own only the difference.
 # This prevents a pile of overlapping road ribbons at every intersection.
 for i,(key,dest) in enumerate(sorted(TILES.items())):
-    dest['meshes'].extend(partition_street_surfaces(ROAD_MESH.get(key,{}),WALK_MESH.get(key,[]),CORE))
+    dest['meshes'].extend(partition_street_surfaces(ROAD_MESH.get(key,{}),WALK_MESH.get(key,[]),SURFACE_CORE))
+    dest['surfaces'] = [add_surface_render_patches(record, SURFACE_CORE) for record in dest['surfaces']]
     if i%400==0:print(f'Metro surfaces {i}/{len(TILES)} tiles',flush=True)
 
 manifest_tiles=[]
@@ -533,7 +536,7 @@ limits=[
 counts={'buildings':building_count,'roads':all_road_count,'routableRoads':len(network_roads),'networkNodes':len(network_nodes),
         'surfaces':surface_count,'pois':len(pois),'curatedPois':curated_count,'unlocatedCuratedPois':curated_unlocated,'mergedPoiDuplicates':curated_replaced,'tiles':len(manifest_tiles),'heights':dict(height_counts),'poiCategories':dict(poi_counts)}
 manifest={'version':1,'name':'OKC Metro / West to Downtown','origin':ORIGIN,'bbox':BBOX,'bounds':BOUNDS,
-    'tileSize':TILE,'axis':'x east, z south; meters','coreBounds':CB,
+    'tileSize':TILE,'axis':'x east, z south; meters','coreBounds':CB,'coreSurfaceBounds':SURFACE_CB,
     'widthMiles':round((BOUNDS['maxX']-BOUNDS['minX'])/1609.344,2),'depthMiles':round((BOUNDS['maxZ']-BOUNDS['minZ'])/1609.344,2),
     'poiDetailRadiusMeters':CONFIG['poiDetailRadiusMeters'],'counts':counts,'tiles':manifest_tiles,
     'assets':{name:{'url':name+'.json','gzipUrl':name+'.json.gz',**assets[name]} for name in ['overview','pois','network']},

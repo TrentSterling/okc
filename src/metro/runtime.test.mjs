@@ -14,6 +14,7 @@ import {interpretRoof} from './roof-shapes.js';
 import {mountTile, unmountTile, setTileAppearance} from './tile-scene.js';
 import {createDrivingWorld} from '../driving.js';
 import {createMetroStreamer} from './streaming.js';
+import {clipSurfaceTriangle,surfaceCoreBounds,roadDeckHeight} from './surface-ownership.js';
 
 function fakeWorkers() {
   const workers = [];
@@ -127,7 +128,7 @@ async function meshCompiler(t) {
   const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
   fs.mkdirSync(path.join(directory, 'metro'));
   fs.writeFileSync(path.join(directory, 'package.json'), '{"type":"module"}');
-  for (const name of ['mesh-builder.js', 'roof-shapes.js']) fs.copyFileSync(path.join(root, 'src/metro', name), path.join(directory, 'metro', name));
+  for (const name of ['mesh-builder.js', 'roof-shapes.js', 'surface-ownership.js', 'mesh-bounds.js']) fs.copyFileSync(path.join(root, 'src/metro', name), path.join(directory, 'metro', name));
   fs.symlinkSync(path.join(root, 'public/vendor'), path.join(directory, 'vendor'), 'dir');
   t.after(() => fs.rmSync(directory, {recursive: true, force: true}));
   ({compileTile} = await import(pathToFileURL(path.join(directory, 'metro/mesh-builder.js')).href));
@@ -146,6 +147,12 @@ test('compiled gable and courtyard geometry is finite with upward roofs and clos
     assert.equal(mesh.layer, 'buildings');
     for (const array of [mesh.positions, mesh.normals, mesh.uvs]) assert.ok(array.every(Number.isFinite));
     if (mesh.kind === 'roof') for (let i = 1; i < mesh.normals.length; i += 3) assert.ok(mesh.normals[i] > .5);
+    const b=mesh.bounds;assert.ok(b&&Number.isFinite(b.radius));
+    for(let i=0;i<mesh.positions.length;i+=3){
+      const p=Array.from(mesh.positions.slice(i,i+3));
+      p.forEach((v,j)=>assert.ok(v>=b.min[j]&&v<=b.max[j]));
+      assert.ok(Math.hypot(...p.map((v,j)=>v-b.center[j]))<=b.radius+1e-7,'worker sphere contains every rendered vertex');
+    }
   }
   const walls = result.meshes.filter(mesh => /^brick|stone|stucco|metal/.test(mesh.kind));
   assert.ok(walls.some(mesh => {
@@ -230,4 +237,52 @@ test('nested park, woodland and parking regions have deterministic depth ownersh
   assert.ok(Math.abs(heights.grass-.008)<1e-6);assert.ok(Math.abs(heights.forest-.04)<1e-6);assert.ok(Math.abs(heights.parking-.08)<1e-6);
   assert.ok(heights.grass<heights.forest&&heights.forest<heights.parking&&heights.parking<.14);
   assert.equal(result.meshes.length,3,'semantic offsets do not split existing material buckets');
+});
+
+test('surface clipping removes an interior owner even when every triangle corner is outside it', () => {
+  const bounds={minX:0,maxX:4,minZ:0,maxZ:4},points=[[-2,.14,-2],[-2,.14,12],[12,.14,-2]];
+  const result=clipSurfaceTriangle(points,points.map(p=>[p[0]/5,p[2]/5]),bounds);
+  let area=0;
+  for(const {points:p,uv} of result){
+    area+=Math.abs((p[1][0]-p[0][0])*(p[2][2]-p[0][2])-(p[1][2]-p[0][2])*(p[2][0]-p[0][0]))/2;
+    assert.ok(p.every(v=>v[0]<=0)||p.every(v=>v[0]>=4)||p.every(v=>v[2]<=0)||p.every(v=>v[2]>=4),'triangle belongs wholly outside the core');
+    p.forEach((v,i)=>{assert.ok(Math.abs(uv[i][0]-v[0]/5)<1e-12);assert.ok(Math.abs(uv[i][1]-v[2]/5)<1e-12);assert.equal(v[1],.14);});
+  }
+  assert.ok(Math.abs(area-82)<1e-10,'98 m² source triangle minus 16 m² interior owner');
+});
+
+test('legacy tile road, land and paint obey downtown apron ownership without deleting apron buildings', async t => {
+  const compile=await meshCompiler(t),core={minX:-10,maxX:10,minZ:-10,maxZ:10},surfaceCore=surfaceCoreBounds(core);
+  assert.deepEqual(surfaceCore,{minX:-60,maxX:60,minZ:-60,maxZ:60});
+  const road={id:'crossing',kind:'primary',w:10,p:[[-80,0],[80,0]]};
+  const result=compile({id:'0_0',meshes:[{kind:'road',y:.14,p:[[-80,-5],[80,-5],[80,5],[-80,5]]}],
+    surfaces:[{kind:'parking',p:[[-8,-8],[8,-8],[8,8],[-8,8]]}],roads:[road],
+    buildings:[{id:'apron-building',h:6,p:[[25,20],[30,20],[30,25],[25,25]]}]},{core});
+  assert.equal(result.buildings.length,1,'building exclusion remains at the original core');
+  assert.equal(result.meshes.some(m=>m.kind==='parking'),false,'the original downtown owns core land');
+  assert.ok(result.meshes.some(m=>m.kind==='yellow'),'outside paint remains');
+  let roadArea=0;
+  for(const m of result.meshes.filter(m=>['asphalt','concrete','yellow','paint'].includes(m.kind))){
+    for(let i=0;i<m.positions.length;i+=9){
+      const p=Array.from({length:3},(_,j)=>Array.from(m.positions.slice(i+j*3,i+j*3+3)));
+      assert.ok(p.every(v=>v[0]<=-60)||p.every(v=>v[0]>=60)||p.every(v=>v[2]<=-60)||p.every(v=>v[2]>=60));
+      if(m.kind==='asphalt')roadArea+=Math.abs((p[1][0]-p[0][0])*(p[2][2]-p[0][2])-(p[1][2]-p[0][2])*(p[2][0]-p[0][0]))/2;
+    }
+    for(let i=1;i<m.normals.length;i+=3)assert.ok(m.normals[i]>.99);
+  }
+  assert.ok(Math.abs(roadArea-400)<1e-5,'only the two 20 m road ends remain');
+  const fallback=compile({id:'0_0',roads:[road]},{core,detail:false});
+  assert.ok(fallback.meshes[0].positions.length>0,'legacy centerline-only tiles remain supported');
+  assert.equal(roadDeckHeight({layer:-1,bridge:true,tunnel:true}),.14);
+  assert.equal(roadDeckHeight({layer:0,bridge:true}),5.14);
+});
+
+test('clipping a holed surface preserves its courtyard and uses optional baked render patches', async t => {
+  const compile=await meshCompiler(t),surfaceCore={minX:0,maxX:4,minZ:0,maxZ:4},core={minX:100,maxX:110,minZ:100,maxZ:110};
+  const surface={kind:'park',p:[[-10,-10],[10,-10],[10,10],[-10,10]],holes:[[[-2,-2],[-2,2],[2,2],[2,-2]]]};
+  const result=compile({id:'0_0',surfaces:[surface]},{core,surfaceCore});
+  const m=result.meshes[0];let area=0;
+  for(let i=0;i<m.positions.length;i+=9){const p=m.positions;area+=Math.abs((p[i+3]-p[i])*(p[i+8]-p[i+2])-(p[i+5]-p[i+2])*(p[i+6]-p[i]))/2;}
+  assert.ok(Math.abs(area-372)<1e-4,'courtyard hole and clipped owner keep independent area');
+  assert.equal(compile({id:'0_0',surfaces:[{...surface,renderPatches:[]}]},{core,surfaceCore}).meshes.length,0,'empty baked patch list means no 3D ownership');
 });

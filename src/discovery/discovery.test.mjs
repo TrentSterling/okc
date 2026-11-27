@@ -46,4 +46,24 @@ const a={id:'one',name:'One',x:3000,z:0},b={id:'two',name:'Two',x:4000,z:0};
 const first=nav2.navigate(a),second=nav2.navigate(b);routeJobs[0].resolve(route(position,a));await first;routeJobs[1].resolve(route(position,b));await second;assert.equal(shown.at(-1).points.at(-1)[0],4000);
 const bridgeJobs=[];provider.route=async(from,to)=>route(from,to);bridge={pauseTour:noop,setRoute:noop,getPosition:()=>position,navigate:(place,r,control)=>{const job={...deferred(),place,control};bridgeJobs.push(job);return job.promise;}};
 const old=nav2.navigate(a);await settle();const latest=nav2.navigate(b);await settle();assert.equal(bridgeJobs[0].control.isCurrent(),false);assert.equal(bridgeJobs[1].control.isCurrent(),true);bridgeJobs[1].resolve();await latest;bridgeJobs[0].resolve();await old;nav2.dispose();
-console.log('Discovery checks passed: failed/retained/hidden map tile requests, tour pause/resume/cancel, changed itineraries, arrival, stale routes and bridge cancellation guards.');
+
+// A manual key interrupt must only brake an actively playing tour. Repeated
+// keyboard events during ordinary free driving must preserve car momentum.
+let pauseCalls=0,manualCar={vx:11,vz:2,speed:11,travelSpeed:Math.hypot(11,2)};
+const manualBridge={beginTour:async()=>{},setRoute:noop,getPosition:()=>position,
+ pauseTour(){pauseCalls++;manualCar.vx=manualCar.vz=manualCar.speed=manualCar.travelSpeed=0;}};
+const nav3=createNavigation({getExplorer:()=>explorer,getBridge:()=>manualBridge,getPosition:()=>position,setPosition:p=>position=p,getPlaces:()=>[],routerProvider:()=>({route:async(from,to)=>route(from,to)})});
+const moving={...manualCar};
+for(let i=0;i<100;i++)nav3.stopTour();
+assert.equal(pauseCalls,0,'Idle tour interrupts must not call the physical car brake.');
+assert.deepEqual(manualCar,moving,'Repeated manual interrupts preserve free-driving momentum when no tour exists.');
+await nav3.tourCommand({stops,index:0,action:'start'});
+nav3.stopTour();
+assert.equal(pauseCalls,1,'An actively playing tour is physically paused once.');
+assert.equal(manualCar.travelSpeed,0);
+manualCar={...moving};
+for(let i=0;i<100;i++)nav3.stopTour();
+assert.equal(pauseCalls,1,'Already paused tours must not repeatedly brake the free car.');
+assert.deepEqual(manualCar,moving,'Manual driving after a paused tour retains its momentum.');
+nav3.dispose();assert.equal(pauseCalls,1,'Disposal of an already paused tour does not brake again.');
+console.log('Discovery checks passed: failed/retained/hidden map tile requests, tour pause/resume/cancel, idle and repeated manual interrupts, changed itineraries, arrival, stale routes and bridge cancellation guards.');

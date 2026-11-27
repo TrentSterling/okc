@@ -1,6 +1,6 @@
 {
   "name": "okc-prairie-prism",
-  "version": "0.7.1",
+  "version": "0.7.2",
   "private": true,
   "type": "module",
   "dependencies": {
@@ -10,7 +10,7 @@
   "scripts": {
     "build": "node scripts/build.mjs",
     "build:downloads": "python3 scripts/build-downloads.py",
-    "check": "node scripts/check-source.mjs && node scripts/check-build-safety.mjs && node scripts/check-static.mjs && node scripts/check-tower-surfaces.mjs && node scripts/check-world-surfaces.mjs && node scripts/check-depth-offsets.mjs && node scripts/check-street-sections.mjs && node scripts/check-building-shells.mjs && node scripts/check-opening-sills.mjs && python3 scripts/check-building-articulation.py && python3 scripts/check-mapped-massing.py && node scripts/check-driving.mjs && node scripts/check-city-art.mjs && node scripts/check-skyline-facades.mjs && node scripts/check-sunset.mjs && node scripts/bake-world-geometry.mjs --check && node src/explorer/planner.test.mjs && node src/explorer/atlas.test.mjs && node --test src/metro/runtime.test.mjs && python3 scripts/check-metro-compiler.py && python3 scripts/check-metro.py && node src/loading/assets.test.mjs && node src/discovery/discovery.test.mjs && node --test scripts/lib/request-pacing.test.mjs && npm run check:startup",
+    "check": "node scripts/check-source.mjs && node scripts/check-build-safety.mjs && node scripts/check-static.mjs && node scripts/check-tower-surfaces.mjs && node scripts/check-world-surfaces.mjs && node scripts/check-depth-offsets.mjs && node scripts/check-street-sections.mjs && node scripts/check-building-shells.mjs && node scripts/check-opening-sills.mjs && python3 scripts/check-building-articulation.py && python3 scripts/check-mapped-massing.py && node scripts/check-driving.mjs && node scripts/check-city-art.mjs && node scripts/check-skyline-facades.mjs && node scripts/check-sunset.mjs && node scripts/bake-world-geometry.mjs --check && node src/explorer/planner.test.mjs && node src/explorer/atlas.test.mjs && node src/world/packed-data.test.mjs && node --test src/metro/runtime.test.mjs src/metro/view-coverage.test.mjs src/metro/streaming.test.mjs && python3 scripts/check-metro-compiler.py && python3 scripts/check-metro.py && node src/loading/assets.test.mjs && node src/discovery/discovery.test.mjs && node --test scripts/lib/request-pacing.test.mjs && npm run check:startup",
     "build:map": "npm run build",
     "check:source": "node scripts/check-source.mjs",
     "check:build-safety": "node scripts/check-build-safety.mjs",
