@@ -86,3 +86,14 @@ navigation prototypes, and decorative traffic is not a traffic simulation.
 The 29 original gallery captures remain byte-preserved historical images. New
 native diagnostics are labeled separately and never presented as current
 browser captures or evidence of an FPS improvement.
+
+## Publication audit
+
+The first remote run, `46057155818`, passed its complete validation job and
+published source `2c307446` through native Pages. Its final public audit then
+received HTTP 429 after a burst of roughly 3,100 files in 11 seconds. It did not
+report a hash mismatch, but it did not finish the complete inventory either.
+The follow-up verifier retains every file and adds shared request pacing,
+server-directed retry delays and a shared cooldown before another full audit.
+This is a deployment-check correction; the application and atlas passed their
+existing release gates.
