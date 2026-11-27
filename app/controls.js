@@ -26,7 +26,7 @@ export function bindControls({getState,getSimTime,view,world,keys,touchInputs,ui
  $('exposure').addEventListener('input',e=>{getState().exposure=Number(e.target.value);syncUI();});
  for(const [id,key] of [['screenToggle','screen'],['legendsToggle','legends'],['trafficToggle','traffic']])$(id).addEventListener('change',e=>{getState()[key]=e.target.checked;if(key==='legends'&&getState().legends){view.orbitFocus=null;view.viewFov=null;view.orbitYaw=2.25;view.orbitPitch=.19;view.orbitDistance=700;$('studyView').value='';getState().camera='orbit';view.firstCamera=true;toast('Legends Tower: an imagined future skyline, 1,907 ft.');}syncUI();});
  $('soundToggle').addEventListener('change',e=>{getState().sound=e.target.checked;enableAudio();});
- $('qualitySelect').addEventListener('change',e=>{getState().quality=e.target.value;resize();});
+ $('qualitySelect').addEventListener('change',e=>{if(actions.setQuality)actions.setQuality(e.target.value);else{getState().quality=e.target.value;resize();}});
  $('settingsBtn').addEventListener('click',()=>{$('settingsPanel').hidden=!$('settingsPanel').hidden;$('settingsBtn').setAttribute('aria-expanded',String(!$('settingsPanel').hidden));});
  const showHelp=show=>{clearDrivingInputs();$('helpPanel').hidden=!show;$('helpBtn').setAttribute('aria-expanded',String(show));if(show)$('closeHelp').focus();else focusRoad();};
  $('helpBtn').addEventListener('click',()=>showHelp(true));$('closeHelp').addEventListener('click',()=>showHelp(false));
@@ -40,7 +40,7 @@ export function bindControls({getState,getSimTime,view,world,keys,touchInputs,ui
  window.addEventListener('keydown',e=>{
   if(e.code==='Escape'){showHelp(false);$('settingsPanel').hidden=true;$('settingsBtn').setAttribute('aria-expanded','false');if(!ui.hudVisible)toggleHud();return;}
   if(e.code==='Tab'&&!$('helpPanel').hidden){e.preventDefault();$('closeHelp').focus();return;}
-  if(isTyping()||!$('helpPanel').hidden)return;
+  if(e.defaultPrevented||document.body.classList.contains('explorer-map-open')||isTyping()||!$('helpPanel').hidden)return;
   if(['Space','KeyW','KeyS','KeyA','KeyD','ArrowUp','ArrowDown','ArrowLeft','ArrowRight'].includes(e.code))e.preventDefault();
   keys.add(e.code);if(e.repeat)return;
   if(e.code==='KeyF')setDriveMode(getState().driveMode==='free'?'scenic':'free');

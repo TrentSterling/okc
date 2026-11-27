@@ -1,0 +1,28 @@
+/* Small launch surface; the city itself stays the full-screen application. */
+.loading-screen{z-index:999;background:#10221f;color:#f2efdf;overflow:hidden;isolation:isolate}
+.loading-screen::before{content:"";position:absolute;inset:0;background:linear-gradient(90deg,rgba(9,25,22,.93) 0%,rgba(9,25,22,.75) 42%,rgba(9,25,22,.14) 100%),url('./gallery/shots/v02-opening-view.png') center/cover;filter:saturate(.7);z-index:-2}
+.loading-screen::after{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(0deg,#10221f 0%,transparent 65%)}
+.loading-content{width:min(800px,88vw);text-align:left;position:relative;margin:auto;padding:5vh 0}
+.loading-kicker{color:#c6b079;font-size:.8rem;font-weight:700;letter-spacing:.24em;text-transform:uppercase}
+.loading-content h1{font-size:clamp(3.4rem,8vw,6.5rem);font-weight:600;letter-spacing:-.06em;line-height:.96;margin:22px 0;color:#f6f1df;text-shadow:none}
+.loading-content h1 span{display:block;color:#9acbb8}
+.loading-description{max-width:420px;font-size:1.07rem;line-height:1.65;color:#d3dbcf;margin:28px 0 32px}
+.loading-places{display:flex;gap:12px;flex-wrap:wrap;margin:0 0 34px;color:#d9ba7e;font-size:.9rem}
+.loading-places span{border:1px solid #8ba09555;padding:7px 12px;border-radius:20px}
+.loading-progress-head{display:flex;justify-content:space-between;width:min(440px,100%);font-size:.92rem;color:#dce3d7;margin-bottom:12px}
+.loading-content progress{display:block;width:min(440px,100%);height:5px;border:0;border-radius:8px;overflow:hidden;background:#5a756055;accent-color:#e4b66f}
+.loading-content progress::-webkit-progress-bar{background:#5a756055}
+.loading-content progress::-webkit-progress-value{background:linear-gradient(90deg,#82c9ae,#f1be74);transition:width .25s}
+#loadingStatus{font-size:1rem;color:#f1eedf;margin:18px 0 6px}
+#loadingDetail{font-size:.82rem;color:#adbbac;min-height:1.4em;margin:0}
+.loading-stages{display:flex;list-style:none;gap:18px;padding:0;margin:20px 0;color:#667d72;font-size:.77rem}.loading-stages .is-complete{color:#b5d9c5}
+.loading-map-link{border:1px solid #aec9b663;padding:10px 16px;margin-top:22px;border-radius:8px;background:#17332bdd;color:#f2eedc;font-size:.9rem;cursor:pointer}.loading-map-link:hover{background:#2a4d40}
+#loadingRetry button{background:#d8ac66;color:#172920;border:0;border-radius:8px;padding:12px 18px;cursor:pointer}
+#loadingCoverage{position:fixed;bottom:28px;left:6vw;color:#9aac9e;font-size:.8rem}
+.map-only #hud,.map-only #scene,.map-only .cinema-shade{display:none}.map-only .ex-mode-switch [data-mode="3d"]{opacity:.45}
+.map-fallback-note{position:fixed;bottom:12px;left:50%;transform:translateX(-50%);max-width:min(640px,85vw);text-align:center;padding:9px 15px;border:1px solid #45695a;border-radius:9px;color:#bdd5c9;background:#142c24ed;font:12px/1.5 system-ui;z-index:60;pointer-events:none}
+.metro-stream-status{position:fixed;left:50%;top:100px;transform:translateX(-50%);color:#dbd6bb;background:#14291ee8;border:1px solid #547e60;padding:8px 14px;border-radius:9px;font:13px system-ui;z-index:32;pointer-events:none}.metro-stream-status[hidden]{display:none}
+.explorer-map-open .metro-stream-status{display:none}
+.masthead .eyebrow{color:#b4d0c2}.masthead .wordmark{font-size:25px;letter-spacing:-.8px}
+@media(max-width:700px){.loading-content h1{font-size:3.8rem}.loading-description{font-size:.94rem;max-width:300px}.loading-stages{gap:10px;font-size:.65rem}.loading-places{font-size:.75rem;gap:8px}.map-fallback-note{bottom:5px;font-size:10px;max-width:90vw}.masthead .wordmark{font-size:19px}.masthead .eyebrow{font-size:9px}.top-tools .tool-button{padding:7px 9px;font-size:11px}}
+@media(prefers-reduced-motion:reduce){.loading-content progress::-webkit-progress-value{transition:none}}

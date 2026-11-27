@@ -1,0 +1,422 @@
+{
+  "schemaVersion": 1,
+  "inspectedAt": "2026-11-27",
+  "scope": "Eight priority destinations; limited roof, footprint, campus and selected official-photo review. This is not an audit of all mapped POIs.",
+  "imageryHandling": "Reference links and factual observations only. No third-party imagery is redistributed as app assets or textures.",
+  "limitations": [
+    "Aerial acquisition dates are not verified.",
+    "Visible roof shapes do not establish heights, precise doors, accessibility, facade materials or current tenant boundaries.",
+    "General city buildings remain source-footprint extrusions rather than inspected photorealistic replicas."
+  ],
+  "records": [
+    {
+      "poiId": "cactus-jacks",
+      "name": "Cactus Jack’s Family Fun Center",
+      "inspectedAt": "2026-11-27",
+      "status": "aerial-reference-reviewed",
+      "observations": [
+        "A narrow, light-colored roof runs north–south west of Council Road, with several small projections along its west edge.",
+        "Paved customer parking lies between the east side of the building and Council Road; a separate roof lies southwest.",
+        "The city footprint shape and orientation correspond to the observed roof. Exterior wall materials, signage dimensions and entrance position were not established."
+      ],
+      "sources": [
+        {
+          "kind": "aerial",
+          "url": "https://services.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/export?bbox=-97.6566626019656%2C35.4796844%2C-97.65273139803439%2C35.4828844&bboxSR=4326&imageSR=3857&size=640%2C640&format=jpg&f=image",
+          "publisher": "Esri World Imagery",
+          "viewed": true,
+          "acquisitionDate": null,
+          "note": "Service mosaic inspected on research date; imagery acquisition date not verified."
+        },
+        {
+          "kind": "venue",
+          "url": "https://www.cjarcade.com/index.php/about",
+          "viewed": true,
+          "note": "Venue identity/address source, not by itself an architecture inspection."
+        },
+        {
+          "kind": "footprint",
+          "url": "https://services6.arcgis.com/Do88DoK2xjTUCXd1/ArcGIS/rest/services/Oklahoma_City_OK_Buildings/FeatureServer/0/query?where=OBJECTID%3D163752&outFields=OBJECTID&outSR=4326&f=geojson",
+          "publisher": "Oklahoma City open data / Esri",
+          "viewed": true,
+          "note": "Coordinate containment checked; roof outline compared visually with aerial."
+        }
+      ],
+      "verification": {
+        "aerialViewed": true,
+        "officialVenueIdentityChecked": true,
+        "footprintAssociationChecked": true,
+        "facadePhotoVerified": false,
+        "entranceVerified": false,
+        "heightMeasured": false,
+        "exactReplica": false
+      },
+      "inspectionPoint": {
+        "lon": -97.654697,
+        "lat": 35.4812844
+      },
+      "buildingIds": [
+        "gis:okc/163752"
+      ],
+      "modelingGuidance": "Use source footprint massing where available; heights, facades and decorative details remain generalized."
+    },
+    {
+      "poiId": "windsor-lanes",
+      "name": "AMF Windsor Lanes",
+      "inspectedAt": "2026-11-27",
+      "status": "aerial-reference-reviewed",
+      "observations": [
+        "A broad north–south bowling building sits south of NW 23rd Street, with a large paved lot to its west.",
+        "The roof has dark and gray sections separated by a light mechanical strip; exact roof pitch cannot be measured from this view.",
+        "City footprint association is supported by the roof location. Facade, lane layout and door placement remain unverified."
+      ],
+      "sources": [
+        {
+          "kind": "aerial",
+          "url": "https://services.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/export?bbox=-97.6046656019656%2C35.49059999999999%2C-97.60073439803439%2C35.4938&bboxSR=4326&imageSR=3857&size=640%2C640&format=jpg&f=image",
+          "publisher": "Esri World Imagery",
+          "viewed": true,
+          "acquisitionDate": null,
+          "note": "Service mosaic inspected on research date; imagery acquisition date not verified."
+        },
+        {
+          "kind": "venue",
+          "url": "https://www.amf.com/location/amf-windsor-lanes",
+          "viewed": true,
+          "note": "Venue identity/address source, not by itself an architecture inspection."
+        },
+        {
+          "kind": "footprint",
+          "url": "https://services6.arcgis.com/Do88DoK2xjTUCXd1/ArcGIS/rest/services/Oklahoma_City_OK_Buildings/FeatureServer/0/query?where=OBJECTID%3D154857&outFields=OBJECTID&outSR=4326&f=geojson",
+          "publisher": "Oklahoma City open data / Esri",
+          "viewed": true,
+          "note": "Coordinate containment checked; roof outline compared visually with aerial."
+        }
+      ],
+      "verification": {
+        "aerialViewed": true,
+        "officialVenueIdentityChecked": true,
+        "footprintAssociationChecked": true,
+        "facadePhotoVerified": false,
+        "entranceVerified": false,
+        "heightMeasured": false,
+        "exactReplica": false
+      },
+      "inspectionPoint": {
+        "lon": -97.6027,
+        "lat": 35.4922
+      },
+      "buildingIds": [
+        "gis:okc/154857"
+      ],
+      "modelingGuidance": "Use source footprint massing where available; heights, facades and decorative details remain generalized."
+    },
+    {
+      "poiId": "ollies-yukon",
+      "name": "Ollie’s Bargain Outlet: Yukon",
+      "inspectedAt": "2026-11-27",
+      "status": "campus-reviewed-tenant-unresolved",
+      "observations": [
+        "The Census location is a street-range point on Cornwell Drive, not a rooftop or storefront entrance.",
+        "A large connected retail complex and broad parking lot lie east of Cornwell, north of Vandament; the venue identifies its site as the former Smart Save Grocery next to Dollar General.",
+        "The exact current tenant roof was not resolved from the available primary evidence. No footprint association or facade clone is claimed."
+      ],
+      "sources": [
+        {
+          "kind": "aerial",
+          "url": "https://services.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/export?bbox=-97.74443543630962%2C35.492705580674%2C-97.7405042323784%2C35.495905580674005&bboxSR=4326&imageSR=3857&size=640%2C640&format=jpg&f=image",
+          "publisher": "Esri World Imagery",
+          "viewed": true,
+          "acquisitionDate": null,
+          "note": "Service mosaic inspected on research date; imagery acquisition date not verified."
+        },
+        {
+          "kind": "venue",
+          "url": "https://www.ollies.com/blogs/news-events/yukon-grand-opens-11-21",
+          "viewed": true,
+          "note": "Venue identity/address source, not by itself an architecture inspection."
+        }
+      ],
+      "verification": {
+        "aerialViewed": true,
+        "officialVenueIdentityChecked": true,
+        "footprintAssociationChecked": false,
+        "facadePhotoVerified": false,
+        "entranceVerified": false,
+        "heightMeasured": false,
+        "exactReplica": false
+      },
+      "inspectionPoint": {
+        "lon": -97.742469834344,
+        "lat": 35.494305580674
+      },
+      "buildingIds": [],
+      "modelingGuidance": "Use source footprint massing where available; heights, facades and decorative details remain generalized."
+    },
+    {
+      "poiId": "ollies-nwexp",
+      "name": "Ollie’s Bargain Outlet: NW Expressway",
+      "inspectedAt": "2026-11-27",
+      "status": "aerial-reference-reviewed",
+      "observations": [
+        "The landlord site plan identifies Ollie’s as suite 8007 A in the large north anchor at Council Crossing.",
+        "The aerial image shows the connected light-roof retail complex north of NW Expressway and west of Council Road, with parking to the south.",
+        "The city polygon covers the connected host complex, including other tenants. It is not a separate outline of the Ollie’s leased area. The existing navigation pin is the landlord’s campus marker."
+      ],
+      "sources": [
+        {
+          "kind": "aerial",
+          "url": "https://services.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/export?bbox=-97.6595092692859%2C35.565574543702%2C-97.65557806535469%2C35.568774543702006&bboxSR=4326&imageSR=3857&size=640%2C640&format=jpg&f=image",
+          "publisher": "Esri World Imagery",
+          "viewed": true,
+          "acquisitionDate": null,
+          "note": "Service mosaic inspected on research date; imagery acquisition date not verified."
+        },
+        {
+          "kind": "venue",
+          "url": "https://www.ollies.com/pages/store-locator",
+          "viewed": true,
+          "note": "Venue identity/address source, not by itself an architecture inspection."
+        },
+        {
+          "kind": "footprint",
+          "url": "https://services6.arcgis.com/Do88DoK2xjTUCXd1/ArcGIS/rest/services/Oklahoma_City_OK_Buildings/FeatureServer/0/query?where=OBJECTID%3D155097&outFields=OBJECTID&outSR=4326&f=geojson",
+          "publisher": "Oklahoma City open data / Esri",
+          "viewed": true,
+          "note": "Coordinate containment checked; roof outline compared visually with aerial."
+        },
+        {
+          "kind": "landlord-site-plan",
+          "url": "https://jahrealty.propertycapsule.com/property/output/document/view/id:2273/",
+          "viewed": true,
+          "pages": [
+            1,
+            2
+          ],
+          "note": "Plan identifies suite 8007 A; connected complex footprint extends beyond the tenant."
+        }
+      ],
+      "verification": {
+        "aerialViewed": true,
+        "officialVenueIdentityChecked": true,
+        "footprintAssociationChecked": true,
+        "facadePhotoVerified": false,
+        "entranceVerified": false,
+        "heightMeasured": false,
+        "exactReplica": false
+      },
+      "inspectionPoint": {
+        "lon": -97.65745,
+        "lat": 35.5679
+      },
+      "buildingIds": [
+        "gis:okc/155097"
+      ],
+      "modelingGuidance": "Use source footprint massing where available; heights, facades and decorative details remain generalized."
+    },
+    {
+      "poiId": "brickopolis",
+      "name": "Brickopolis",
+      "inspectedAt": "2026-11-27",
+      "status": "aerial-reference-reviewed",
+      "observations": [
+        "A narrow north–south, light-roof building fronts Mickey Mantle Drive; outdoor miniature golf occupies the area immediately west.",
+        "The city footprint aligns with the roof beside the canal block. Height, facade details and individual entrances remain unmeasured.",
+        "The official Thirsty’s patio photo confirms a railed outdoor setting but has a blurred background and is insufficient to reconstruct the building facade."
+      ],
+      "sources": [
+        {
+          "kind": "aerial",
+          "url": "https://services.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/export?bbox=-97.51139160196561%2C35.4635714%2C-97.5074603980344%2C35.466771400000006&bboxSR=4326&imageSR=3857&size=640%2C640&format=jpg&f=image",
+          "publisher": "Esri World Imagery",
+          "viewed": true,
+          "acquisitionDate": null,
+          "note": "Service mosaic inspected on research date; imagery acquisition date not verified."
+        },
+        {
+          "kind": "venue",
+          "url": "https://www.brickopolisu.com/prices/",
+          "viewed": true,
+          "note": "Venue identity/address source, not by itself an architecture inspection."
+        },
+        {
+          "kind": "footprint",
+          "url": "https://services6.arcgis.com/Do88DoK2xjTUCXd1/ArcGIS/rest/services/Oklahoma_City_OK_Buildings/FeatureServer/0/query?where=OBJECTID%3D163414&outFields=OBJECTID&outSR=4326&f=geojson",
+          "publisher": "Oklahoma City open data / Esri",
+          "viewed": true,
+          "note": "Coordinate containment checked; roof outline compared visually with aerial."
+        },
+        {
+          "kind": "venue-photo",
+          "url": "https://www.brickopolisu.com/assets/photos/thirstys-patio-v2.webp",
+          "viewed": true,
+          "note": "Official patio photo; background too blurred for facade measurement."
+        }
+      ],
+      "verification": {
+        "aerialViewed": true,
+        "officialVenueIdentityChecked": true,
+        "footprintAssociationChecked": true,
+        "facadePhotoVerified": false,
+        "entranceVerified": false,
+        "heightMeasured": false,
+        "exactReplica": false
+      },
+      "inspectionPoint": {
+        "lon": -97.509426,
+        "lat": 35.4651714
+      },
+      "buildingIds": [
+        "gis:okc/163414"
+      ],
+      "modelingGuidance": "Use source footprint massing where available; heights, facades and decorative details remain generalized."
+    },
+    {
+      "poiId": "dust-bowl",
+      "name": "Dust Bowl Lanes & Lounge",
+      "inspectedAt": "2026-11-27",
+      "status": "aerial-reference-reviewed",
+      "observations": [
+        "The venue occupies a shared Midtown building on the north side of NW 10th Street. Light roof sections and a central open area are visible in the aerial view.",
+        "The containing city footprint represents a host building; it does not establish the extent of the bowling tenant.",
+        "The official Oklahoma City location photo shows indoor bowling lanes, exposed ceiling beams and wood accents. It does not establish exterior facade materials."
+      ],
+      "sources": [
+        {
+          "kind": "aerial",
+          "url": "https://services.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/export?bbox=-97.52176370196561%2C35.4769662%2C-97.5178324980344%2C35.480166200000006&bboxSR=4326&imageSR=3857&size=640%2C640&format=jpg&f=image",
+          "publisher": "Esri World Imagery",
+          "viewed": true,
+          "acquisitionDate": null,
+          "note": "Service mosaic inspected on research date; imagery acquisition date not verified."
+        },
+        {
+          "kind": "venue",
+          "url": "https://www.dustbowllounge.com/locations/oklahoma-city",
+          "viewed": true,
+          "note": "Venue identity/address source, not by itself an architecture inspection."
+        },
+        {
+          "kind": "footprint",
+          "url": "https://services6.arcgis.com/Do88DoK2xjTUCXd1/ArcGIS/rest/services/Oklahoma_City_OK_Buildings/FeatureServer/0/query?where=OBJECTID%3D1802853&outFields=OBJECTID&outSR=4326&f=geojson",
+          "publisher": "Oklahoma City open data / Esri",
+          "viewed": true,
+          "note": "Coordinate containment checked; roof outline compared visually with aerial."
+        },
+        {
+          "kind": "venue-photo",
+          "url": "https://cdn.sanity.io/images/w3imnjqx/production/a56e8060fd46a9badd9d035e756bfc639abf0cc6-3500x2333.jpg?w=1000&h=667&q=75&fit=max&auto=format",
+          "viewed": true,
+          "note": "Official Oklahoma City location photo; interior only."
+        }
+      ],
+      "verification": {
+        "aerialViewed": true,
+        "officialVenueIdentityChecked": true,
+        "footprintAssociationChecked": true,
+        "facadePhotoVerified": false,
+        "entranceVerified": false,
+        "heightMeasured": false,
+        "exactReplica": false
+      },
+      "inspectionPoint": {
+        "lon": -97.5197981,
+        "lat": 35.4785662
+      },
+      "buildingIds": [
+        "gis:okc/1802853"
+      ],
+      "modelingGuidance": "Use source footprint massing where available; heights, facades and decorative details remain generalized."
+    },
+    {
+      "poiId": "blue-zoo",
+      "name": "Blue Zoo Oklahoma City",
+      "inspectedAt": "2026-11-27",
+      "status": "mall-campus-reviewed-indoor-tenant",
+      "observations": [
+        "Blue Zoo is an indoor tenant at Quail Springs Mall. The inspected aerial shows a connected mall with multiple large anchor roofs and surrounding parking.",
+        "The published Blue Zoo point did not fall within a containing city footprint in the cached source geometry.",
+        "No standalone aquarium building, tenant-specific roof or exterior aquarium facade is inferred. A mall-level model is appropriate until tenant/entrance evidence is supplied."
+      ],
+      "sources": [
+        {
+          "kind": "aerial",
+          "url": "https://services.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/export?bbox=-97.56168975429975%2C35.609089999999995%2C-97.55309024570025%2C35.61609&bboxSR=4326&imageSR=3857&size=640%2C640&format=jpg&f=image",
+          "publisher": "Esri World Imagery",
+          "viewed": true,
+          "acquisitionDate": null,
+          "note": "Service mosaic inspected on research date; imagery acquisition date not verified."
+        },
+        {
+          "kind": "venue",
+          "url": "https://oklahomacity.bluezoo.us/day-passes/",
+          "viewed": true,
+          "note": "Venue identity/address source, not by itself an architecture inspection."
+        }
+      ],
+      "verification": {
+        "aerialViewed": true,
+        "officialVenueIdentityChecked": true,
+        "footprintAssociationChecked": false,
+        "facadePhotoVerified": false,
+        "entranceVerified": false,
+        "heightMeasured": false,
+        "exactReplica": false
+      },
+      "inspectionPoint": {
+        "lon": -97.55739,
+        "lat": 35.61259
+      },
+      "buildingIds": [],
+      "modelingGuidance": "Use source footprint massing where available; heights, facades and decorative details remain generalized."
+    },
+    {
+      "poiId": "yukon-christmas-lights",
+      "name": "Yukon Christmas in the Park",
+      "inspectedAt": "2026-11-27",
+      "status": "park-context-and-seasonal-photo-reviewed",
+      "observations": [
+        "The inspected park aerial shows a pond, paths, curving park drives, courts, recreational buildings and parking within a broader park system.",
+        "The official event photo shows illuminated figures and colorful ground light displays at night; it does not provide surveyed positions or a year-specific installation layout.",
+        "This is a seasonal park destination, not a single building. Festive objects should remain illustrative and not be labeled exact replicas."
+      ],
+      "sources": [
+        {
+          "kind": "aerial",
+          "url": "https://services.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/export?bbox=-97.75299875429975%2C35.4798535%2C-97.74439924570025%2C35.4868535&bboxSR=4326&imageSR=3857&size=640%2C640&format=jpg&f=image",
+          "publisher": "Esri World Imagery",
+          "viewed": true,
+          "acquisitionDate": null,
+          "note": "Service mosaic inspected on research date; imagery acquisition date not verified."
+        },
+        {
+          "kind": "venue",
+          "url": "https://www.yukonforward.com/visit/event-calendar/p/event/40260/yukons-christmas-in-the-park",
+          "viewed": true,
+          "note": "Venue identity/address source, not by itself an architecture inspection."
+        },
+        {
+          "kind": "venue-photo",
+          "url": "https://secure-cdn.scdn6.secure.raxcdn.com/media/userfiles/subsite_364/images/events-calendar/yukon-christmas-in-park.jpg",
+          "viewed": true,
+          "note": "Official Yukon economic development event photo; no acquisition date or surveyed decoration positions."
+        }
+      ],
+      "verification": {
+        "aerialViewed": true,
+        "officialVenueIdentityChecked": true,
+        "footprintAssociationChecked": false,
+        "facadePhotoVerified": false,
+        "entranceVerified": false,
+        "heightMeasured": false,
+        "exactReplica": false
+      },
+      "inspectionPoint": {
+        "lon": -97.748699,
+        "lat": 35.4833535
+      },
+      "buildingIds": [],
+      "modelingGuidance": "Use source footprint massing where available; heights, facades and decorative details remain generalized."
+    }
+  ]
+}

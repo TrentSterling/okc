@@ -4,11 +4,13 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="theme-color" content="#141a24">
-  <meta name="description" content="An Oklahoma City sunset drive. Explore Devon Tower's reflected sky, Reno Avenue, and a skyline that changes with the light.">
+  <meta name="description" content="Explore Yukon, Bethany and Oklahoma City. Drive mapped streets, discover real places, plan a Christmas date, and find your next favorite spot.">
   <link rel="canonical" href="https://tront.xyz/okc/">
-  <title>Prairie Prism · An Oklahoma City sunset drive</title>
+  <title>Prairie Prism · Discover your OKC</title>
   <link rel="stylesheet" href="./style.css">
-  <script type="importmap">{"imports":{"three":"./vendor/three.module.js"}}</script>
+  <link rel="stylesheet" href="./explorer.css">
+  <link rel="stylesheet" href="./discovery.css">
+  <script type="importmap">{"imports":{"three":"./vendor/three.module.js","./world-meshes.js":"./world/runtime-meshes.js","./world-surfaces.js":"./world/runtime-surfaces.js"}}</script>
 </head>
 <body>
   <canvas id="scene" tabindex="0" aria-label="Interactive Oklahoma City driving scene. Choose Drive yourself, then use W and S for throttle, brake and reverse, A and D to steer, Space for handbrake, and R to recover. Camera and lighting controls follow."></canvas>
@@ -16,10 +18,17 @@
 
   <div id="loading" class="loading-screen" role="status" aria-live="polite">
     <div class="loading-content">
-      <div class="loading-kicker">Oklahoma City</div>
-      <h1>Prairie Prism</h1>
-      <div class="loading-line"><span></span></div>
-      <p id="loadingStatus">Finding the last light…</p>
+      <div class="loading-kicker">TRONTLABS / PRAIRIE PRISM</div>
+      <h1>Your city.<span>Your next adventure.</span></h1>
+      <p class="loading-description">From the west side to the skyline. Find a new favorite, scout the streets, and make a day of it.</p>
+      <div class="loading-places"><span>Yukon</span><span>Bethany</span><span>West OKC</span><span>Downtown</span></div>
+      <div class="loading-progress-head"><span>Opening Oklahoma City</span><span id="loadingStep">0 / 6</span></div>
+      <progress id="loadingProgress" max="6" value="0" aria-label="Completed loading stages"></progress>
+      <p id="loadingStatus">Loading the city atlas…</p><p id="loadingDetail">Real streets. Real places. A whole lot to explore.</p>
+      <ol class="loading-stages" aria-label="Loading stages"><li data-load-stage>Download</li><li data-load-stage>Geometry</li><li data-load-stage>Places</li><li data-load-stage>City</li><li data-load-stage>Lighting</li><li data-load-stage>Ready</li></ol>
+      <button id="openMapEarly" class="loading-map-link" type="button">Open the map while 3D loads</button>
+      <div id="loadingRetry" hidden><button id="retryLoad" type="button">Retry loading</button></div>
+      <p id="loadingCoverage">A mapped metro. An adventure for two.</p>
     </div>
   </div>
   <div id="errorPanel" class="error-panel" role="alert" hidden>
@@ -31,7 +40,7 @@
   <main id="hud" aria-label="Scene controls">
     <header class="masthead">
       <div class="brand">
-        <p class="eyebrow">Oklahoma City · A sunset drive</p>
+        <p class="eyebrow">Yukon to the skyline · Christmas edition</p>
         <div class="wordmark">Prairie Prism</div>
         <p id="proposalNote" class="proposal-note" hidden>Legends Tower · proposed skyline</p>
       </div>
@@ -121,7 +130,7 @@
       <div class="touch-steering"><button type="button" data-drive-control="left" aria-label="Steer left">←</button><button type="button" data-drive-control="right" aria-label="Steer right">→</button></div>
       <div class="touch-pedals"><button type="button" data-drive-control="handbrake" class="touch-handbrake" aria-label="Handbrake">Hold</button><button type="button" data-drive-control="brake" aria-label="Brake and hold to reverse">Brake<br><small>Reverse</small></button><button type="button" data-drive-control="throttle" class="touch-throttle" aria-label="Accelerate">Gas</button></div>
     </div>
-    <p id="creditNote" class="credit-note">v0.6 · Oklahoma City · <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">© OpenStreetMap</a> · <a href="./geo/provenance.json" target="_blank" rel="noopener">City / Esri map data</a></p>
+    <p id="creditNote" class="credit-note">v0.7 · Discover OKC · <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">© OpenStreetMap</a> · <a href="./geo/provenance.json" target="_blank" rel="noopener">City / Esri map data</a></p>
   </main>
   <button id="showHudBtn" class="tool-button show-hud glass" type="button" hidden>Show controls</button>
 
@@ -145,6 +154,7 @@
       <p class="help-footnote">Arrow keys also work in free driving. On touch screens, hold the steering and pedal buttons together. Buildings and map edges are solid; traffic is scenic. Click the scene after using settings to return keyboard control. Drag to look around; double-click to face forward.</p>
     </div>
   </section>
-  <script type="module" src="./app.js"></script>
+  <script type="module" src="./boot.js"></script>
+  <div id="metroStreamStatus" class="metro-stream-status" role="status" hidden></div>
 </body>
 </html>

@@ -1,0 +1,59 @@
+{
+  "passed": true,
+  "checks": [
+    "finite source geometry",
+    "tile inventory",
+    "raw and compressed payload identity",
+    "source provenance",
+    "graph source identity",
+    "one-way graph contracts",
+    "map boundary graph clipping",
+    "valid polygon footprints",
+    "road / sidewalk footprint partition",
+    "original downtown geometry ownership",
+    "unique building identities",
+    "POI source and ID coverage",
+    "cross-city graph reachability"
+  ],
+  "counts": {
+    "directedSegments": 455602,
+    "tileBytes": 197918437,
+    "tileGzipBytes": 40896774,
+    "buildings": 272713,
+    "roads": 107092,
+    "surfaces": 16951,
+    "details": 26308,
+    "meshes": 67033,
+    "reachableFromFirstAnchor": 214591
+  },
+  "maxTileBytes": 303286,
+  "roadSidewalkOverlapSquareMeters": 0.0,
+  "newRoadCoreOverlapSquareMeters": 0.0,
+  "routeChecks": [
+    {
+      "from": "Yukon Christmas in the Park",
+      "to": "Cactus Jack\u2019s Family Fun Center",
+      "reachable": true
+    },
+    {
+      "from": "Yukon Christmas in the Park",
+      "to": "Brickopolis",
+      "reachable": true
+    },
+    {
+      "from": "Yukon Christmas in the Park",
+      "to": "AMF Windsor Lanes",
+      "reachable": true
+    },
+    {
+      "from": "Yukon Christmas in the Park",
+      "to": "Subway \u2014 8022 NW 39th Expressway",
+      "reachable": true
+    }
+  ],
+  "failures": [],
+  "limits": [
+    "CPU / geographic contract check only. Browser screenshots and actual runtime behavior require separate verification.",
+    "Source map accuracy, current business operation and facade resemblance are not established by this check."
+  ]
+}

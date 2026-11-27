@@ -1,0 +1,14 @@
+{
+  "name": "Yukon, Bethany and Oklahoma City",
+  "bbox": [-97.80, 35.40, -97.46, 35.62],
+  "origin": [-97.51758985376695, 35.466887450817715],
+  "tileSizeMeters": 512,
+  "poiDetailRadiusMeters": 500,
+  "coreBoundsMeters": {"minX": -1600, "minZ": -1140, "maxX": 1600, "maxZ": 1120},
+  "notes": [
+    "Coordinates are [west, south, east, north] in WGS84 longitude/latitude.",
+    "This measured box is about 19.15 by 15.19 miles; it includes Yukon, the lakes, Quail Springs and South OKC.",
+    "Changing bbox requires an explicit source refresh before the deterministic offline build.",
+    "Origin must remain aligned with the preserved Devon Tower and downtown compiler."
+  ]
+}
