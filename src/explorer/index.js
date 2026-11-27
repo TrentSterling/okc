@@ -4,7 +4,7 @@ import {createMap} from './map.js';
 import {icons,discoverView,detailView,plannerView,layersView,buildingView,learningView} from './views.js';
 
 const FAVORITES=['arcades','bars','bowling','mexican','asian','subway','bargains','thrift','markets','dessert','nature','christmas','aquarium','culture'];
-const DEFAULT_SETTINGS={labels:true,buildings:true,roads:true,water:true,parks:true,season:'christmas',weather:'clear',quality:'balanced'};
+const DEFAULT_SETTINGS={labels:true,buildings:true,roads:true,water:true,parks:true,music:false,season:'christmas',weather:'clear',quality:'balanced'};
 
 export function createExplorer(options={}){
  const saved=loadState();
@@ -15,7 +15,7 @@ export function createExplorer(options={}){
  document.body.append(root);
  root.querySelector('.ex-tabs').insertAdjacentHTML('beforeend','<button data-tab="learn" aria-selected="false">Learn</button>');
  const $=selector=>root.querySelector(selector),body=$('.ex-panel-body');
- const map=createMap($('#exMap'),{onSelect:p=>selectPlace(p.id),onMove:()=>{}});
+ const map=createMap($('#exMap'),{onSelect:p=>selectPlace(p.id),onMove:()=>{},onView:view=>options.onMapView?.(view),onSelectBuilding:b=>{building=b;selectedId=null;tab='discover';show();options.onBuildingSelect?.(b);}});
  let notificationTimer,searchTimer;
  function notify(text){const n=$('.ex-notification');n.textContent=text;n.hidden=false;clearTimeout(notificationTimer);notificationTimer=setTimeout(()=>n.hidden=true,3600);}
  function persist(){const ok=saveState({plan,memories,overrides,settings,categories:[...activeCategories]});if(!ok)$('#exFooterStatus').textContent='Browser storage unavailable. Export your plan.';}
@@ -124,7 +124,7 @@ export function createExplorer(options={}){
   if(el.id==='exIndoor'){indoor=el.checked;render();emitLayers();return;}
   if(el.id==='exSavedOnly'){onlySaved=el.checked;render();emitLayers();return;}
   if(el.dataset.layer){el.checked?activeCategories.add(el.dataset.layer):activeCategories.delete(el.dataset.layer);persist();updateMap();emitLayers();return;}
-  if(el.dataset.setting){settings[el.dataset.setting]=el.checked;persist();updateMap();emitLayers();return;}
+  if(el.dataset.setting){settings[el.dataset.setting]=el.checked;if(el.dataset.setting==='music')options.onMusic?.(el.checked);persist();updateMap();emitLayers();return;}
   if(el.dataset.stopCost){const s=plan.stops.find(s=>s.id===el.dataset.stopCost);if(s)s.cost=Math.max(0,Math.min(100000,Number(el.value)||0));persist();render({keepScroll:true});return;}
   if(el.dataset.stopTime){const s=plan.stops.find(s=>s.id===el.dataset.stopTime);if(s)s.time=el.value;persist();return;}
   if(el.id==='exPlanDate'){plan.date=el.value;persist();return;}
@@ -150,5 +150,5 @@ export function createExplorer(options={}){
  function update(next){position=next||options.getPosition?.()||position;const now=performance.now();if(now-lastMapUpdate>300){lastMapUpdate=now;map.setPosition(position);if(position.street)$('#exStreet').textContent=position.street;if(position.district)$('#exLocation').textContent=position.district;if(Number.isFinite(position.heading)){const dirs=['E','SE','S','SW','W','NW','N','NE'];$('.ex-compass').textContent=dirs[((Math.round(position.heading/(Math.PI/4))%8)+8)%8];}}}
  function setRoadRoute(route){map.setRoadRoute(route);const legend=$('.ex-map-legend');legend.textContent=route?.points?.length>1?`Road route${Number.isFinite(route.distance)?' · '+(route.distance/1000).toFixed(1)+' km':''}`:'Selected itinerary · straight-line preview';legend.prepend(document.createElement('span'));}
  setData({places:options.places||[],mapData:options.mapData||{}});show();if(options.mapOnly)setMode('map');
- return {show,hide,setMode,setData,selectPlace,update,notify,setRoadRoute,showMap(){setMode('map');},setMapVisible(value){setMode(value?'map':'3d');},setMission(value){mission=value||{};if(tab==='learn')render({keepScroll:true});},setTourStep(index){tourIndex=getTourStops()[index]?.itineraryIndex??index;render({keepScroll:true});},setBuilding(value){building=value;selectedId=null;tab='discover';show();},get overrides(){return {...overrides};},get settings(){return {...settings};},get plan(){return exportPlan(plan,places);},get visiblePlaces(){return filtered();},get selectedPlace(){return byId.get(selectedId)||null;},destroy(){clearTimeout(notificationTimer);clearTimeout(searchTimer);map.destroy();root.remove();document.body.classList.remove('explorer-panel-open','explorer-map-open');}};
+ return {show,hide,setMode,setData,selectPlace,update,notify,setRoadRoute,setMapBuildings:map.setBuildings,getMapView:map.getView,showMap(){setMode('map');},setMapVisible(value){setMode(value?'map':'3d');},setMission(value){mission=value||{};if(tab==='learn')render({keepScroll:true});},setTourStep(index){tourIndex=getTourStops()[index]?.itineraryIndex??index;render({keepScroll:true});},setBuilding(value){building=value;selectedId=null;tab='discover';show();},get overrides(){return {...overrides};},get settings(){return {...settings};},get plan(){return exportPlan(plan,places);},get visiblePlaces(){return filtered();},get selectedPlace(){return byId.get(selectedId)||null;},destroy(){clearTimeout(notificationTimer);clearTimeout(searchTimer);map.destroy();root.remove();document.body.classList.remove('explorer-panel-open','explorer-map-open');}};
 }

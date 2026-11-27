@@ -8,6 +8,7 @@ export const DEFAULT_DATE = [
  ['Bricktown Canal',0,'19:30','Canal walk'],
  ['Christmas lights drive',10,'20:00','Fuel allowance'],
 ];
+export const CHRISTMAS_PLANNING_NOTE='Holiday Pop-Up Shops: Friday–Sunday, November 27–December 20. A 1 PM skating stop needs weekend opening hours. Lights on Broadway festival: December 5 and 12, 4–7 PM; the light displays can be seen on other nights. Published schedules are not live availability. Check each venue before heading out.';
 const finite=(v,fallback=0)=>Number.isFinite(Number(v))?Math.max(0,Math.min(100000,Number(v))):fallback;
 export const money=v=>'$'+finite(v).toLocaleString('en-US',{minimumFractionDigits:v%1?2:0,maximumFractionDigits:2});
 export function planTotals(plan){const subtotal=plan.stops.reduce((s,p)=>s+Math.round(finite(p.cost)*100),0)/100,reserve=finite(plan.reserve),total=Math.round((subtotal+reserve)*100)/100;return {subtotal,reserve,total,remaining:Math.round((finite(plan.budget)-total)*100)/100};}
@@ -19,7 +20,7 @@ export function matchPlace(name,places,address=''){
  if(address){const a=normalizeAddress(address),match=candidates.find(p=>{const b=normalizeAddress(p.address||'');return b.length>=5&&(a===b||b.startsWith(a)||a.startsWith(b));});if(match)return match;if(candidates.length>1||candidates.some(p=>p.address))return null;}
  return candidates.find(p=>p.curated)||candidates[0]||null;
 }
-export function defaultPlan(places=[]){return {version:1,name:'OKC Christmas Date',budget:200,reserve:13,date:'',stops:DEFAULT_DATE.map(([name,cost,time,note,address=''],i)=>{const place=matchPlace(name,places,address);return{id:`stop-default-${i}`,placeId:place?.id||null,name:place?.name||name,address:place?.address||address,cost,time,note,priceKind:'allowance'};})};}
+export function defaultPlan(places=[]){return {version:1,name:'OKC Christmas Date',budget:200,reserve:13,date:'2026-12-12',planningNote:CHRISTMAS_PLANNING_NOTE,stops:DEFAULT_DATE.map(([name,cost,time,note,address=''],i)=>{const place=matchPlace(name,places,address);return{id:`stop-default-${i}`,placeId:place?.id||null,name:place?.name||name,address:place?.address||address,cost,time,note,priceKind:'allowance'};})};}
 export function allowanceFor(p){
  if(Number.isFinite(Number(p.cost))&&p.cost!=null)return finite(p.cost);
  if(p.layers?.includes('subway'))return 24;
@@ -47,7 +48,8 @@ export function importPlan(payload,places=[]){
  const budget=finite(payload.budget,200);
  // Original exported itinerary listed $200 but its stops total $187. Preserve that $13 as reserve.
  const subtotal=stops.reduce((s,p)=>s+p.cost,0),reserve=payload.reserve!=null?finite(payload.reserve):Number(payload.total)>subtotal?Math.max(0,Number(payload.total)-subtotal):0;
- return {version:1,name:String(payload.name||'Our OKC adventure').slice(0,100),budget,reserve,date:/^\d{4}-\d{2}-\d{2}$/.test(payload.date||'')?payload.date:'',stops};
+ const christmas=/christmas/i.test(payload.name||'');
+ return {version:1,name:String(payload.name||'Our OKC adventure').slice(0,100),budget,reserve,date:/^\d{4}-\d{2}-\d{2}$/.test(payload.date||'')?payload.date:!Object.hasOwn(payload,'date')&&christmas?'2026-12-12':'',planningNote:String(payload.planningNote|| (christmas?CHRISTMAS_PLANNING_NOTE:'')).slice(0,1500),stops};
 }
 export function exportPlan(plan,places=[]){const total=planTotals(plan).total;return {...plan,total,stops:plan.stops.map(s=>{const p=places.find(p=>p.id===s.placeId);return {...s,lat:p?.lat??null,lon:p?.lon??null,website:p?.website||null};})};}
 export function moveStop(plan,index,delta){const next=index+delta;if(index<0||index>=plan.stops.length||next<0||next>=plan.stops.length)return false;[plan.stops[index],plan.stops[next]]=[plan.stops[next],plan.stops[index]];return true;}

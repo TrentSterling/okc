@@ -13,6 +13,7 @@ assert.equal(matchPlace('Devon Ice Rink',[{name:'D',id:'parking-d'},{name:'Ice',
 assert.equal(matchPlace('Hatch Early Mood Food',[{name:'Hatch Early Mood Food Automobile Alley',id:'hatch'}]).id,'hatch');
 assert.equal(matchPlace('Bricktown Brewery',[{name:'Bricktown Brewery',id:'wrong',address:'5516 West Memorial Road'}],'1 N Oklahoma Ave'),null,'An explicit address must not resolve to another chain location.');
 assert.equal(matchPlace('Bricktown Brewery',[{name:'Bricktown Brewery',id:'right',address:'1 North Oklahoma Avenue'}],'1 N Oklahoma Ave').id,'right');
+assert.equal(matchPlace('Bricktown dessert allowance',[{name:'Bricktown Candy Co.',id:'dessert',address:'100 East California Avenue'}],'Choose a dessert shop').id,'dessert');
 assert.deepEqual(planTotals(importPlan(exportPlan(imported))),planTotals(imported));
 assert.throws(()=>importPlan({stops:[{name:'Bad cost',cost:-1}]}));
 assert.throws(()=>importPlan({stops:[{name:'NaN',cost:'nonsense'}]}));
@@ -42,4 +43,6 @@ assert.equal(safeUrl('javascript:alert(1)'),null);assert.equal(safeUrl('https://
 assert.ok(layerIds({name:'Subway',category:'fast_food'}).includes('subway'));
 assert.ok(layerIds({name:'Mexican family restaurant',category:'restaurant'}).includes('mexican'));
 assert.ok(!layerIds({name:'Taco Bell Mexican fast food',category:'fast_food'}).includes('mexican'));
+assert.ok(!layerIds({name:'Advance Auto Parts',category:'shopping'}).includes('culture'),'Auto parts must not match the word art.');
+assert.ok(!layerIds({name:'Cafe Kacao',category:'breakfast',cuisine:'guatemalan',description:'Not a Mexican restaurant'}).includes('mexican'),'Descriptions mentioning an excluded cuisine must not override structured cuisine data.');
 console.log('Explorer checks passed: budget reserve, import validation, AM/PM conversion, duplicate stops, reorder bounds, seeded discovery budget/indoor/visited filters, blocked storage, coordinate validity, URL safety, and chain/cuisine categorization.');

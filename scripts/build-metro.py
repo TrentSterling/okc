@@ -22,7 +22,8 @@ BBOX = CONFIG['bbox']
 MX = 111320 * math.cos(math.radians(ORIGIN[1]))
 MZ = 111132
 TILE = CONFIG['tileSizeMeters']
-CORE = box(-1600, -1140, 1600, 1120)
+CB = CONFIG['coreBoundsMeters']
+CORE = box(CB['minX'], CB['minZ'], CB['maxX'], CB['maxZ'])
 REGION = box((BBOX[0]-ORIGIN[0])*MX, -(BBOX[3]-ORIGIN[1])*MZ,
              (BBOX[2]-ORIGIN[0])*MX, -(BBOX[1]-ORIGIN[1])*MZ)
 BOUNDS = dict(zip(('minX','minZ','maxX','maxZ'), [round(n,2) for n in REGION.bounds]))
@@ -400,6 +401,7 @@ for e in source_details['elements']:
 # A spatial index ties businesses to actual containing buildings. Coordinates
 # from OSM way centers are explicitly marked as centers rather than doors.
 all_tree=STRtree(building_geoms) if building_geoms else None
+building_id_set=set(building_ids)
 pois=[];poi_ids=set();poi_counts=Counter()
 for e in source_pois['elements']:
     correction=tag_corrections.get(f'osm:{e["type"]}/{e["id"]}',{})
@@ -453,9 +455,19 @@ if curated_path.exists():
             x,z=local(lon,lat);rec.update(x=x,z=z)
             if not REGION.contains(Point(x,z)):continue
             matches=all_tree.query(Point(x,z),predicate='within') if all_tree is not None else []
-            rec['buildingId']=building_ids[min(matches,key=lambda j:building_geoms[j].area)] if len(matches) else None
-            rec['buildingAssociation']='containing mapped footprint' if len(matches) else 'unmatched'
-            if not rec['buildingId'] and rec.get('entrance') and all_tree is not None:
+            supplied_id=rec.get('buildingId')
+            uncertain_pin=any(token in rec.get('coordinateAccuracy','').lower() for token in ['street-range','campus center','shopping-center location'])
+            if supplied_id in building_id_set:
+                rec['buildingId']=supplied_id
+                rec['buildingAssociation']='reference-inspected footprint association'
+            elif uncertain_pin:
+                rec['buildingCandidateId']=building_ids[min(matches,key=lambda j:building_geoms[j].area)] if len(matches) else None
+                rec['buildingId']=None
+                rec['buildingAssociation']='approximate location; storefront footprint requires inspection'
+            else:
+                rec['buildingId']=building_ids[min(matches,key=lambda j:building_geoms[j].area)] if len(matches) else None
+                rec['buildingAssociation']='containing mapped footprint at source coordinate' if len(matches) else 'unmatched'
+            if not rec['buildingId'] and not uncertain_pin and rec.get('entrance') and all_tree is not None:
                 candidate=all_tree.nearest(Point(x,z))
                 if candidate is not None and building_geoms[candidate].distance(Point(x,z))<18:
                     rec['buildingId']=building_ids[candidate]
@@ -528,11 +540,12 @@ limits=[
  'POI hours and business status may be incomplete or stale; imported records are distinct from manually verified venue research.',
  'OSM polygon centers are not verified entrances. Entrances remain separately source-tagged where available.',
  'Source records were not all manually inspected against street-level photography.',
+ 'District labels use approximate reference centers, not legal neighborhood boundaries.',
 ]
 counts={'buildings':building_count,'roads':all_road_count,'routableRoads':len(network_roads),'networkNodes':len(network_nodes),
         'surfaces':surface_count,'pois':len(pois),'curatedPois':curated_count,'unlocatedCuratedPois':curated_unlocated,'mergedPoiDuplicates':curated_replaced,'tiles':len(manifest_tiles),'heights':dict(height_counts),'poiCategories':dict(poi_counts)}
 manifest={'version':1,'name':'OKC Metro / West to Downtown','origin':ORIGIN,'bbox':BBOX,'bounds':BOUNDS,
-    'tileSize':TILE,'axis':'x east, z south; meters','coreBounds':{'minX':-1600,'minZ':-1140,'maxX':1600,'maxZ':1120},
+    'tileSize':TILE,'axis':'x east, z south; meters','coreBounds':CB,
     'widthMiles':round((BOUNDS['maxX']-BOUNDS['minX'])/1609.344,2),'depthMiles':round((BOUNDS['maxZ']-BOUNDS['minZ'])/1609.344,2),
     'poiDetailRadiusMeters':CONFIG['poiDetailRadiusMeters'],'counts':counts,'tiles':manifest_tiles,
     'assets':{name:{'url':name+'.json','gzipUrl':name+'.json.gz','bytes':(OUTPUT/(name+'.json')).stat().st_size,'gzipBytes':(OUTPUT/(name+'.json.gz')).stat().st_size} for name in ['overview','pois','network']},

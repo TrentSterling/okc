@@ -19,3 +19,4 @@
 @media(max-width:1100px){.ex-map-title{left:370px;right:70px}.ex-place-title{font-size:14px}.ex-place-meta{font-size:12px}.ex-layer-grid label{font-size:13px}}
 @media(max-width:760px){.ex-map-title{left:7px;right:7px;padding:10px 13px;top:12px}.ex-map-title h2{font-size:23px}.ex-place-title{font-size:14px}.ex-place-meta{font-size:12px}.ex-layer-grid label{font-size:12px}.ex-tabs button{font-size:12px}.ex-button{font-size:13px!important}}
 .ex-chain-select{display:flex;align-items:center;gap:8px;margin:6px 0 12px}.ex-chain-select>span{color:var(--ex-muted);font-size:12px;white-space:nowrap}.ex-chain-select select{flex:1;font-size:12px;padding:7px 26px 7px 9px;max-width:210px}
+.ex-season-note{margin:14px 0;border:1px solid #d6b77830;background:#b59b5821;border-radius:7px;padding:10px 12px}.ex-season-note summary{font-size:12px;color:var(--ex-gold);cursor:pointer}.ex-season-note p{font-size:12px;line-height:1.7;color:#c6ceb8;margin-top:9px}
