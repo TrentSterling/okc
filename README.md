@@ -2,6 +2,11 @@
 
 An Oklahoma City atlas, date planner and drivable city for Trent. Geographically grounded reconstruction and exploration prototype, **v0.7.1**.
 
+The v0.7.1 repair restores 3D startup under the `/okc/` hosting path and adds a
+required built-app startup and free-driving regression gate. See the
+[startup repair evidence](docs/validation/startup-v071.md) for the cause and
+verification scope.
+
 **Live site:** https://tront.xyz/okc/
 
 **Gallery:** https://tront.xyz/okc/gallery/ · **Repository:** https://github.com/TrentSterling/okc

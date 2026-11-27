@@ -6,7 +6,8 @@
 - `src/metro/streaming.js` used `../../geo/metro/` from the deployed `/okc/metro/streaming.js`, requesting `/geo/metro/tiles/` instead of `/okc/geo/metro/tiles/`. Both compressed and plain fallback URLs are now fixed. Startup exceptions also retain their actual message in the atlas fallback.
 - The new actual-streamer regression failed before the correction and passed afterward; the metro runtime suite now has 12 passing cases. An independent audit found no second URL escape across 6,024 constructed asset paths.
 - `scripts/check-app-startup.mjs` now runs the actual built boot/app/import map, packed geometry, discovery bridge, streamed tiles and free-drive controls with strict deployment-subpath fetches. Browser DOM/canvas and GPU renderer/PMREM are adapters; this is not a browser or GPU visual test. `npm run check:startup` is part of the required `npm run check` chain.
-- Current next action: finish the corrected build and startup/driving smoke test, commit the repair, then wait for the entire validation/publication/public-hash workflow before marking the hotfix live. The previous v0.7 source and captures remain in Git history.
+- Full corrected build and `npm run check` passed. The actual built-app startup gate loaded 89 modules and six packed assets, requested 11 nearby tiles, reached `sceneReady`, entered free drive and advanced the car 3.126 meters under throttle without errors. The original build failed this same harness on the escaped tile URL. See [repair evidence](docs/validation/startup-v071.md) for scope and limits.
+- The repair is recoverably checkpointed at `backup/startup-repair-20261127` / `b57ff49b6e66264b89c10f4ee9abce8b1e26b642`. Current next action: publish the validated hotfix and wait for the entire validation/publication/public-hash workflow before marking it live. The previous v0.7 source and captures remain in Git history.
 
 ## Recovered Discover OKC publication (v0.7.0)
 
