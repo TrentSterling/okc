@@ -3,18 +3,19 @@
 export function createPlatform(host){
  let editor=null,editing=null;
  const safeURL=value=>{try{const url=new URL(value,location.href);return ['https:','http:'].includes(url.protocol)?url.href:null;}catch{return null;}};
- function endEdit(){if(!editing)return;const old=editing;editing=null;editor?.blur();old.onCommit?.(editor.value);host.invalidate();host.canvas.focus({preventScroll:true});}
+ function endEdit(){if(!editing)return;const old=editing;editing=null;host.editAnchor=null;editor?.blur();old.onCommit?.(editor.value);host.invalidate();host.canvas.focus({preventScroll:true});}
  function beginEdit(id,value,options){
+  if(editing?.id===id)return;if(editing)endEdit();
   host.cancelInputs('text-entry');
   if(!editor){
    editor=document.createElement('textarea');editor.setAttribute('aria-label','Edit selected game field');
    editor.style.cssText='position:fixed;left:0;top:0;width:1px;height:1px;opacity:0;pointer-events:none;border:0;padding:0;z-index:-1;';
    editor.autocapitalize='off';editor.autocomplete='off';editor.spellcheck=false;document.body.append(editor);
    editor.addEventListener('input',()=>{if(!editing)return;editing.value=editor.value;editing.onChange?.(editor.value);host.invalidate();});
-   editor.addEventListener('keydown',event=>{if(event.key==='Escape'||event.key==='Enter'&&!editing?.multiline){event.preventDefault();endEdit();}event.stopPropagation();});
-   editor.addEventListener('blur',()=>{if(editing){const old=editing;editing=null;old.onCommit?.(editor.value);host.invalidate();}});
+   editor.addEventListener('keydown',event=>{if(event.isComposing||event.keyCode===229){event.stopPropagation();return;}if(event.key==='Escape'||event.key==='Enter'&&!editing?.multiline){event.preventDefault();endEdit();}event.stopPropagation();});
+   editor.addEventListener('blur',()=>{if(editing){const old=editing;editing=null;host.editAnchor=null;old.onCommit?.(editor.value);host.invalidate();}});
   }
-  editing={id,value:String(value??''),...options};editor.value=editing.value;
+  editing={id,value:String(value??''),...options};host.anchorEditor?.(id);editor.value=editing.value;
   editor.inputMode=options.type==='number'?'decimal':options.type==='email'?'email':options.type==='url'?'url':'text';
   editor.maxLength=options.maxLength||1200;editor.setAttribute('aria-label',options.label||options.placeholder||'Game text field');
   editor.focus({preventScroll:true});editor.setSelectionRange(editor.value.length,editor.value.length);host.invalidate();

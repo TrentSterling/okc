@@ -34,7 +34,7 @@ jobs:
           cache-dependency-path: requirements-build.txt
 
       - name: Install pinned map compiler
-        run: python -m pip install --requirement requirements-build.txt
+        run: python -m pip install --requirement requirements-build.txt --requirement requirements-visual.txt
 
       - name: Install pinned shader source and native validation runtime
         run: |
@@ -56,6 +56,19 @@ jobs:
           python scripts/visual/check-sunset-gles.py --input "$RUNNER_TEMP/okc-sunset-shaders" --output "$RUNNER_TEMP/sunset-shader-validation" --compile-only
           node scripts/check-depth-offsets.mjs --output "$RUNNER_TEMP/okc-depth-offsets.json"
           python scripts/visual/check-depth-offsets-gles.py --state "$RUNNER_TEMP/okc-depth-offsets.json" --output "$RUNNER_TEMP/sunset-shader-validation/depth-offsets-v06.json"
+          node scripts/visual/prepare-ui-diagnostics.mjs --output "$RUNNER_TEMP/okc-ui-shaders"
+          python scripts/visual/render-ui-diagnostics.py --input "$RUNNER_TEMP/okc-ui-shaders" --output "$RUNNER_TEMP/ui-native-validation"
+
+      - name: Preserve GPU UI and phone layout evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: gpu-ui-${{ github.sha }}
+          path: |
+            ${{ runner.temp }}/ui-native-validation/report.json
+            ${{ runner.temp }}/ui-native-validation/*.png
+          if-no-files-found: ignore
+          retention-days: 14
 
       - name: Preserve shader validation evidence
         if: always()

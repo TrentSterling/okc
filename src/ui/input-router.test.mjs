@@ -9,7 +9,7 @@ const rect = {x: 10, y: 10, w: 80, h: 80};
 test('two held fingers are released independently across UI redraws', () => {
   const held = new Set(), steer = new Set(), router = createInputRouter();
   const host = {router, width: 390, height: 844, insets: {}, scrolls: new Map(), platform: {}, invalidate() {}};
-  const surface = {rect() {}, text() {}, circle() {}, line() {}};
+  const surface = {rect() {}, text() {}, circle() {}, line() {}, measure(value, size = 16) { return value.length * size * .6; }};
   const draw = () => {
     const widgets = createWidgets(host, surface);
     widgets.hold('throttle', 'GO', rect, {onDown: id => held.add(id), onUp: id => held.delete(id)});

@@ -1,14 +1,16 @@
 # Prairie Prism
 
-An Oklahoma City atlas, date planner and drivable city for Trent. Geographically grounded reconstruction and exploration prototype, **v0.7.2**.
+An Oklahoma City atlas, date planner and drivable city for Trent. Geographically grounded reconstruction and exploration prototype, **v0.8.0**.
 
-The v0.7.2 repair keeps held driving input from resetting velocity, gives downtown
-and streamed roads separate surface ownership, and follows the actual camera
-view when loading city tiles. Startup reuses packed geometry buffers and offline
-bounds, defers hidden-map indexing, and removes millions of temporary texture
-arrays without changing their pixels. See [driving and streaming repair evidence](docs/validation/driving-streaming-v072.md),
-[surface ownership](docs/validation/metro-surface-ownership/README.md), and
-[startup CPU evidence](docs/validation/startup-cpu/README.md) for verification scope.
+The v0.8 interface uses batched GPU glyphs and shapes on the game canvas. The
+explorer, loading screen, scene Menu, map labels and driving controls share one
+input router. The atlas keeps cached GPU geometry, and phone layouts retain
+reachable controls in portrait and short landscape. See [GPU UI architecture](docs/gpu-ui-v08.md)
+and [verification evidence](docs/validation/gpu-ui-v08/README.md) for scope and limits.
+
+The v0.7.2 held-driving, road ownership and camera-streaming fixes remain in
+place. The full integration test still drives 216.891 m over ten seconds with
+285 repeated key events; this is simulation evidence, not a device FPS claim.
 
 **Live site:** https://tront.xyz/okc/
 
@@ -28,7 +30,7 @@ The successful v0.7 build contains **272,713 building footprints, 82,114 source 
 - **Keep your discoveries.** Favorites, visit status, notes, photo links and building corrections are stored in this browser. JSON backups carry them to another device. No account or cloud synchronization is implied.
 - **Try a city challenge.** Pizza delivery, taxi pickup, finding a named place and photo expeditions are simple exploration prototypes. They select real mapped destinations; they are not complete jobs, a traffic simulation or a GTA-style campaign.
 
-Loading is split by responsibility. Atlas assets can load alongside 3D startup; the routing graph loads only when needed. A bounded worker pool fetches, decompresses and compiles nearby 512 m metro tiles, while the scene keeps collision coverage around the car and a bounded set of tiles in the actual camera view. Completed tile uploads are paced to one per display frame; stale view requests are cancelled, and recent tiles are retained within a quality-dependent residency cap. The map caches its static background, clusters overview markers and requests close-up footprints only while visible. Gzip assets have a plain-file fallback, and unavailable workers have a main-thread fallback. These are implemented resource limits, not a measured FPS claim.
+Loading is split by responsibility. Atlas assets can load alongside 3D startup; the routing graph loads only when needed. A bounded worker pool fetches, decompresses and compiles nearby 512 m metro tiles, while the scene keeps collision coverage around the car and a bounded set of tiles in the actual camera view. Completed tile uploads are paced to one per display frame; stale view requests are cancelled, and recent tiles are retained within a quality-dependent residency cap. The map caches GPU geometry (or its fallback drawing data), clusters overview markers and requests close-up footprints only while visible. Gzip assets have a plain-file fallback, and unavailable workers have a main-thread fallback. These are implemented resource limits, not a measured FPS claim.
 
 The interrupted November 27 workspace was recovered and checkpointed at `11885be` before integration continued. Earlier source and gallery assets were preserved. See [Discover OKC release notes](docs/discovery-v07.md) for module boundaries, data accuracy, recovery and current verification limits.
 
@@ -72,7 +74,7 @@ References include the architect's building description, the structural engineer
 
 Static meshes and repeated trim are grouped spatially so unseen city regions can be culled. High uses 2048-pixel directional shadows, Balanced 1024, and Low disables shadows and the local city reflection probe. Moving shadows refresh at up to 30/20 Hz instead of every display frame; a stationary sun and scene reuse their maps. Main canvas resolution is capped by quality, while photographs render synchronously before download.
 
-The renderer uses reversed depth when `EXT_clip_control` is available and logarithmic depth otherwise. Intentional road-paint and crown-screen biases respect the selected depth direction. Building overlap is addressed by geometry ownership rather than material bias. Settings shows measured FPS after startup; its tooltip reports the current draw calls and triangles. Those are runtime diagnostics, not a hardware benchmark.
+The renderer uses reversed depth when `EXT_clip_control` is available and logarithmic depth otherwise. Intentional road-paint and crown-screen biases respect the selected depth direction. Building overlap is addressed by geometry ownership rather than material bias. Settings shows measured FPS, draw calls and triangles after startup. Those are runtime diagnostics, not a hardware benchmark.
 
 ## Earlier release: v0.2.1
 

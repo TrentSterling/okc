@@ -6,7 +6,7 @@ const visible=(r,c)=>!c||r.x+r.w>c.x&&r.x<c.x+c.w&&r.y+r.h>c.y&&r.y<c.y+c.h;
 export function createWidgets(host,surface){
  let clip=null,scrollId=null;const targets=[];
  const press=host.router.pressed,hover=host.router.hovered;
- const ctx={width:host.width,height:host.height,insets:host.insets,compact:host.width<=720||host.height<500,landscape:host.width>host.height,targets,
+ const ctx={width:host.width,height:host.height,insets:host.insets,compact:host.width<=720||host.height<500,landscape:host.landscape??host.width>host.height,targets,
   text(text,x,y,options={}){return surface.text(String(text??''),x,y,{size:16,color:palette.ink,...options,clip:intersect(clip,options.clip)});},
   rect(x,y,w,h,options={}){if(w>0&&h>0&&visible({x,y,w,h},clip))surface.rect(x,y,w,h,{color:palette.panel,...options,clip:intersect(clip,options.clip)});},
   circle(x,y,r,options={}){surface.circle(x,y,r,{color:palette.accent,...options,clip:intersect(clip,options.clip)});},
@@ -19,7 +19,8 @@ export function createWidgets(host,surface){
    rect=box(rect);const active=options.active||press.has(id),focused=host.focusId===id||hover===id;
    const color=options.disabled?'#162734':active?palette.active:options.variant==='primary'?palette.accent:options.variant==='danger'?'#613e42':'#1a303f';
    ctx.rect(rect.x,rect.y,rect.w,rect.h,{color,radius:9,border:focused?palette.cyan:active?palette.accent:palette.line,borderWidth:focused?2:1});
-   ctx.text(label,rect.x+rect.w/2,rect.y+(rect.h-18)/2,{size:options.size||15,color:options.disabled?'#647d87':options.variant==='primary'? '#152635':palette.ink,align:'center',maxWidth:rect.w-16,maxLines:1});
+   const baseSize=options.size||15,available=rect.w-12,size=Math.max(12,Math.min(baseSize,baseSize*available/Math.max(1,ctx.measure(label,baseSize))));
+   ctx.text(label,rect.x+rect.w/2,rect.y+(rect.h-size*1.25)/2,{size,color:options.disabled?'#647d87':options.variant==='primary'? '#152635':palette.ink,align:'center',maxWidth:available,maxLines:1});
    ctx.hit(id,rect,{onTap:onClick,disabled:!!options.disabled,focusable:true,label:String(label),kind:'button'});
   },
   hold(id,label,rect,options={}){

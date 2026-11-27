@@ -1,6 +1,6 @@
 // Licensed, offline-baked DejaVu Sans SDF. No browser fonts or text rasterizer.
 // Robot Life source: 69b9c4ed0d65193205db8cb07d1fc217716dd783.
-const DEFAULT_BASE = new URL('./', import.meta.url);
+const DEFAULT_BASE = new URL('glyphs.json', import.meta.url);
 let sharedAssets;
 const defaultFetch = (url, options) => globalThis.fetch(url, options);
 const abortError = error => error?.name === 'AbortError';
@@ -75,6 +75,22 @@ export function measureText(value, metrics, size = 16) {
 export function layoutText(value, metrics, {size = 16, maxWidth = Infinity, maxLines = Infinity, lineHeight = 1.25} = {}) {
   if (!Number.isFinite(size) || !Number.isFinite(lineHeight) || lineHeight <= 0) throw RangeError('GPU text size and line height must be finite.');
   if (!(size > 0) || !(maxWidth > 0) || !(maxLines > 0)) return {lines: [], widths: [], width: 0, height: 0};
+  if (maxLines === 1) {
+    const normalized = normalizeText(value), first = normalized.split('\n')[0];
+    let line = first;
+    if (normalized.includes('\n') || measureText(first, metrics, size) > maxWidth) {
+      const marker = metrics.glyphs['…'] ? '…' : '...', markerWidth = measureText(marker, metrics, size);
+      let prefix = '', width = 0;
+      for (const ch of first) {
+        const advance = glyphFor(metrics, ch).advance * size / metrics.size;
+        if (width + advance + markerWidth > maxWidth) break;
+        prefix += ch; width += advance;
+      }
+      line = markerWidth <= maxWidth ? prefix.trimEnd() + marker : '';
+    }
+    const width = measureText(line, metrics, size);
+    return {lines: [line], widths: [width], width, height: size * lineHeight};
+  }
   const lines = [], scale = size / metrics.size, space = glyphFor(metrics, ' ').advance * scale;
   const push = line => { if (lines.length < maxLines) lines.push(line); };
   for (const paragraph of normalizeText(value).split('\n')) {

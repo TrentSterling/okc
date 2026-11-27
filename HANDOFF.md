@@ -1,5 +1,14 @@
 # Prairie Prism handoff
 
+## Active GPU UI and phone repair (v0.8.0)
+
+- User requested inspecting the UI, replacing DOM-rendered controls with GPU glyphs, and phone testing. Visible game HUD, Explorer, loading, atlas labels and 3D POI labels now use one instanced GPU surface; only nonvisual native editing/file bridges remain. Gallery stays an ordinary page.
+- Code recovered at `/workspace/scratch/bc993b0a4273/okc`; work branch `work/gpu-ui-v08-20261127`. Remote pre-change backup `backup/pre-gpu-ui-v08-20261127` points to `652cf4f9b26457b289d0479e96aaff3bb60f7ea6`; implementation checkpoint `backup/gpu-ui-v08-checkpoint-20261127` points to `17820e01d4d75484001258990356368baf70f587`.
+- Font: 244 glyphs, 1024² R8, 160,361 bytes gzip; original small bootstrap alphabet gives font-download retry UI. Map uses at most seven geometry batches, one running worker job and latest-only queues. Phone panels and held controls use the shared pointer router.
+- Local build completed. Initial actual built startup/driving gate passed 216.891 m in ten seconds, 285 repeats, 28 m/s final speed, with GPU control routing and both phone target layouts. The complete local check chain and 54 focused UI tests passed. Independent CI rebuild and publication are the remaining gates.
+- Browser phone-size interaction tests passed search, details, planner scroll, zoom and pan using the canvas fallback. WebGL2 is unavailable in this cloud browser; no physical-phone 3D/FPS claim. Eight actual native production UI/map shader variants and seven fixtures pass, including emergency font rendering.
+- [Architecture](docs/gpu-ui-v08.md) and [evidence](docs/validation/gpu-ui-v08/README.md) document boundaries and test scope. Preserve the v0.7.2 world/road/driving/capture work. Do not run a full build and full startup harness concurrently.
+
 ## Active driving, surface and loading repair (v0.7.2)
 
 - User reported instantly stuck driving, flickering streets, slow startup/processing and camera views that did not load. Continue through a complete validated direct-main publication; earlier authorization and recoverable backups still apply.

@@ -27,8 +27,8 @@ function fixture(count=1){
  return {controller,view:createExplorerView(ui,controller,{setInsets(){}})};
 }
 function collectPage(view,width=390,height=844){
- const all=new Map();let total=1;
- for(let offset=0;offset<=total;offset+=100){const ctx=mockContext(width,height,offset);view.draw(ctx);for(const t of ctx.targets)all.set(t.id,t);total=Math.max(total,...ctx.scrolls.map(s=>s.contentHeight));}
+ const all=new Map();all.texts=[];let total=1;
+ for(let offset=0;offset<=total;offset+=100){const ctx=mockContext(width,height,offset);view.draw(ctx);for(const t of ctx.targets)all.set(t.id,t);all.texts.push(...ctx.texts);total=Math.max(total,...ctx.scrolls.map(s=>s.contentHeight));}
  return all;
 }
 
@@ -51,7 +51,8 @@ test('details, journal, sources, layers, learning and building corrections remai
  const {controller,view}=fixture();controller.selectPlace('p');let targets=collectPage(view);
  for(const id of ['ex-detail-add','ex-detail-nav','ex-directions','ex-street-view','ex-place-site','ex-detail-favorite','ex-visit','ex-trent-rating','ex-jenn-rating','ex-journal-notes','ex-journal-photo','ex-source-0','ex-inspect'])assert.ok(targets.has(id),id);
  controller.show('layers');targets=collectPage(view);
- for(const id of ['ex-district','ex-layers-all','ex-layers-none','ex-layers-favorites','ex-layer-subway','ex-layer-mexican','ex-setting-buildings','ex-setting-water','ex-music','ex-season','ex-weather','ex-quality','ex-backup-export','ex-backup-import','ex-source-manifest'])assert.ok(targets.has(id),id);
+ for(const id of ['ex-district','ex-layers-all','ex-layers-none','ex-layers-favorites','ex-layer-subway','ex-layer-mexican','ex-setting-buildings','ex-setting-water','ex-season','ex-weather','ex-quality','ex-backup-export','ex-backup-import','ex-source-manifest'])assert.ok(targets.has(id),id);
+ assert.equal(targets.has('ex-music'),false,'Unavailable music must not present a working toggle.');assert.match(targets.texts.join(' '),/Winter music is not available in this build\./);
  controller.show('learn');controller.setMission({title:'Test mission',target:{name:'A cafe'},distance:20});targets=collectPage(view);
  for(const id of ['ex-play-delivery','ex-play-taxi','ex-play-quiz','ex-play-photographer','ex-challenge-resume','ex-challenge-cancel'])assert.ok(targets.has(id),id);
  controller.setBuilding({id:'b',h:12});targets=collectPage(view);

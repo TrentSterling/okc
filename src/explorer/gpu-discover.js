@@ -27,9 +27,9 @@ export function drawDiscovery(ctx,area,state,dispatch){
    ctx.rect(x+9,top+14,4,60,{color:placeColor(p),radius:2});
    const body=rect(x+17,top+3,width-69,rowHeight-13);
    ctx.hit(`ex-place-open-${p.id}`,body,{onClick:action(dispatch,'place.select',{placeId:p.id}),focusable:true,label:p.name,kind:'button'});
-   ctx.clip(rect(body.x+5,top+10,body.w-10,34),()=>ctx.text(p.name,body.x+5,top+10,{size:16,color:COLORS.text,maxWidth:body.w-10}));
-   ctx.clip(rect(body.x+5,top+45,body.w-10,18),()=>ctx.text(`${CATEGORY_BY_ID.get(p.primaryLayer)?.label||'Place'} · ${p.district}`,body.x+5,top+45,{size:12,color:COLORS.muted,maxWidth:body.w-10}));
-   ctx.clip(rect(body.x+5,top+67,body.w-10,18),()=>ctx.text(p.address||'Mapped place',body.x+5,top+67,{size:12,color:COLORS.faint,maxWidth:body.w-10}));
+   ctx.clip(rect(body.x+5,top+8,body.w-10,42),()=>ctx.text(p.name,body.x+5,top+8,{size:16,color:COLORS.text,maxWidth:body.w-10,maxLines:2}));
+   ctx.clip(rect(body.x+5,top+55,body.w-10,18),()=>ctx.text(`${CATEGORY_BY_ID.get(p.primaryLayer)?.label||'Place'} · ${p.district}`,body.x+5,top+55,{size:12,color:COLORS.muted,maxWidth:body.w-10,maxLines:1}));
+   ctx.clip(rect(body.x+5,top+75,body.w-10,18),()=>ctx.text(p.address||'Mapped place',body.x+5,top+75,{size:12,color:COLORS.faint,maxWidth:body.w-10,maxLines:1}));
    ctx.button(`ex-place-add-${p.id}`,inPlan?'−':'+',rect(x+width-48,top+3,44,44),action(dispatch,'place.include',{placeId:p.id}),{active:inPlan});
    ctx.button(`ex-place-fav-${p.id}`,favorite?'★':'☆',rect(x+width-48,top+48,44,44),action(dispatch,'place.favorite',{placeId:p.id}),{active:favorite});
   }
@@ -39,7 +39,7 @@ export function drawDiscovery(ctx,area,state,dispatch){
 export function drawPlace(flow,state,dispatch){
  const p=state.selectedPlace;if(!p)return;const memory=state.memories[p.id]||{},inPlan=state.plan.stops.some(s=>s.placeId===p.id);
  const journal=patch=>dispatch({type:'journal.patch',placeId:p.id,patch});
- flow.button('ex-place-back','‹ All places','view.back');
+ flow.button('ex-place-back','Back to places','view.back');
  flow.text(p.name,{size:22,color:COLORS.text});flow.text(p.address||'Street address not supplied',{size:14,color:COLORS.muted});
  flow.text(`${p.district} · ${p.layers.map(c=>CATEGORY_BY_ID.get(c)?.label||c).join(' · ')}`,{size:13,color:placeColor(p)});
  flow.buttons([{id:'ex-detail-add',label:inPlan?'Remove stop':'Add stop',type:'place.include',payload:{placeId:p.id},options:{active:inPlan}},{id:'ex-detail-nav',label:'Go in 3D',type:'place.navigate',payload:{placeId:p.id},options:{disabled:p.x==null}}]);

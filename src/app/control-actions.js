@@ -50,7 +50,7 @@ export function createControlActions({getState,getSimTime,view,ui,setup,actions,
   setDriveMode(mode){if(!['free','scenic'].includes(mode))return;actions.clearDrivingInputs();actions.setDriveMode(mode);},
   toggleDrive(){actions.toggleDrive();},
   recover(){actions.clearDrivingInputs();actions.recoverCar();},
-  setCamera(mode){if(['chase','driver','orbit'].includes(mode)){actions.clearDrivingInputs();ui.setStudyView('');actions.setCamera(mode);}},
+  setCamera(mode){if(['chase','driver','orbit'].includes(mode)){actions.clearDrivingInputs();ui.setStudyView('');actions.setCamera(mode);focus();}},
   cycleCamera(){command.setCamera(['chase','driver','orbit'][(['chase','driver','orbit'].indexOf(getState().camera)+1)%3]);},
   preset(id){if(['daylight','golden','prism','blue','night'].includes(id))actions.setPreset(id);},
   toggleSky(){const s=getState();if(s.progress>=1)s.progress=0;s.sunPlaying=!s.sunPlaying;sync();},
@@ -58,7 +58,7 @@ export function createControlActions({getState,getSimTime,view,ui,setup,actions,
    if(getState().driveMode==='free')return;
    getState().direction*=-1;actions.resetLane();getState().lane=-1.75;
    view.orbitFocus=null;view.viewFov=null;view.lookYaw=0;view.lookPitch=0;view.firstCamera=true;sync();
-   notify(getState().direction===1?'Heading east toward downtown':'Heading west into the sunset');
+   notify(getState().direction===1?'Heading east toward downtown':'Heading west into the sunset');focus();
   },
   selectViewpoint(id){
    const preset=SHOT_BY_ID.get(id);ui.setStudyView(id);if(!preset)return;actions.clearDrivingInputs();

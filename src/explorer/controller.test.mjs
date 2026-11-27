@@ -78,3 +78,20 @@ test('map, inspect, mission and external method contracts stay available without
  await c.dispatch({type:'challenge.command',command:'taxi'});assert.ok(actions.some(a=>a[1]==='taxi'));
  c.destroy();assert.ok(events.some(e=>e[0]==='destroy'));
 });
+
+test('navigation owns its final error or route information message',async()=>{
+ let controller;
+ const fixtureState=fixture({onNavigate:async()=>{controller.notify('Disconnected road network');}});controller=fixtureState.controller;
+ await controller.dispatch({type:'place.navigate',placeId:'cafe'});
+ assert.deepEqual(fixtureState.notices,['Disconnected road network'],'A generic success toast must not overwrite the navigation result.');
+});
+
+test('leaving place details clears the controller selection and map highlight together',async()=>{
+ const {controller:c,events}=fixture();
+ const check=()=>{assert.equal(c.getSnapshot().selectedId,null);assert.equal(events.filter(e=>e[0]==='setSelected').at(-1)[1],null);};
+ for(const action of [{type:'view.back'},{type:'view.escape'},{type:'view.show',tab:'planner'}]){
+  c.selectPlace('cafe');assert.equal(events.filter(e=>e[0]==='setSelected').at(-1)[1],'cafe');await c.dispatch(action);check();
+ }
+ c.selectPlace('cafe');c.setBuilding({id:'building-1',h:8});check();
+ c.selectPlace('cafe');await c.dispatch({type:'filter.patch',patch:{query:'Park'}});check();
+});

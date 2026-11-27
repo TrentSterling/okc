@@ -1,0 +1,3 @@
+# Native GLES pixel diagnostics only; the production site has no Python runtime.
+numpy==2.3.5
+Pillow==13.0.0

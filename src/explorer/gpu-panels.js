@@ -13,7 +13,7 @@ export function drawLayers(flow,state,dispatch){
  flow.line();flow.title('Geography');
  for(const [id,label] of [['labels','Business and street labels'],['buildings','Building footprints'],['roads','Roads and intersections'],['water','Lakes and waterways'],['parks','Parks and green space']])flow.toggle(`ex-setting-${id}`,label,state.settings[id],value=>settings({[id]:value}));
  flow.line();flow.title('Set the scene');
- flow.toggle('ex-music','Winter music',state.settings.music,value=>settings({music:value}));
+ flow.text('Winter music is not available in this build.',{size:13,color:COLORS.muted});
  flow.select('ex-season','Season',state.settings.season,choices([['christmas','Christmas'],['normal','Everyday OKC']]),value=>settings({season:value}));
  flow.select('ex-weather','Weather',state.settings.weather,choices([['clear','Clear winter evening'],['snow','Snow flurries'],['fog','Winter mist'],['wet','After the rain']]),value=>settings({weather:value}));
  flow.select('ex-quality','Rendering quality',state.settings.quality,choices([['high','High detail'],['balanced','Balanced'],['low','Low detail']]),value=>settings({quality:value}));
@@ -51,7 +51,7 @@ export function drawLearning(flow,state,dispatch){
 export function drawBuilding(flow,state,dispatch){
  const b={...state.building,...state.overrides[state.building?.id]},draft=state.buildingDraft;if(!draft)return;
  const patch=value=>dispatch({type:'building.patch',patch:value});
- flow.button('ex-building-back','‹ All places','view.back');flow.title('Building inspector');
+ flow.button('ex-building-back','Back to places','view.back');flow.title('Building inspector');
  flow.text(b.name||'Mapped building',{size:18});flow.text(`${b.id} · ${b.heightSource||'Height is an estimate'}`,{size:13,color:COLORS.muted});
  if(b.roofSource)flow.text(`Roof: ${b.roofSource}`,{size:13,color:COLORS.muted});
  flow.text('Corrections are stored on this device. The original source footprint remains attached to this building.',{size:14,color:COLORS.muted});

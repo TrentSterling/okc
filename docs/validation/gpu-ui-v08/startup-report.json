@@ -1,0 +1,44 @@
+{
+  "passed": true,
+  "baseURL": "https://startup.invalid/okc/",
+  "applicationModules": 109,
+  "packedAssetsRead": 8,
+  "metroTileRequests": 16,
+  "sceneReady": true,
+  "freeDrive": true,
+  "drivingSeconds": 10,
+  "repeatKeyEvents": 285,
+  "distanceUnderThrottleMeters": 216.891,
+  "finalDrivingSpeedMetersPerSecond": 28,
+  "rendererCalls": 1420,
+  "worldRendererCalls": 610,
+  "uiRendererCalls": 810,
+  "gpuControls": true,
+  "phoneLayouts": [
+    {
+      "width": 390,
+      "height": 844,
+      "syntheticSafeInsets": {
+        "top": 47,
+        "right": 0,
+        "bottom": 34,
+        "left": 0
+      },
+      "heldControls": 5,
+      "menuReachable": true
+    },
+    {
+      "width": 844,
+      "height": 390,
+      "syntheticSafeInsets": {
+        "top": 0,
+        "right": 44,
+        "bottom": 21,
+        "left": 44
+      },
+      "heldControls": 5,
+      "menuReachable": true
+    }
+  ],
+  "scope": "Actual built boot/app/import map, packed geometry, scene construction, discovery bridge, tile decoding/compiler/mount, GPU UI target routing/setup export and free driving. Browser DOM/canvas, viewport, RAF and GPU renderer/PMREM adapters; worker fallback path. Phone layout checks are synthetic target/buffer checks. No shader, browser layout, image or FPS verification."
+}

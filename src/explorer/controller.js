@@ -28,8 +28,9 @@ export function createExplorerController(options={},services={}){
  function emitLayers(){options.onLayers?.({...state.settings,categories:[...state.activeCategories],subway:state.activeCategories.has('subway'),mexican:state.activeCategories.has('mexican'),filter:state.filter,visiblePlaceIds:filtered().map(p=>p.id)});}
  function changed({map:refreshMap=false,layers=false}={}){if(destroyed)return;if(refreshMap)syncMap();if(layers)emitLayers();state.revision++;for(const fn of listeners)fn();}
  function persist(){state.storageError=!saveState({plan:state.plan,memories:state.memories,overrides:state.overrides,settings:state.settings,categories:[...state.activeCategories]},services.storage);}
+ function clearSelection(){state.selectedId=null;map.setSelected?.(null);}
  function invalidateTour(){if(state.tourIndex>=0)options.onTour?.({action:'cancel',stops:getTourStops(),index:0});state.tourIndex=-1;state.touring=false;state.tourFinished=false;state.roadRoute=null;map.setRoadRoute?.(null);}
- function show(tab){if(sections.has(tab)){state.tab=tab;state.building=null;state.buildingDraft=null;if(tab!=='discover')state.selectedId=null;}state.open=true;services.onPanel?.(true);changed();}
+ function show(tab){if(sections.has(tab)){state.tab=tab;state.building=null;state.buildingDraft=null;if(tab!=='discover')clearSelection();}state.open=true;services.onPanel?.(true);changed();}
  function hide(){state.open=false;services.onPanel?.(false);changed();}
  function setMode(value){
   const next=value==='map'?'map':'3d',previous=state.mode;state.mode=next;services.setMode?.(next);
@@ -42,7 +43,7 @@ export function createExplorerController(options={},services={}){
   if(p.x!=null){if(state.mode==='map')map.focus?.(p,.18);options.onFocus?.(p);}changed();
  }
  function setBuilding(value){
-  state.building=value;state.selectedId=null;state.tab='discover';state.open=true;services.onPanel?.(true);
+  state.building=value;clearSelection();state.tab='discover';state.open=true;services.onPanel?.(true);
   const b={...value,...state.overrides[value?.id]};state.buildingDraft=value?{name:b.name||'',height:String(b.h??b.height??8),color:/^#[0-9a-f]{6}$/i.test(b.color||'')?b.color:'#967e69',roof:b.roof||'flat',reference:b.reference||'',notes:b.notes||''}:null;
   changed();
  }
@@ -122,8 +123,8 @@ export function createExplorerController(options={},services={}){
     case 'view.expand':state.expanded=!state.expanded;changed();return;
     case 'view.filters':state.filtersOpen=!state.filtersOpen;changed();return;
     case 'view.setMode':setMode(action.mode);return;
-    case 'view.back':state.selectedId=null;state.building=null;state.buildingDraft=null;changed();return;
-    case 'view.escape':if(state.building||state.selectedId&&state.tab==='discover'){state.selectedId=null;state.building=null;state.buildingDraft=null;changed();}else if(state.open)hide();else if(state.mode==='map')setMode('3d');return;
+    case 'view.back':clearSelection();state.building=null;state.buildingDraft=null;changed();return;
+    case 'view.escape':if(state.building||state.selectedId&&state.tab==='discover'){clearSelection();state.building=null;state.buildingDraft=null;changed();}else if(state.open)hide();else if(state.mode==='map')setMode('3d');return;
     case 'filter.patch':{
      const p=action.patch||{};for(const key of ['query','chain','filter'])if(Object.hasOwn(p,key))state[key]=text(p[key],300);
      for(const key of ['indoor','onlySaved'])if(Object.hasOwn(p,key))state[key]=!!p[key];
@@ -133,7 +134,7 @@ export function createExplorerController(options={},services={}){
     case 'place.select':selectPlace(action.placeId);return;
     case 'place.include':togglePlace(action.placeId,action.value);return;
     case 'place.favorite':{const id=String(action.placeId);state.memories={...state.memories,[id]:{...state.memories[id],favorite:!state.memories[id]?.favorite}};memoryRevision++;persist();changed({map:true,layers:true});return;}
-    case 'place.navigate':{const p=byId.get(String(action.placeId));if(!p||p.x==null)return;invalidateTour();setMode('3d');await options.onNavigate?.(p);notify(`Exploring ${p.name}.`);return;}
+    case 'place.navigate':{const p=byId.get(String(action.placeId));if(!p||p.x==null)return;invalidateTour();setMode('3d');await options.onNavigate?.(p);return;}
     case 'place.inspect':{const p=byId.get(String(action.placeId));if(p)await options.onInspect?.(p);return;}
     case 'journal.patch':{
      const id=String(action.placeId||state.selectedId),patch=action.patch||{},old=state.memories[id]||{};

@@ -16,6 +16,7 @@ export function fail(error){
 
 export function focusRoad(){
  const ui=getUI();if(ui?.isEditing||ui?.modalOpen)return;
+ if(ui)ui.focusId=null;
  $('scene')?.focus({preventScroll:true});
 }
 

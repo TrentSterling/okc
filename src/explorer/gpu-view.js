@@ -13,6 +13,7 @@ export function createExplorerView(ui,controller,map){
   const insetKey=JSON.stringify(layout.mapInsets);if(previousInsets!==insetKey){previousInsets=insetKey;map.setInsets?.(layout.mapInsets);}
   if(state.mode==='map'&&!initialMapFit){initialMapFit=true;if(map.getScale?.()===.025)map.fit?.();}
   const launchWidth=Math.min(102,Math.max(82,bar.w-142)),modeWidth=Math.min(62,(bar.w-launchWidth-12)/2);
+  ctx.block?.('ex-toolbar-block',rect(bar.x,bar.y,launchWidth+12+modeWidth*2,44));
   ctx.button('ex-launch',state.open?'Close':'Explore',rect(bar.x,bar.y,launchWidth,44),action(dispatch,'view.toggle'),{active:state.open});
   ctx.button('ex-mode-map','Map',rect(bar.x+launchWidth+6,bar.y,modeWidth,44),action(dispatch,'view.setMode',{mode:'map'}),{active:state.mode==='map'});
   ctx.button('ex-mode-3d','3D',rect(bar.x+launchWidth+12+modeWidth,bar.y,modeWidth,44),action(dispatch,'view.setMode',{mode:'3d'}),{active:state.mode==='3d',disabled:ui.sceneReady===false});

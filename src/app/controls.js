@@ -15,7 +15,6 @@ export function bindControls({getState,getSimTime,view,world,keys,touchInputs,ui
  ui.configure({actions:command,setup,clearInputs,beginHold:(id,action)=>{input.begin(id,action);focusRoad();},endHold:id=>input.end(id),isHeld:action=>input.isHeld(action)});
  const listen=(target,type,fn,options)=>{target.addEventListener(type,fn,options);disposers.push(()=>target.removeEventListener(type,fn,options));};
  disposers.push(surface.registerWorldInput(cameraInput),surface.onCancelInputs(clearInputs));
- listen(window,'resize',()=>{clearInputs();actions.resize();surface.invalidate();});
  listen(window,'keydown',e=>{
   if(e.defaultPrevented)return;
   if(e.code==='Escape'){

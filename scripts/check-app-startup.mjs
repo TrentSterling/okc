@@ -217,7 +217,9 @@ function visibleTarget(id) {
   const r = target.rect, clip = target.clip || {x: 0, y: 0, w: gameUI.width, h: gameUI.height};
   const x = Math.max(r.x, clip.x, 0), y = Math.max(r.y, clip.y, 0);
   const right = Math.min(r.x + r.w, clip.x + clip.w, gameUI.width), bottom = Math.min(r.y + r.h, clip.y + clip.h, gameUI.height);
-  return right > x && bottom > y ? {...target, center: {x: (x + right) / 2, y: (y + bottom) / 2}} : null;
+  // Do not "click" a one-pixel fragment of a clipped settings row. Scroll it
+  // fully into view just as a person would before activating the button.
+  return right - x >= r.w - .01 && bottom - y >= r.h - .01 ? {...target, center: {x: (x + right) / 2, y: (y + bottom) / 2}} : null;
 }
 function tapTarget(id) {
   gameUI.render(); const target = visibleTarget(id); assert(target, 'Visible GPU control missing: ' + id);

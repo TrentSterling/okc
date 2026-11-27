@@ -1,7 +1,7 @@
 import {getUI} from '../ui/runtime.js';
 import {placeColor,placeIcon} from './catalog.js';
 import {boundsOf,createSpatialIndex} from './spatial-index.js';
-import {pointsOf,waterKind,roadClass,roadWidth,packMapGeometry} from './map-geometry.js';
+import {pointsOf,waterKind,parkKind,buildingStyle,roadClass,roadWidth,packMapGeometry} from './map-geometry.js';
 import {createMapBatches} from './map-batches.js';
 import {createMapCamera} from './map-camera.js';
 
@@ -50,9 +50,11 @@ export function createGPUMap({onSelect=()=>{},onMove=()=>{},onView=()=>{},onSele
   const size=ctx.width+':'+ctx.height;if(size!==lastSize){lastSize=size;state.width=ctx.width;state.height=ctx.height;viewportDirty=true;emitView();}prepare();updateVisible();
   ctx.hit('atlas-gesture',{x:0,y:0,w:ctx.width,h:ctx.height},{lockDrag:true,onDown:model.down,onMove:model.move,onUp:model.up,onCancel:model.cancel,onWheel:e=>model.zoom(Math.exp(-e.deltaY*.0015),e),onDoubleClick:e=>model.zoom(1.7,e)});
   const {scale}=state,screen=model.screen;
+  const labelBoxes=[];
+  const label=(text,x,y,size,color,maxWidth)=>{const w=Math.min(maxWidth,ctx.measure(text,size)),box={x:x-w/2-5,y:y-3,w:w+10,h:size*1.25+6};if(box.x<6||box.x+box.w>ctx.width-6||box.y<6||box.y+box.h>ctx.height-6||labelBoxes.some(b=>box.x<b.x+b.w&&box.x+box.w>b.x&&box.y<b.y+b.h&&box.y+box.h>b.y))return;labelBoxes.push(box);ctx.text(text,x,y,{align:'center',size,color,maxWidth,maxLines:1});};
   if(labels){
-   if(scale<.28)for(const d of data.districts){if(Number.isFinite(d.x)&&Number.isFinite(d.z)){const [x,y]=screen(d.x,d.z);ctx.text(String(d.name).toUpperCase(),x,y,{align:'center',size:12,color:'#a5bab4',maxWidth:210,maxLines:1});}}
-   if(layers.roads&&scale>.09){const cells=new Set();for(const road of visibleRoads){if(!road.name)continue;const [x,y]=screen(...road.p[Math.floor(road.p.length/2)]);if(x<0||x>ctx.width||y<0||y>ctx.height)continue;const key=Math.floor(x/170)+':'+Math.floor(y/65);if(cells.has(key))continue;cells.add(key);ctx.text(road.name,x,y-15,{size:12,align:'center',color:'#a9bcb4',maxWidth:160,maxLines:1});}}
+   if(scale<.28)for(const d of data.districts){if(Number.isFinite(d.x)&&Number.isFinite(d.z)){const [x,y]=screen(d.x,d.z);label(String(d.name).toUpperCase(),x,y,12,'#a5bab4',210);}}
+   if(layers.roads&&scale>.09){const cells=new Set();for(const road of visibleRoads){if(!road.name)continue;const [x,y]=screen(...road.p[Math.floor(road.p.length/2)]);if(x<0||x>ctx.width||y<0||y>ctx.height)continue;const key=Math.floor(x/170)+':'+Math.floor(y/65);if(cells.has(key))continue;cells.add(key);label(road.name,x,y-15,12,'#a9bcb4',160);}}
   }
   const points=roadRoute?.points?.length>1?roadRoute.points:route.filter(p=>p.x!=null&&p.z!=null).map(p=>[p.x,p.z]);
   for(let i=1;i<points.length;i++){const a=screen(...points[i-1]),b=screen(...points[i]);if(roadRoute)ctx.line(...a,...b,{color:'#10242b',width:7});ctx.line(...a,...b,{color:'#edc583',width:roadRoute?3:2});}
@@ -73,8 +75,8 @@ export function createGPUMap({onSelect=()=>{},onMove=()=>{},onView=()=>{},onSele
   if(!visible||ui.mode!=='map')return;updateVisible();context.fillStyle='#142326';context.fillRect(0,0,state.width,state.height);
   const path=(points,close=false,begin=true)=>{if(begin)context.beginPath();points.forEach((p,i)=>{const [x,y]=model.screen(...p);i?context.lineTo(x,y):context.moveTo(x,y);});if(close)context.closePath();};
   const polygon=item=>{path(item.p,true);for(const hole of item.holes)path(hole,true,false);context.fill('evenodd');};
-  for(const item of visibleSurfaces){const water=waterKind(item);if(water?!layers.water:!layers.parks)continue;context.fillStyle=water?'#24444d':'#203f33';polygon(item);}
-  if(layers.buildings&&state.scale>=.18){context.fillStyle='#687c7373';for(const item of visibleBuildings)polygon(item);}
+  for(const item of visibleSurfaces){const water=waterKind(item);if(water?!layers.water:!layers.parks)continue;context.fillStyle=water?'#24444d':parkKind(item)?'#203f33':'#253335';polygon(item);}
+  if(layers.buildings&&state.scale>=.18)for(const item of visibleBuildings){context.fillStyle=item.id===selectedBuilding?'#d3b97999':buildingStyle(item).fill;polygon(item);}
   if(layers.roads){context.lineCap='round';context.lineJoin='round';for(let kind=0;kind<3;kind++){if(kind===0&&state.scale<.035)continue;context.strokeStyle=['#304440','#465d57','#70817a'][kind];for(const road of visibleRoads){if(roadClass(road)!==kind)continue;context.lineWidth=roadWidth(kind,road.w||(kind===2?15:kind===1?10:5),state.scale);path(road.p);context.stroke();}}}
  }
  const removeView=ui.addView('atlas',draw,0),removeLayer=ui.addLayer('atlas',{render(renderer){if(visible&&ui.mode==='map')batches.render(renderer,{...state,layers});},renderCanvas}),removeCancel=ui.onCancelInputs(model.clear);
@@ -82,7 +84,7 @@ export function createGPUMap({onSelect=()=>{},onMove=()=>{},onView=()=>{},onSele
  return {getView,fit:model.fit,focus:model.focus,zoom:model.zoom,
   show(){visible=true;state.width=ui.width;state.height=ui.height;viewportDirty=true;ui.invalidate();emitView();},hide(){visible=false;model.clear();clearTimeout(viewTimer);onView(getView());ui.invalidate();},
   setData(next={}){const b=next.bounds;if(Array.isArray(b))state.bounds=b;else if(b)state.bounds=[b.minX,b.minZ,b.maxX,b.maxZ];pending=next;baseReady=false;if(visible)prepare();ui.invalidate();},
-  setInsets(value){state.insets={...state.insets,...value};},
+  setInsets(value){const old=state.insets,next={...old,...value};state.center.x-=((next.left-next.right)-(old.left-old.right))/2/state.scale;state.center.z-=((next.top-next.bottom)-(old.top-old.bottom))/2/state.scale;state.insets=next;viewportDirty=true;ui.invalidate();emitView();},
   setBuildings(value){buildings=(value||[]).map(geometry).filter(b=>b.p.length>2);for(const b of buildings)b.b=boundsOf(b.p);buildingIndex=createSpatialIndex(buildings);requestGeometry({buildings},'buildings');viewportDirty=true;ui.invalidate();},
   setPlaces(value){if(places!==value){places=value;ui.invalidate();}},setSelected(value){if(selected!==value){selected=value;ui.invalidate();}},
   setRoute(value){route=value;ui.invalidate();},setRoadRoute(value){roadRoute=value?{...value,points:pointsOf({p:value.points||[]})}:null;ui.invalidate();},

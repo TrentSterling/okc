@@ -21,7 +21,7 @@ def bake(font_path, output):
     size, pad, supersample, width, height, spread = 48, 10, 4, 1024, 512, 8
     chars = ''.join(sorted(set(''.join(chr(n) for n in range(32, 127))
                               + ''.join(chr(n) for n in range(161, 256))
-                              + 'ŒœŠšŽžŸ–—‘’“”…←↑→↓↔↕✓✕•★☆⌖☰▶◀▾▴▦◒⦿✹◡◇♧▤◔♡✧≈◈▱−'), key=ord))
+                              + 'ŒœŠšŽžŸởĐứẹườũạ–—‘’“”…←↑→↓↔↕✓✕•★☆⌖☰▶◀▾▴▦◒⦿✹◡◇♧▤◔♡✧≈◈▱−'), key=ord))
     font = ImageFont.truetype(str(font_path), size)
     large = ImageFont.truetype(str(font_path), size * supersample)
     placements, x, y, row = {}, 0, 0, 0

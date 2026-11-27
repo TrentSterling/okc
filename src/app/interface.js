@@ -50,6 +50,8 @@ export function createInterface({getState,legends,glass,renderer,clearDrivingInp
   if(!surface.sceneReady||surface.mode!=='3d'||!bindings||!panel)return;
   drawSettings(ctx,read(),control);
  },80));
+ disposers.push(surface.onChange(event=>{if((event.mode&&event.mode!=='3d'||event.sceneReady===false)&&panel)setPanel(null);}));
+ disposers.push(surface.onEscape(()=>{if(!panel)return false;setPanel(null);return true;}));
  return {
   configure(value){bindings={...bindings,...value};invalidate();},
   sync,read,updateTimeLabel:invalidate,toggleHud:control.toggleHud,setPanel,closePanel:control.closePanel,

@@ -16,7 +16,7 @@ test('licensed binary atlas, gzip, metrics and accented name coverage agree', ()
   assert.deepEqual(new Uint8Array(gunzipSync(packed)), pixels);
   assert.equal(createHash('sha256').update(pixels).digest('hex'), metrics.sha256);
   assert.equal(pixels.length, metrics.width * metrics.height);
-  for (const ch of 'Café Niño Straße Œuvre ←→↑↓✓★–—▦◒⦿✹◡S◇♧▤◔♡✧≈◈▱⌖×−') if (ch !== ' ') assert.ok(metrics.glyphs[ch], ch);
+  for (const ch of 'Café Niño Straße Œuvre ởĐứẹườũạ ←→↑↓✓★–—▦◒⦿✹◡S◇♧▤◔♡✧≈◈▱⌖×−') if (ch !== ' ') assert.ok(metrics.glyphs[ch], ch);
   assert.match(metrics.glyphs['⦿'].source, /original geometric/);
   assert.match(metrics.glyphs['⌖'].source, /original geometric/);
   const accented = metrics.glyphs.é;
@@ -68,6 +68,17 @@ test('draw list clips and retains a rotated line crossing the visible viewport',
   assert.deepEqual(snapshot.attributes.aRotation.slice(2, 4), [0, 1]);
   assert.ok(Math.abs(snapshot.attributes.aColor[3] - 0x44 / 255) < 1e-6);
   ui.dispose();
+});
+
+test('single-line labels use a fitting ellipsis while multiline paragraphs retain wrapping', () => {
+  const options = {size: 16, maxWidth: 90, maxLines: 1};
+  const truncated = layoutText('A restaurant with a long name', metrics, options);
+  assert.equal(truncated.lines.length, 1); assert.match(truncated.lines[0], /…$/); assert.ok(truncated.width <= 90);
+  assert.deepEqual(layoutText('Café', metrics, options).lines, ['Café']);
+  assert.match(layoutText('First\nSecond', metrics, options).lines[0], /…$/);
+  const paragraph = layoutText('A restaurant with a long name', metrics, {...options, maxLines: Infinity});
+  assert.ok(paragraph.lines.length > 1); assert.ok(paragraph.lines.every(line => !line.endsWith('…')));
+  assert.deepEqual(layoutText('A long name', metrics, {...options, maxWidth: 1}).lines, ['']);
 });
 
 test('center and right text align to their x anchor independently of wrap width', () => {

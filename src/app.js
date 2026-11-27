@@ -40,6 +40,7 @@ function snapshotView(){return {state:{...state},driving:state.driveMode==='free
 function restoreSetup(restored){
  state=restored.state;freeCar=restored.freeCar;clearDrivingInputs();cameraRig.restore(restored.view);actualLane=state.lane;cameraRig.view.firstCamera=true;
  if(freeCar&&!state.driving)freeCar.yawRate=0;
+ discovery?.explorer.dispatch({type:'settings.patch',patch:{quality:state.quality}});
  resize();atmosphere.update(state.progress,state.style,true,performance.now(),state.neutral);syncUI();
 }
 
@@ -47,6 +48,7 @@ async function init(){
  const initialized=getUI();
  renderer=initialized.renderer;const reversedDepth=initialized.reversedDepth;
  if(!renderer)throw Error('WebGL2 is unavailable.');
+ initialized.onChange(event=>{if(event.resize&&camera)resize();});
  scene=new THREE.Scene();camera=new THREE.PerspectiveCamera(48,innerWidth/innerHeight,.5,7500);scene.add(camera);
  reportLoad('scene','Building your Oklahoma City');
  await new Promise(resolve=>requestAnimationFrame(resolve));
@@ -68,7 +70,7 @@ async function init(){
  bindControls({getState:()=>state,getSimTime:()=>simTime,view:cameraRig.view,world,keys,touchInputs,ui,setup,actions:{
    setDriveMode,recoverCar,toggleHud,toggleDrive,setCamera,setPreset,enableAudio,resize,reset,applyCapturePreset,clearDrivingInputs,manualTakeover:stopTour,
    updateAtmosphere:(...args)=>atmosphere.update(...args),resetLane:()=>{actualLane=-1.75;},photograph:captures.photograph,
-   setQuality:quality=>{state.quality=quality;discovery?.metro.setQuality(quality);resize();},
+   setQuality:quality=>{if(discovery)discovery.explorer.dispatch({type:'settings.patch',patch:{quality}});else{state.quality=quality;resize();}},
  }});resize();
  reportLoad('scene','Nearby city geometry is ready',{complete:true});
  reportLoad('lighting','Catching the western sky');
@@ -82,6 +84,7 @@ async function init(){
  if(renderer.compileAsync)await renderer.compileAsync(scene,camera);
  refreshLocalReflection(true);
  renderer.render(scene,camera);
+ if(!initialized.renderer)throw Error('The graphics context was interrupted during startup.');
  sceneInitialized=true;
  initialized.setSceneReady(true);initialized.driveFrames(true);
  reportLoad('ready','The city is yours');
@@ -103,6 +106,7 @@ function refreshLocalReflection(immediate=false,now=performance.now()){
 }
 
 function frame(now){
+ if(!getUI().renderer){lastTime=now;return;}
  if(captures.isCapturing){lastTime=now;requestAnimationFrame(frame);return;}
  const dt=Math.min((now-lastTime)/1000,.05);lastTime=now;simTime+=dt;
  const surface=getUI(),sceneVisible=!document.hidden&&surface.mode!=='map';
@@ -193,7 +197,7 @@ function reset(){ui.setStudyView('');const oldSound=state.sound;cameraRig.view.o
 function toggleDrive(){state.driving=!state.driving;state.cruise=state.driveMode==='scenic';if(state.driveMode==='free'&&!state.driving){freeCar.vx=freeCar.vz=freeCar.speed=freeCar.travelSpeed=freeCar.yawRate=0;freeCar.bodyRoll=freeCar.bodyPitch=freeCar.bodyRollVelocity=freeCar.bodyPitchVelocity=0;cameraRig.reset(freeCar);state.speed=0;clearDrivingInputs();}syncUI();focusRoad();}
 
 function resize(){
- if(!renderer)return;
+ if(!renderer||!getUI().renderer)return;
  const cap=state.quality==='high'?1.25:state.quality==='balanced'?1:.7;
  const surface=getUI();renderer.setPixelRatio(Math.min(devicePixelRatio,cap));renderer.setSize(surface.width,surface.height,false);
  camera.aspect=surface.width/surface.height;camera.updateProjectionMatrix();

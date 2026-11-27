@@ -14,11 +14,9 @@ export function createExplorer(options={}){
  controller=createExplorerController(options,{map,platform:ui.platform,notify:message=>ui.toast(message),setMode:mode=>ui.setMode(mode),onPanel:open=>{if(open)ui.cancelInputs?.('explorer');}});
  const view=createExplorerView(ui,controller,map);
  const removeModeListener=ui.onChange?.(()=>{const mode=ui.mode;if((mode==='map'||mode==='3d')&&controller.getSnapshot().mode!==mode)controller.setMode(mode);});
- const removeEscape=ui.onEscape?.(()=>{const state=controller.getSnapshot();if(!state.open&&state.mode!=='map')return false;controller.dispatch({type:'view.escape'});return true;});
+ const removeEscape=ui.onEscape?.(()=>{if(ui.modalOpen)return false;const state=controller.getSnapshot();if(!state.open&&state.mode!=='map')return false;controller.dispatch({type:'view.escape'});return true;});
  if(ui.mode==='map'&&!options.mapOnly)controller.setMode('map');
  const originalDestroy=controller.destroy;
- return {...controller,
-  get overrides(){return controller.overrides;},get settings(){return controller.settings;},get plan(){return controller.plan;},get visiblePlaces(){return controller.visiblePlaces;},get selectedPlace(){return controller.selectedPlace;},
-  destroy(){removeModeListener?.();removeEscape?.();view.destroy();originalDestroy();ui.invalidate();}
- };
+ controller.destroy=()=>{removeModeListener?.();removeEscape?.();view.destroy();originalDestroy();ui.invalidate();};
+ return controller;
 }
