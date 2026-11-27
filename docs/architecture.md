@@ -1,6 +1,6 @@
 # Source layout and release process
 
-Prairie Prism remains a static Three.js application with native ES modules. The browser entrypoint is `app.js`; the build copies authored modules without bundling or transforming them. The existing HTML import map resolves `three` to the pinned, vendored library.
+Prairie Prism remains a static Three.js application with native ES modules. The browser entrypoint is `boot.js`, which checks 3D capability before lazily importing `app.js`; the build copies authored modules without bundling or transforming them. The existing HTML import map resolves `three` to the pinned, vendored library.
 
 ## Ownership
 
@@ -74,3 +74,25 @@ The second job cannot start until validation succeeds. The public URL remains `h
 The pre-modularization release is preserved at `backup/pre-modular-20261124-5c832b1`, commit `5c832b1f71ac71eed9a984a99aef49d726cd3829`. Original source, generated data and all capture assets remain in that history. Do not force-reset `main` or erase the backup branch. Revert the relevant source change with a new commit and let the validated publishing workflow rebuild it.
 
 Before declaring an incident lost, inspect the local checkout, remote work branches, the source commit, CI artifacts, and the publishing branch. A stopped conversation alone does not establish loss of any of those.
+
+
+## Discover OKC v0.7 modules and loading
+
+| Location | Responsibility |
+| --- | --- |
+| `src/boot.js`, `src/loading/progress.js` | Capability-aware startup, real stage completion, early atlas access and retry |
+| `src/loading/asset-client.js`, `asset-worker.js`, `assets.js` | Concurrent downloads, worker gzip decode/JSON parsing, transferable binary buffers and raw-JSON fallback |
+| `src/world/runtime-meshes.js`, `runtime-surfaces.js` | Compact equivalents of the canonical downtown regression assets |
+| `src/discovery.js` | Composition of the atlas, scene bridge, loading and persistence callbacks |
+| `src/discovery/navigation.js` | Asynchronous route requests, guided tour lifecycle and navigation challenges |
+| `src/discovery/map-tiles.js` | Lazy nearby atlas footprints, two requests at once and a bounded tile cache |
+| `src/explorer/` | Indexed catalog queries, cached map base, planner views, validated persistence and date warnings |
+| `src/metro/` | Bounded geometry workers, tile scene ownership, streaming, routing worker, lighting and labels |
+| `scripts/metro_geometry.py`, `metro_output.py` | Shared road precision/partitioning and deterministic compressed atlas serialization |
+| `scripts/write-release.mjs` | Exact release inventory for runtime files, maps, photographs and downloads |
+
+The full city is never loaded into the scene at startup. The atlas overview and POIs download in parallel. The road graph loads only when navigation is requested and is prepared and searched in a dedicated worker. Nearby 512 m tiles are fetched, decompressed, parsed and compiled by a bounded geometry worker pool. Tile eviction releases GPU objects and collision entries. Detailed atlas footprints load only at close zoom; the base map has its own spatial index and cached bitmap, so a moving car does not redraw the entire road network.
+
+The startup loader checks WebGL2 before importing the 3D module graph. A map-only browser therefore does not download the downtown 3D buffers. Native module entrypoints and the original skyline exports remain stable. Authored modules stay below the 64 KiB source guard. Tests remain in source but are omitted from the deployed runtime.
+
+The offline metro and downtown stages are independent and run in parallel. Each builds into the same isolated staging directory under distinct filenames, and the coordinator waits for both before replacing `dist`. The canonical downtown JS geometry remains available for regression checks; HTML import-map entries select equivalent compressed runtime assets. `release.json` includes every output file's SHA-256, and publication verifies the complete inventory, including gzip/binary resources.

@@ -60,7 +60,9 @@ function visitModule(file, importMap, documentURL) {
   }
   for (const specifier of imports) {
     const isBare = !/^(?:\.{0,2}\/|[a-z][a-z0-9+.-]*:)/i.test(specifier);
-    const mapped = isBare ? importMap.get(specifier) : null;
+    // Import maps also remap normalized relative URLs (the packed runtime data).
+    const normalized=new URL(specifier,fileURL(file)).href;
+    const mapped = importMap.get(specifier)||[...importMap.entries()].find(([key])=>key.startsWith('.')&&new URL(key,documentURL).href===normalized)?.[1];
     assert.ok(!isBare || mapped, 'Unmapped module import: ' + specifier + ' in ' + relative(file));
     const target = localReference(mapped || specifier, mapped ? documentURL : fileURL(file),
                                   relative(file) + ' import');
@@ -69,6 +71,10 @@ function visitModule(file, importMap, documentURL) {
   // Literal fetch URLs resolve against the document, not the module file.
   for (const match of source.matchAll(/\bfetch\s*\(\s*(['"])([^'"]+)\1/g)) {
     localReference(match[2], documentURL, relative(file) + ' fetch');
+  }
+  for(const match of source.matchAll(/new URL\(\s*(['"])([^'"]+)\1\s*,\s*import\.meta\.url\s*\)/g)){
+    const target=localReference(match[2],fileURL(file),relative(file)+' module URL');
+    if(target&&/\.m?js$/.test(target))visitModule(target,new Map(),fileURL(file));
   }
 }
 

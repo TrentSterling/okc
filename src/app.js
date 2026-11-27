@@ -65,7 +65,9 @@ async function init(){
  bindControls({getState:()=>state,getSimTime:()=>simTime,view:cameraRig.view,world,keys,touchInputs,ui,setup,actions:{
    setDriveMode,recoverCar,toggleHud,toggleDrive,setCamera,setPreset,enableAudio,resize,reset,applyCapturePreset,clearDrivingInputs,
    updateAtmosphere:(...args)=>atmosphere.update(...args),resetLane:()=>{actualLane=-1.75;},photograph:captures.photograph,
+   setQuality:quality=>{state.quality=quality;discovery?.metro.setQuality(quality);resize();},
  }});resize();
+ reportLoad('scene','Nearby city geometry is ready',{complete:true});
  reportLoad('lighting','Catching the western sky');
  await new Promise(resolve=>requestAnimationFrame(resolve));
  const viewId=typeof location==='undefined'?null:new URLSearchParams(location.search).get('view');
@@ -96,6 +98,7 @@ function refreshLocalReflection(immediate=false,now=performance.now()){
 function frame(now){
  if(captures.isCapturing){lastTime=now;requestAnimationFrame(frame);return;}
  const dt=Math.min((now-lastTime)/1000,.05);lastTime=now;simTime+=dt;
+ const sceneVisible=!document.hidden&&!document.body.classList.contains('explorer-map-open');
  if(state.driveMode==='free'){
    const held=action=>[...touchInputs.values()].includes(action);
    const throttle=Number(keys.has('KeyW')||keys.has('ArrowUp')||held('throttle'))-Number(keys.has('KeyS')||keys.has('ArrowDown')||held('brake'));
@@ -117,20 +120,21 @@ function frame(now){
  actualLane=THREE.MathUtils.damp(actualLane,state.lane,2.8,dt);
  }
  if(state.sunPlaying){state.progress=Math.min(1,state.progress+dt/150);if(state.progress===1){state.sunPlaying=false;syncUI();} $('timeSlider').value=state.progress;updateTimeLabel();}
- if(now-lastEnvironment>180){if(atmosphere.update(state.progress,state.style,false,now,state.neutral))lastEnvironment=now;}
+ if(sceneVisible&&now-lastEnvironment>180){if(atmosphere.update(state.progress,state.style,false,now,state.neutral))lastEnvironment=now;}
  const night=state.neutral?0:atmosphere.night(state.progress);glass.uniforms.style.value=state.style;glass.uniforms.night.value=state.neutral?0:night;
  player.userData.setNight?.(night);
  devon.update(simTime,night,state.screen&&!state.neutral);legends.update(simTime,night);
  world.update(dt,simTime,night,state.traffic?1:0);
- refreshLocalReflection(false,now);
+ if(sceneVisible)refreshLocalReflection(false,now);
  updateCamera(dt);
  discovery?.update(dt,simTime,night,now);
- atmosphere.prepareShadows(cameraRig.carPosition,now,state.traffic||state.speed>.01);
+ if(sceneVisible)atmosphere.prepareShadows(cameraRig.carPosition,now,state.traffic||state.speed>.01);
  updateAudio();
- renderer.render(scene,camera);
+ if(sceneVisible)renderer.render(scene,camera);
  $('speedValue').textContent=Math.round(state.speed*2.23694);
  if(!$('settingsPanel').hidden){$('routeSlider').value=state.route;$('routeValue').textContent=Math.round(state.route*100)+'%';}
- frameCount++;if(now-fpsTime>900){
+ if(!sceneVisible){frameCount=0;fpsTime=now;}else frameCount++;
+ if(sceneVisible&&now-fpsTime>900){
    const fps=Math.round(frameCount*1000/(now-fpsTime)),info=renderer.info.render;
    $('fps').textContent=fps+' FPS';
    $('fps').title=info.calls+' draw calls · '+Math.round(info.triangles/1000)+'k triangles · '+renderer.domElement.dataset.depthMode+' depth';

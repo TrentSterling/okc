@@ -1,2 +1,12 @@
 import {compileTile} from './mesh-builder.js';
-self.onmessage=({data})=>{try{const result=compileTile(data.tile,data.options);const transfer=result.meshes.flatMap(m=>[m.positions.buffer,m.normals.buffer,m.uvs.buffer]);self.postMessage({request:data.request,result},transfer);}catch(e){self.postMessage({request:data.request,error:e.message});}};
+import {loadTileData} from './tile-data.js';
+
+self.onmessage = async ({data}) => {
+  try {
+    const raw = data.kind === 'load' ? await loadTileData(data.source) : data.tile;
+    const compiled = compileTile(raw, data.options);
+    const transfer = compiled.meshes.flatMap(mesh => [mesh.positions.buffer, mesh.normals.buffer, mesh.uvs.buffer]);
+    const result = data.kind === 'load' ? {raw, result: compiled} : compiled;
+    self.postMessage({request: data.request, result}, transfer);
+  } catch (error) { self.postMessage({request: data.request, error: error.message}); }
+};

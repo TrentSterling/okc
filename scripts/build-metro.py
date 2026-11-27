@@ -8,10 +8,12 @@ by the original compiler; new road meshes subtract that rectangle.
 from pathlib import Path
 from collections import Counter, defaultdict
 import gzip, hashlib, json, math, os, re, time
-from shapely import make_valid, set_precision
+from shapely import make_valid
 from shapely.geometry import Polygon, MultiPolygon, LineString, Point, box, shape
 from shapely.ops import unary_union, polygonize
 from shapely.strtree import STRtree
+from metro_geometry import polygons, polygon_records, partition_street_surfaces
+from metro_output import write_json
 
 ROOT = Path(__file__).resolve().parents[1]
 OUTPUT = Path(os.environ.get('OKC_BUILD_OUTPUT', ROOT / 'dist')) / 'geo/metro'
@@ -86,23 +88,6 @@ def geometry_sequences(coords):
 def number(value, default=0):
     match = re.search(r'[-+]?\d+(?:\.\d+)?',str(value or ''))
     return float(match[0]) if match else default
-
-
-def polygons(g):
-    if g.is_empty:return []
-    if g.geom_type == 'Polygon':return [g]
-    if hasattr(g,'geoms'):return [p for part in g.geoms for p in polygons(part)]
-    return []
-
-
-def polygon_records(g):
-    result=[]
-    for poly in polygons(set_precision(make_valid(g),.01)):
-        if poly.area<.25:continue
-        p=[[round(x,2),round(z,2)] for x,z in list(poly.exterior.coords)[:-1]]
-        holes=[[[round(x,2),round(z,2)] for x,z in list(r.coords)[:-1]] for r in poly.interiors]
-        result.append({'p':p,**({'holes':holes} if holes else {})})
-    return result
 
 
 def element_polygons(e):
@@ -189,12 +174,7 @@ def classify(t):
 
 
 def write(path,value):
-    path.parent.mkdir(parents=True,exist_ok=True)
-    data=(json.dumps(value,separators=(',',':'),ensure_ascii=False)+'\n').encode('utf-8')
-    path.write_bytes(data)
-    if path.name in ['overview.json','pois.json','network.json']:
-        with gzip.GzipFile(filename=str(path)+'.gz',mode='wb',mtime=0) as archive:
-            archive.write(data)
+    return write_json(path,value,compressed=path.parent.name=='tiles' or path.name in ['manifest.json','overview.json','pois.json','network.json'])
 
 
 def simplify_points(p,tol):
@@ -273,7 +253,6 @@ for e in source_roads['elements']:
                 WALK_MESH[key].append(line.buffer(width/2+1.7,cap_style=2,join_style=2).intersection(rect))
         else:WALK_MESH[key].append(clipped)
 print(f'Metro: {all_road_count} ways, {len(network_nodes)} graph nodes, {len(network_roads)} routable ways',flush=True)
-write(OUTPUT/'network.json',{'version':1,'origin':ORIGIN,'bounds':BOUNDS,'nodes':network_nodes,'nodeIds':network_ids,'roads':network_roads})
 
 # Polygon relations keep mapped lake and park holes, rather than replacing
 # shorelines with ellipses. Skip member ways already owned by a relation.
@@ -313,13 +292,17 @@ print(f'Metro: {surface_count} mapped land/water polygons',flush=True)
 
 # Match buildings by actual overlapping polygon coverage. OSM tags add metadata;
 # the GIS footprint is never replaced by a guessed procedural rectangle.
-osm_geoms=[];osm_meta=[]
+osm_geoms=[];osm_meta=[];osm_identities=[]
 for e in source_buildings['elements']:
     t=e.get('tags',{})
     if t.get('building')=='no' or not t.get('building') or t.get('building:part'):continue
-    for poly in element_polygons(e):
+    parts=element_polygons(e)
+    for poly in parts:
         if poly.area<8 or not poly.intersects(REGION):continue
-        osm_geoms.append(poly);osm_meta.append(e)
+        identity=f'osm:{e["type"]}/{e["id"]}'
+        if len(parts)>1:
+            identity+=':part-'+hashlib.sha256(poly.normalize().wkb).hexdigest()[:12]
+        osm_geoms.append(poly);osm_meta.append(e);osm_identities.append(identity)
 osm_tree=STRtree(osm_geoms) if osm_geoms else None
 matched_osm=set();building_geoms=[];building_ids=[];building_meta=[];height_counts=Counter();duplicate_keys=set();building_count=0
 
@@ -350,6 +333,15 @@ def add_building(poly,identity,tags,source):
          'heightSource':provenance,'footprintSource':source,'center':[cx,cz],
          'roof':tags.get('roof:shape','unknown'),'roofSource':'OSM tag' if tags.get('roof:shape') else 'unknown',
          'material':tags.get('building:material','unknown')}
+    roof_height=number(tags.get('roof:height'))
+    if roof_height>0:
+        if re.search(r'\bft\b|feet|\x27',str(tags.get('roof:height'))):roof_height*=.3048
+        rec['roofHeight']=round(roof_height,2);rec['roofHeightSource']='OSM roof:height'
+    roof_direction=number(tags.get('roof:direction'),None)
+    if roof_direction is not None:
+        rec['roofDirection']=roof_direction%360;rec['roofDirectionSource']='OSM roof:direction'
+    if tags.get('roof:orientation') in ['along','across']:
+        rec['roofOrientation']=tags['roof:orientation']
     if tags.get('addr:street'):rec['address']=' '.join([tags.get('addr:housenumber',''),tags['addr:street']]).strip()
     tile(math.floor(cx/TILE),math.floor(cz/TILE))['buildings'].append(rec)
     building_geoms.append(poly);building_ids.append(identity);building_meta.append(rec);building_count+=1
@@ -357,6 +349,11 @@ def add_building(poly,identity,tags,source):
 page_count=math.ceil(len(foot_meta['snapshot']['objectIds'])/foot_meta['snapshot']['pageSize'])
 for page in range(page_count):
     source=load(f'metro-footprints-{page:04d}.geojson.gz')
+    page_size=foot_meta['snapshot']['pageSize']
+    expected_ids=set(foot_meta['snapshot']['objectIds'][page*page_size:(page+1)*page_size])
+    page_ids=[feature['properties']['OBJECTID'] for feature in source['features']]
+    if len(page_ids)!=len(expected_ids) or set(page_ids)!=expected_ids:
+        raise RuntimeError(f'Footprint page {page} does not match its source inventory; refresh inputs explicitly.')
     for feature in source['features']:
         geo=feature.get('geometry')
         if not geo:continue
@@ -387,7 +384,7 @@ for index,(p,e) in enumerate(zip(osm_geoms,osm_meta)):
         for j in gis_tree.query(p):
             if p.intersection(building_geoms[j]).area/min(p.area,building_geoms[j].area)>.45:
                 duplicate=True;break
-    if not duplicate:add_building(p,f'osm:{e["type"]}/{e["id"]}',e.get('tags',{}),'OpenStreetMap contributors')
+    if not duplicate:add_building(p,osm_identities[index],e.get('tags',{}),'OpenStreetMap contributors')
 print(f'Metro: {building_count} unique mapped footprints',flush=True)
 
 # Source-tagged points, kept separate from businesses and polygon ownership.
@@ -507,31 +504,22 @@ print(f'Metro: {len(pois)} POIs incl {curated_count} curated, {curated_replaced}
 # Union each elevation layer once; sidewalk meshes own only the difference.
 # This prevents a pile of overlapping road ribbons at every intersection.
 for i,(key,dest) in enumerate(sorted(TILES.items())):
-    levels=ROAD_MESH.get(key,{})
-    ground=None
-    for y,items in levels.items():
-        merged=unary_union(items)
-        if y==0:ground=merged
-        merged=merged.difference(CORE)
-        for pg in polygon_records(merged):dest['meshes'].append({'kind':'road','y':round(y+.14,2),**pg})
-    if WALK_MESH.get(key):
-        walking=unary_union(WALK_MESH[key])
-        if ground is not None:walking=walking.difference(ground)
-        walking=walking.difference(CORE)
-        for pg in polygon_records(walking):dest['meshes'].append({'kind':'sidewalk','y':.15,**pg})
+    dest['meshes'].extend(partition_street_surfaces(ROAD_MESH.get(key,{}),WALK_MESH.get(key,[]),CORE))
     if i%400==0:print(f'Metro surfaces {i}/{len(TILES)} tiles',flush=True)
 
 manifest_tiles=[]
 for key,dest in sorted(TILES.items()):
     if not any(dest[k] for k in ['buildings','roads','surfaces','details','meshes']):continue
-    path=OUTPUT/f'tiles/{key}.json';write(path,dest)
+    path=OUTPUT/f'tiles/{key}.json';asset=write(path,dest)
     manifest_tiles.append({'id':key,'ix':dest['ix'],'iz':dest['iz'],'url':f'tiles/{key}.json',
+        'gzipUrl':f'tiles/{key}.json.gz',
         'buildings':len(dest['buildings']),'roads':len(dest['roads']),'surfaces':len(dest['surfaces']),
-        'details':len(dest['details']),'bytes':path.stat().st_size})
-write(OUTPUT/'network.json',{'version':1,'origin':ORIGIN,'bounds':BOUNDS,'nodes':network_nodes,'nodeIds':network_ids,'roads':network_roads})
-write(OUTPUT/'overview.json',{'version':1,'origin':ORIGIN,'bounds':BOUNDS,'roads':overview_roads,'surfaces':overview_surfaces,
+        'details':len(dest['details']),**asset})
+assets={}
+assets['network']=write(OUTPUT/'network.json',{'version':1,'origin':ORIGIN,'bounds':BOUNDS,'nodes':network_nodes,'nodeIds':network_ids,'roads':network_roads})
+assets['overview']=write(OUTPUT/'overview.json',{'version':1,'origin':ORIGIN,'bounds':BOUNDS,'roads':overview_roads,'surfaces':overview_surfaces,
     'districts':[{'name':name,'x':local(lon,lat)[0],'z':local(lon,lat)[1]} for name,lon,lat in DISTRICTS]})
-write(OUTPUT/'pois.json',{'version':1,'bounds':BOUNDS,'pois':pois,'categories':[dict(zip(('id','label','color'),c)) for c in CATEGORIES]})
+assets['pois']=write(OUTPUT/'pois.json',{'version':1,'bounds':BOUNDS,'pois':pois,'categories':[dict(zip(('id','label','color'),c)) for c in CATEGORIES]})
 limits=[
  'Footprints and street centerlines are mapped public data; source completeness varies by neighborhood.',
  'Building facades, untagged heights, lane widths and bridge elevation offsets are visual estimates, not surveyed replicas.',
@@ -548,8 +536,9 @@ manifest={'version':1,'name':'OKC Metro / West to Downtown','origin':ORIGIN,'bbo
     'tileSize':TILE,'axis':'x east, z south; meters','coreBounds':CB,
     'widthMiles':round((BOUNDS['maxX']-BOUNDS['minX'])/1609.344,2),'depthMiles':round((BOUNDS['maxZ']-BOUNDS['minZ'])/1609.344,2),
     'poiDetailRadiusMeters':CONFIG['poiDetailRadiusMeters'],'counts':counts,'tiles':manifest_tiles,
-    'assets':{name:{'url':name+'.json','gzipUrl':name+'.json.gz','bytes':(OUTPUT/(name+'.json')).stat().st_size,'gzipBytes':(OUTPUT/(name+'.json.gz')).stat().st_size} for name in ['overview','pois','network']},
+    'assets':{name:{'url':name+'.json','gzipUrl':name+'.json.gz',**assets[name]} for name in ['overview','pois','network']},
     'totalTileBytes':sum(t['bytes'] for t in manifest_tiles),
+    'totalTileGzipBytes':sum(t['gzipBytes'] for t in manifest_tiles),
     'sources':[{'name':'OpenStreetMap contributors','url':'https://www.openstreetmap.org/copyright','license':'ODbL 1.0',
                 'retrievedAt':source_roads['snapshot']['retrievedUTC'],'osmTimestamp':source_roads.get('osm3s',{}).get('timestamp_osm_base')},
                {'name':'City of Oklahoma City / Esri Community Maps Contributors','url':foot_meta['snapshot']['url'],
@@ -559,5 +548,6 @@ write(OUTPUT/'manifest.json',manifest)
 write(OUTPUT/'coverage-report.json',{'counts':counts,'bounds':BOUNDS,'bbox':BBOX,'limits':limits,
       'sourceFootprintRecords':len(foot_meta['snapshot']['objectIds']),'matchedOSMBuildings':len(matched_osm),
       'totalTileBytes':sum(t['bytes'] for t in manifest_tiles),
+      'totalTileGzipBytes':sum(t['gzipBytes'] for t in manifest_tiles),
       'runtimeAssets':manifest['assets'],'unlocatedCuratedIds':[p['id'] for p in pois if p.get('curated') and p.get('x') is None]})
 print(json.dumps({'metro':counts,'seconds':round(time.monotonic()-started,2),'output':str(OUTPUT)}),flush=True)

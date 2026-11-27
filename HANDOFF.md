@@ -1,5 +1,18 @@
 # Prairie Prism handoff
 
+## Active recovered Discover OKC release (v0.7)
+
+- User authorized finishing and publishing directly to `main` at https://tront.xyz/okc/, with incremental recoverable checkpoints and no PRs.
+- Recovered the full interrupted workspace at `/workspace/scratch/bc993b0a4273/okc`, including post-checkpoint data and planner edits. Those recovered edits are remotely preserved as `9c856d12538428fe2a2b66003c20d7a7b024c26d`.
+- Pre-discovery production remains recoverable at `backup/pre-discovery-20261127` / `75b1502b1bdf965bac032220b07742689d3d59b2`. Original built baseline remains in ignored `qa/baseline-dist/`.
+- Runtime work separates startup asset decode, geometry worker jobs, bounded tile residency, route calculation, atlas drawing, catalog search, planner state and persistent corrections. Worker geometry is never baked on every render frame.
+- Full build now runs independent metro and downtown compiler pipelines concurrently, joins before replacing output, and writes `release.json` with exact hashes for every deployed asset, including compressed tile and geometry files.
+- The data audit found rounded road/sidewalk overlaps and duplicate multipart building identities in the interrupted build. Fixes retain strict validation; a fresh atlas bake and all release gates are required.
+- Use `OKC_PYTHON=/workspace/scratch/bc993b0a4273/okc-build-env/bin/python` and put that virtual environment's `bin` on `PATH` for the local Python checks. System Python lacks Shapely. CI installs the pinned requirement normally.
+- Direct shell Git can fetch public source but cannot authenticate pushes here. Use the authorized GitHub connector for content-addressed blobs, trees and fast-forward commits; do not extract credentials. Keep local HEAD/tree synchronized after each connector checkpoint.
+- Browser preview is managed through `sites-preview`; WebGL2 remains unavailable in the provided browser. Atlas/planner UI is browser-tested separately from actual geometry and native production-shader tests. Do not claim a browser 3D capture or measured FPS.
+- Current next action: finish integration, rebuild from preserved inputs, validate, push final release, wait for Actions publish and full live hash verification. Inspect the actual remote head and workflow before declaring completion.
+
 ## Active street geometry and building massing correction (v0.6)
 
 - Work branch: `refactor/street-massing-20261124`, checkout `/workspace/okc-modular`.

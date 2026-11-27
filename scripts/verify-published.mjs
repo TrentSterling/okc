@@ -13,16 +13,8 @@ const base = new URL(process.env.SITE_URL || 'https://tront.xyz/okc/');
 const revision = process.env.PAGES_COMMIT;
 if (!base.pathname.endsWith('/')) base.pathname += '/';
 if (!revision) throw new Error('Set PAGES_COMMIT to the published revision before verifying.');
-const files = [];
-function collect(directory) {
-  for (const entry of fs.readdirSync(directory, {withFileTypes: true})) {
-    const file = path.join(directory, entry.name);
-    if (entry.isDirectory()) collect(file);
-    else if (/\.(?:html|js|mjs|css|json|txt|zip)$/.test(entry.name)) files.push(file);
-  }
-}
-collect(dist);
-files.sort();
+const release=JSON.parse(fs.readFileSync(path.join(dist,'release.json'),'utf8'));
+const files=[...release.assets.map(asset=>path.join(dist,asset.path)),path.join(dist,'release.json')].sort();
 let verified = 0;
 let bytes = 0;
 async function check(file) {
@@ -51,7 +43,7 @@ async function check(file) {
 }
 console.log(`Verifying ${files.length} published files against the tested build.`);
 let next = 0;
-await Promise.all(Array.from({length: Math.min(4, files.length)}, async () => {
+await Promise.all(Array.from({length: Math.min(8, files.length)}, async () => {
   while (next < files.length) await check(files[next++]);
 }));
-console.log(JSON.stringify({verifiedFiles: verified, verifiedBytes: bytes, revision, site: base.href}));
+console.log(JSON.stringify({verifiedFiles: verified, verifiedBytes: bytes, revision,sourceRevision:release.sourceRevision,version:release.version,site: base.href}));

@@ -1,2 +1,2 @@
-import {fetchGzip} from '../metro/download.js';
-export const WORLD_SURFACES=JSON.parse(new TextDecoder().decode(await fetchGzip(new URL('../geo/base-surfaces.json.gz',import.meta.url),'Loading streets and collision geometry')));
+import {loadAsset} from '../loading/asset-client.js';
+export const WORLD_SURFACES=await loadAsset(new URL('../geo/base-surfaces.json.gz',import.meta.url),{gzip:true,label:'Loading streets and collision geometry'});

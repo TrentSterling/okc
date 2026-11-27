@@ -3,7 +3,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import {fileURLToPath} from 'node:url';
-import {spawnSync} from 'node:child_process';
+import {spawn,spawnSync} from 'node:child_process';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const output = path.join(root, 'dist');
@@ -31,6 +31,20 @@ function run(command, args, env = process.env) {
   if (summary) console.log(summary.slice(-4000));
 }
 
+// Independent metro and downtown compilers use separate output files. Wait for
+// both even on failure so no child can write into a removed staging directory.
+function runAsync(command,args,env){
+  return new Promise((resolve,reject)=>{
+    const child=spawn(command,args,{cwd:root,env,stdio:['ignore','pipe','pipe']});
+    let tail='';const collect=chunk=>{tail=(tail+chunk.toString()).slice(-8000);};
+    child.stdout.on('data',collect);child.stderr.on('data',collect);
+    child.on('error',reject);child.on('close',code=>{
+      if(code!==0){if(tail)console.error(tail);reject(Error(`${command} ${args.join(' ')} failed: exit ${code}`));}
+      else{if(tail.trim())console.log(tail.slice(-4000).trim());resolve();}
+    });
+  });
+}
+
 // Check the one external build dependency before touching the previous output.
 run(python, ['-c', 'import shapely; assert shapely.__version__ == "2.1.2", "Install requirements-build.txt (Shapely 2.1.2 required)"']);
 for (const directory of ['public', 'src']) {
@@ -43,20 +57,21 @@ let previousMoved = false;
 let installed = false;
 try {
   fs.cpSync(path.join(root, 'public'), staging, {recursive: true});
-  fs.cpSync(path.join(root, 'src'), staging, {recursive: true});
+  fs.cpSync(path.join(root, 'src'), staging, {recursive: true,filter:file=>!/\.test\.m?js$/.test(file)});
   const env = {...process.env, OKC_BUILD_OUTPUT: staging};
-  for (const script of ['build-city-data.py', 'build-world-surfaces.py']) {
-    console.log(`Building ${script}`);
-    run(python, [path.join('scripts', script)], env);
-  }
-  console.log('Baking static city geometry');
-  run(process.execPath, ['scripts/bake-world-geometry.mjs'], env);
-  console.log('Packing equivalent runtime geometry');
-  run(process.execPath, ['scripts/pack-runtime.mjs'], env);
-  console.log('Building the expanded metro atlas');
-  run(python, ['scripts/build-metro.py'], env);
+  const downtown=async()=>{
+    for(const script of ['build-city-data.py','build-world-surfaces.py']){
+      console.log(`Building ${script}`);await runAsync(python,[path.join('scripts',script)],env);
+    }
+    console.log('Baking static city geometry');await runAsync(process.execPath,['scripts/bake-world-geometry.mjs'],env);
+    console.log('Packing equivalent runtime geometry');await runAsync(process.execPath,['scripts/pack-runtime.mjs'],env);
+  };
+  const metro=async()=>{console.log('Building the expanded metro atlas in parallel');await runAsync(python,['scripts/build-metro.py'],env);};
+  const results=await Promise.allSettled([downtown(),metro()]);
+  const failure=results.find(result=>result.status==='rejected');if(failure)throw failure.reason;
   console.log('Building original capture downloads');
   run(python, ['scripts/build-downloads.py'], env);
+  run(process.execPath,['scripts/write-release.mjs'],env);
 
   if (fs.existsSync(output)) {
     fs.renameSync(output, previous);
