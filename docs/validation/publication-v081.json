@@ -1,0 +1,62 @@
+{
+  "workflow": {
+    "id": 46087176260,
+    "url": "https://github.com/TrentSterling/okc/actions/runs/46087176260",
+    "conclusion": "success",
+    "completedUTC": "2026-11-28T00:35:13Z"
+  },
+  "nativePaintDepth": {
+    "productionPrograms": 8,
+    "cases": 48,
+    "failedCases": 0,
+    "localLostPaintPixels": 0,
+    "localOccluderLeaks": 0,
+    "localDrawOrderChangedPixels": 0,
+    "independentCIPassed": true
+  },
+  "focusedUIInputExplorerMapTests": 54,
+  "metroRuntimeCoverageStreamingTests": 30,
+  "manifest": {
+    "assetCount": 6230,
+    "assetBytes": 443479194,
+    "note": "The public audit also verifies release.json itself."
+  },
+  "testedInputHashesMatchIndependentBuild": [
+    {
+      "path": "geo/base-city.bin.gz",
+      "bytes": 13776850,
+      "sha256": "a1794afb7d758d0fd28e67f8525e805e60f4b117c02a786e4b2b109f8dcf9eb6"
+    },
+    {
+      "path": "geo/base-city-layout.json",
+      "bytes": 100387,
+      "sha256": "cddff006629e988bc5477be189d693bd25c07c039cf276731f1467eee59cc998"
+    },
+    {
+      "path": "geo/base-surfaces.json.gz",
+      "bytes": 703496,
+      "sha256": "0774decf8ac5d3d08934f5dc3656a369b737845dd7383d04fe33abd0d9fb400b"
+    },
+    {
+      "path": "world/paint-material.js",
+      "bytes": 584,
+      "sha256": "d972226c4a263e9f96472b15de3066bd763e0d55a3960e093adbbeeb4476759a"
+    }
+  ],
+  "audit": {
+    "verifiedFiles": 6231,
+    "verifiedBytes": 444289399,
+    "revision": "857f594c18c433b2e955391f253aa15f7d9881aa",
+    "sourceRevision": "3d246e8894cda844f030c7e614df6eac3828488a",
+    "version": "0.8.1",
+    "site": "https://tront.xyz/okc/",
+    "retries": 0,
+    "pacing": {
+      "spacingMilliseconds": 100,
+      "cooldownUntil": 0,
+      "rateLimitWaves": 0
+    },
+    "elapsedSeconds": 626
+  },
+  "scope": "Complete independent CI rebuild, source/geometry/driving/UI validation, production shader rendering, GitHub Pages activation and public SHA-256 identity. Native paint rendering uses Mesa llvmpipe, with actual MeshStandard depth programs and packed Float32 geometry. Diagnostic colors isolate visibility; this is not a full PBR browser capture or physical-device performance test. Phone target-layout checks use synthetic browser/renderer adapters."
+}

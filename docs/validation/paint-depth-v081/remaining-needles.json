@@ -1,0 +1,1563 @@
+{
+  "createdAt": "2026-11-28T00:23:01.806557+00:00",
+  "sourceRevision": "3d246e8894cda844f030c7e614df6eac3828488a",
+  "method": "Read final indexed Float32 road/parking positions, apply chunk origins, select longest edge >32 m and aspect (longest edge / minimum altitude) >256. Intersect each selected triangle with every spatially neighboring actual Float32 paint rectangle using Shapely/GEOS; test strict contact and nearest distance across all 14,391 paint rectangles. Prepared paint inputs are reused only after their production source/data hashes match.",
+  "inputSha256": {
+    "dist/geo/base-city-layout.json": "cddff006629e988bc5477be189d693bd25c07c039cf276731f1467eee59cc998",
+    "dist/geo/base-city.bin.gz": "a1794afb7d758d0fd28e67f8525e805e60f4b117c02a786e4b2b109f8dcf9eb6",
+    "dist/geo/base-surfaces.json.gz": "0774decf8ac5d3d08934f5dc3656a369b737845dd7383d04fe33abd0d9fb400b",
+    "dist/world/batching.js": "301cc04fc174559fc5a4cc5a75cda9725609e3dd41df55533cb72e2aaebbdecb",
+    "dist/world/streets.js": "dfb9cc4ba5b77db5b738152c626a49fddc19cfe20942d182917921eb41e49e39",
+    "dist/world/road-markings.js": "4ae9cd05f7596cd1328827a707ea91db8c2f77270b5e1e5b5b0caf6eeee328b1",
+    "dist/world/route.js": "37d7014083f03a93b82e012fca26bdbf33ac72b68e359425c0caec5d9ffc573d",
+    "qa/paint-geometry-audit/input.json": "afe5e356a45a0db9c54b42a586739632c0ac6228564349699758ca8e6c16679d"
+  },
+  "preparedPaintSourcesMatchFinalBuild": {
+    "dist/geo/base-surfaces.json.gz": true,
+    "dist/world/batching.js": true,
+    "dist/world/streets.js": true,
+    "dist/world/road-markings.js": true,
+    "dist/world/route.js": true
+  },
+  "paintRectangles": 14391,
+  "selection": {
+    "minimumLongestEdgeM": 32,
+    "minimumAspect": 256,
+    "positiveOverlapAreaToleranceM2": 1e-10
+  },
+  "summary": {
+    "road": {
+      "count": 20,
+      "aspectRange": [
+        256.8266151591738,
+        221768.52550525978
+      ],
+      "minimumAltitudeRangeM": [
+        0.00016689983022812215,
+        1.7915065008069204
+      ],
+      "longestEdgeRangeM": [
+        37.013129256768835,
+        468.30604553222656
+      ],
+      "trianglesWithPositivePaintOverlap": 0,
+      "positivePaintOverlapPairs": 0,
+      "positivePaintOverlapAreaM2": 0,
+      "trianglesTouchingOrIntersectingPaint": 0,
+      "minimumDistanceToAnyPaintM": 0.7071436989066612,
+      "minimumDistanceToSameOwnerPaintM": 0.7071436989066612
+    },
+    "parking": {
+      "count": 18,
+      "aspectRange": [
+        260.0468591706516,
+        4821.447853240474
+      ],
+      "minimumAltitudeRangeM": [
+        0.007018532032791443,
+        0.3045875896000294
+      ],
+      "longestEdgeRangeM": [
+        32.383681823441556,
+        79.20704601784708
+      ],
+      "trianglesWithPositivePaintOverlap": 0,
+      "positivePaintOverlapPairs": 0,
+      "positivePaintOverlapAreaM2": 0,
+      "trianglesTouchingOrIntersectingPaint": 0,
+      "minimumDistanceToAnyPaintM": 0.694836228761958,
+      "minimumDistanceToSameOwnerPaintM": 0.694836228761958
+    }
+  },
+  "triangles": [
+    {
+      "kind": "parking",
+      "chunk": "-1:-1:ground.parking:0",
+      "triangle": 101,
+      "longestEdgeM": 79.20704601784708,
+      "minimumAltitudeM": 0.3045875896000294,
+      "aspect": 260.0468591706516,
+      "areaM2": 12.062741612957325,
+      "centroid": [
+        -685.5891011555991,
+        -461.38850021362305
+      ],
+      "vertices": [
+        [
+          -711.9873046875,
+          -461.8754997253418
+        ],
+        [
+          -632.8000030517578,
+          -460.11000061035156
+        ],
+        [
+          -711.9799957275391,
+          -462.1800003051758
+        ]
+      ],
+      "positivePaintOverlaps": [],
+      "touchesOrIntersectsPaint": [],
+      "nearestPaint": {
+        "mark": 3423,
+        "kind": "parking",
+        "source": "compiled",
+        "distanceM": 10.624979865175339
+      },
+      "nearestSameOwnerPaint": {
+        "mark": 3423,
+        "distanceM": 10.624979865175339
+      }
+    },
+    {
+      "kind": "parking",
+      "chunk": "-1:-1:ground.parking:0",
+      "triangle": 102,
+      "longestEdgeM": 79.20698029514223,
+      "minimumAltitudeM": 0.07592230760036187,
+      "aspect": 1043.2636045794359,
+      "areaM2": 3.006788361031795,
+      "centroid": [
+        -659.1963704427084,
+        -460.67319997151685
+      ],
+      "vertices": [
+        [
+          -632.8000030517578,
+          -460.11000061035156
+        ],
+        [
+          -711.9873046875,
+          -461.8754997253418
+        ],
+        [
+          -632.8018035888672,
+          -460.0340995788574
+        ]
+      ],
+      "positivePaintOverlaps": [],
+      "touchesOrIntersectsPaint": [],
+      "nearestPaint": {
+        "mark": 3423,
+        "kind": "parking",
+        "source": "compiled",
+        "distanceM": 10.557147680437804
+      },
+      "nearestSameOwnerPaint": {
+        "mark": 3423,
+        "distanceM": 10.557147680437804
+      }
+    },
+    {
+      "kind": "parking",
+      "chunk": "-1:-1:ground.parking:0",
+      "triangle": 587,
+      "longestEdgeM": 41.35555502550237,
+      "minimumAltitudeM": 0.1291199493812617,
+      "aspect": 320.2878813357405,
+      "areaM2": 2.6699135857634246,
+      "centroid": [
+        -214.77320353190106,
+        -724.0562693277994
+      ],
+      "vertices": [
+        [
+          -215.760009765625,
+          -697.5299987792969
+        ],
+        [
+          -214.26998901367188,
+          -735.7794036865234
+        ],
+        [
+          -214.28961181640625,
+          -738.8594055175781
+        ]
+      ],
+      "positivePaintOverlaps": [],
+      "touchesOrIntersectsPaint": [],
+      "nearestPaint": {
+        "mark": 4600,
+        "kind": "parking",
+        "source": "compiled",
+        "distanceM": 11.038744028513454
+      },
+      "nearestSameOwnerPaint": {
+        "mark": 4600,
+        "distanceM": 11.038744028513454
+      }
+    },
+    {
+      "kind": "parking",
+      "chunk": "-1:-1:ground.parking:0",
+      "triangle": 655,
+      "longestEdgeM": 44.79228795876723,
+      "minimumAltitudeM": 0.033091187741381874,
+      "aspect": 1353.6016993053609,
+      "areaM2": 0.7411150051048025,
+      "centroid": [
+        -137.57166544596353,
+        -591.4765675862631
+      ],
+      "vertices": [
+        [
+          -137.28399658203125,
+          -576.5481033325195
+        ],
+        [
+          -138.1138916015625,
+          -621.3327026367188
+        ],
+        [
+          -137.31710815429688,
+          -576.5488967895508
+        ]
+      ],
+      "positivePaintOverlaps": [],
+      "touchesOrIntersectsPaint": [],
+      "nearestPaint": {
+        "mark": 4822,
+        "kind": "parking",
+        "source": "compiled",
+        "distanceM": 1.8963985336369729
+      },
+      "nearestSameOwnerPaint": {
+        "mark": 4822,
+        "distanceM": 1.8963985336369729
+      }
+    },
+    {
+      "kind": "parking",
+      "chunk": "-1:-1:ground.parking:0",
+      "triangle": 672,
+      "longestEdgeM": 50.646798457923914,
+      "minimumAltitudeM": 0.05694265365661869,
+      "aspect": 889.4351633722467,
+      "areaM2": 1.4419815517030656,
+      "centroid": [
+        -77.4119364420573,
+        -279.28823343912757
+      ],
+      "vertices": [
+        [
+          -49.599395751953125,
+          -278.52960205078125
+        ],
+        [
+          -100.22640991210938,
+          -279.9450988769531
+        ],
+        [
+          -82.41000366210938,
+          -279.38999938964844
+        ]
+      ],
+      "positivePaintOverlaps": [],
+      "touchesOrIntersectsPaint": [],
+      "nearestPaint": {
+        "mark": 13650,
+        "kind": "road",
+        "source": "extra-road-markings",
+        "distanceM": 16.63460912626306
+      },
+      "nearestSameOwnerPaint": {
+        "mark": 5059,
+        "distanceM": 126.85065919113319
+      }
+    },
+    {
+      "kind": "road",
+      "chunk": "-1:-1:ground.road:0",
+      "triangle": 18,
+      "longestEdgeM": 468.30604553222656,
+      "minimumAltitudeM": 0.32879638671875,
+      "aspect": 1424.3041117505104,
+      "areaM2": 76.98866782477126,
+      "centroid": [
+        -1023.8904012044271,
+        -340.5303548177083
+      ],
+      "vertices": [
+        [
+          -1023.6712036132812,
+          -411.7530975341797
+        ],
+        [
+          -1024.0,
+          -539.0720062255859
+        ],
+        [
+          -1024.0,
+          -70.76596069335938
+        ]
+      ],
+      "positivePaintOverlaps": [],
+      "touchesOrIntersectsPaint": [],
+      "nearestPaint": {
+        "mark": 10781,
+        "kind": "road",
+        "source": "extra-road-markings",
+        "distanceM": 123.21938417452579
+      },
+      "nearestSameOwnerPaint": {
+        "mark": 10781,
+        "distanceM": 123.21938417452579
+      }
+    },
+    {
+      "kind": "road",
+      "chunk": "-1:-1:ground.road:0",
+      "triangle": 19,
+      "longestEdgeM": 127.31933324297046,
+      "minimumAltitudeM": 0.40564560243473546,
+      "aspect": 313.8683927023588,
+      "areaM2": 25.823263817466795,
+      "centroid": [
+        -1023.6507059733073,
+        -456.17503356933594
+      ],
+      "vertices": [
+        [
+          -1023.2809143066406,
+          -417.6999969482422
+        ],
+        [
+          -1024.0,
+          -539.0720062255859
+        ],
+        [
+          -1023.6712036132812,
+          -411.7530975341797
+        ]
+      ],
+      "positivePaintOverlaps": [],
+      "touchesOrIntersectsPaint": [],
+      "nearestPaint": {
+        "mark": 10781,
+        "kind": "road",
+        "source": "extra-road-markings",
+        "distanceM": 123.6948075042515
+      },
+      "nearestSameOwnerPaint": {
+        "mark": 10781,
+        "distanceM": 123.6948075042515
+      }
+    },
+    {
+      "kind": "road",
+      "chunk": "-1:-1:ground.road:0",
+      "triangle": 106,
+      "longestEdgeM": 41.30172168585434,
+      "minimumAltitudeM": 0.017825535904291374,
+      "aspect": 2316.9974752855105,
+      "areaM2": 0.3681126614101231,
+      "centroid": [
+        -1016.4006042480468,
+        -137.58167521158853
+      ],
+      "vertices": [
+        [
+          -1017.7254028320312,
+          -123.99371337890625
+        ],
+        [
+          -1013.7164001464844,
+          -164.92730712890625
+        ],
+        [
+          -1017.760009765625,
+          -123.82400512695312
+        ]
+      ],
+      "positivePaintOverlaps": [],
+      "touchesOrIntersectsPaint": [],
+      "nearestPaint": {
+        "mark": 11328,
+        "kind": "road",
+        "source": "extra-road-markings",
+        "distanceM": 119.48148379294437
+      },
+      "nearestSameOwnerPaint": {
+        "mark": 11328,
+        "distanceM": 119.48148379294437
+      }
+    },
+    {
+      "kind": "parking",
+      "chunk": "-1:0:ground.parking:0",
+      "triangle": 231,
+      "longestEdgeM": 32.383681823441556,
+      "minimumAltitudeM": 0.07728417068449955,
+      "aspect": 419.02088793373787,
+      "areaM2": 1.2513729967176914,
+      "centroid": [
+        -183.777099609375,
+        135.1082967122396
+      ],
+      "vertices": [
+        [
+          -183.4945068359375,
+          148.19439697265625
+        ],
+        [
+          -183.57940673828125,
+          141.310791015625
+        ],
+        [
+          -184.25738525390625,
+          115.8197021484375
+        ]
+      ],
+      "positivePaintOverlaps": [],
+      "touchesOrIntersectsPaint": [],
+      "nearestPaint": {
+        "mark": 12061,
+        "kind": "road",
+        "source": "extra-road-markings",
+        "distanceM": 6.245965430350632
+      },
+      "nearestSameOwnerPaint": {
+        "mark": 4414,
+        "distanceM": 49.06015625673057
+      }
+    },
+    {
+      "kind": "parking",
+      "chunk": "-1:0:ground.parking:0",
+      "triangle": 237,
+      "longestEdgeM": 33.8394862024018,
+      "minimumAltitudeM": 0.007018532032791443,
+      "aspect": 4821.447853240474,
+      "areaM2": 0.11875175894238055,
+      "centroid": [
+        -155.51113891601562,
+        368.3338343302409
+      ],
+      "vertices": [
+        [
+          -155.11819458007812,
+          357.06080627441406
+        ],
+        [
+          -155.12521362304688,
+          357.0606994628906
+        ],
+        [
+          -156.29000854492188,
+          390.87999725341797
+        ]
+      ],
+      "positivePaintOverlaps": [],
+      "touchesOrIntersectsPaint": [],
+      "nearestPaint": {
+        "mark": 4765,
+        "kind": "parking",
+        "source": "compiled",
+        "distanceM": 2.801378834569419
+      },
+      "nearestSameOwnerPaint": {
+        "mark": 4765,
+        "distanceM": 2.801378834569419
+      }
+    },
+    {
+      "kind": "parking",
+      "chunk": "-1:0:ground.parking:0",
+      "triangle": 259,
+      "longestEdgeM": 35.72062732130385,
+      "minimumAltitudeM": 0.029415351675401026,
+      "aspect": 1214.3532300916086,
+      "areaM2": 0.5253674073610455,
+      "centroid": [
+        -35.34447224934896,
+        337.7627665201823
+      ],
+      "vertices": [
+        [
+          -35.26141357421875,
+          349.66900634765625
+        ],
+        [
+          -35.23199462890625,
+          349.66929626464844
+        ],
+        [
+          -35.540008544921875,
+          313.9499969482422
+        ]
+      ],
+      "positivePaintOverlaps": [],
+      "touchesOrIntersectsPaint": [],
+      "nearestPaint": {
+        "mark": 4996,
+        "kind": "parking",
+        "source": "compiled",
+        "distanceM": 5.228192292153835
+      },
+      "nearestSameOwnerPaint": {
+        "mark": 4996,
+        "distanceM": 5.228192292153835
+      }
+    },
+    {
+      "kind": "parking",
+      "chunk": "-1:0:ground.parking:0",
+      "triangle": 260,
+      "longestEdgeM": 35.72283814181163,
+      "minimumAltitudeM": 0.10026043383397194,
+      "aspect": 356.30045448404405,
+      "areaM2": 1.790793624939397,
+      "centroid": [
+        -35.301239013671875,
+        337.76326497395837
+      ],
+      "vertices": [
+        [
+          -35.23199462890625,
+          349.66929626464844
+        ],
+        [
+          -35.1317138671875,
+          349.6705017089844
+        ],
+        [
+          -35.540008544921875,
+          313.9499969482422
+        ]
+      ],
+      "positivePaintOverlaps": [],
+      "touchesOrIntersectsPaint": [],
+      "nearestPaint": {
+        "mark": 4996,
+        "kind": "parking",
+        "source": "compiled",
+        "distanceM": 5.228192292153835
+      },
+      "nearestSameOwnerPaint": {
+        "mark": 4996,
+        "distanceM": 5.228192292153835
+      }
+    },
+    {
+      "kind": "road",
+      "chunk": "-2:-1:ground.road:0",
+      "triangle": 524,
+      "longestEdgeM": 136.67299718403504,
+      "minimumAltitudeM": 0.38568709299404696,
+      "aspect": 354.36238252894964,
+      "areaM2": 26.35650548734702,
+      "centroid": [
+        -1236.6121266682942,
+        -690.7536315917969
+      ],
+      "vertices": [
+        [
+          -1327.6761016845703,
+          -693.6867980957031
+        ],
+        [
+          -1191.0802917480469,
+          -689.0941009521484
+        ],
+        [
+          -1191.0799865722656,
+          -689.4799957275391
+        ]
+      ],
+      "positivePaintOverlaps": [],
+      "touchesOrIntersectsPaint": [],
+      "nearestPaint": {
+        "mark": 3102,
+        "kind": "parking",
+        "source": "compiled",
+        "distanceM": 75.64628890070472
+      },
+      "nearestSameOwnerPaint": {
+        "mark": 12368,
+        "distanceM": 306.26836252902154
+      }
+    },
+    {
+      "kind": "road",
+      "chunk": "-2:-1:ground.road:0",
+      "triangle": 1321,
+      "longestEdgeM": 112.47109288493594,
+      "minimumAltitudeM": 0.325293147546879,
+      "aspect": 345.75303455701413,
+      "areaM2": 18.2930379062891,
+      "centroid": [
+        -1026.062998453776,
+        -371.7442347208659
+      ],
+      "vertices": [
+        [
+          -1026.1499938964844,
+          -445.26000213623047
+        ],
+        [
+          -1026.18798828125,
+          -337.1833953857422
+        ],
+        [
+          -1025.8510131835938,
+          -332.789306640625
+        ]
+      ],
+      "positivePaintOverlaps": [],
+      "touchesOrIntersectsPaint": [],
+      "nearestPaint": {
+        "mark": 10781,
+        "kind": "road",
+        "source": "extra-road-markings",
+        "distanceM": 125.56903742899478
+      },
+      "nearestSameOwnerPaint": {
+        "mark": 10781,
+        "distanceM": 125.56903742899478
+      }
+    },
+    {
+      "kind": "road",
+      "chunk": "-2:-1:ground.road:0",
+      "triangle": 1323,
+      "longestEdgeM": 460.106550637897,
+      "minimumAltitudeM": 1.7915065008069204,
+      "aspect": 256.8266151591738,
+      "areaM2": 412.1419382658205,
+      "centroid": [
+        -1024.6518351236978,
+        -311.47592226664227
+      ],
+      "vertices": [
+        [
+          -1024.0,
+          -70.76596069335938
+        ],
+        [
+          -1024.1044921875,
+          -530.8724994659424
+        ],
+        [
+          -1025.8510131835938,
+          -332.789306640625
+        ]
+      ],
+      "positivePaintOverlaps": [],
+      "touchesOrIntersectsPaint": [],
+      "nearestPaint": {
+        "mark": 10781,
+        "kind": "road",
+        "source": "extra-road-markings",
+        "distanceM": 123.61262492406995
+      },
+      "nearestSameOwnerPaint": {
+        "mark": 10781,
+        "distanceM": 123.61262492406995
+      }
+    },
+    {
+      "kind": "road",
+      "chunk": "-2:-1:ground.road:0",
+      "triangle": 1324,
+      "longestEdgeM": 262.0298839277808,
+      "minimumAltitudeM": 0.6922831241049201,
+      "aspect": 378.501042137304,
+      "areaM2": 90.69943332718685,
+      "centroid": [
+        -1025.0899759928386,
+        -192.39279174804688
+      ],
+      "vertices": [
+        [
+          -1024.0,
+          -70.76596069335938
+        ],
+        [
+          -1025.8510131835938,
+          -332.789306640625
+        ],
+        [
+          -1025.4189147949219,
+          -173.62310791015625
+        ]
+      ],
+      "positivePaintOverlaps": [],
+      "touchesOrIntersectsPaint": [],
+      "nearestPaint": {
+        "mark": 11329,
+        "kind": "road",
+        "source": "extra-road-markings",
+        "distanceM": 124.76491954486536
+      },
+      "nearestSameOwnerPaint": {
+        "mark": 11329,
+        "distanceM": 124.76491954486536
+      }
+    },
+    {
+      "kind": "road",
+      "chunk": "-2:-1:ground.road:0",
+      "triangle": 1325,
+      "longestEdgeM": 102.86693371911633,
+      "minimumAltitudeM": 0.10020199774607823,
+      "aspect": 1026.5956371427974,
+      "areaM2": 5.153736130334437,
+      "centroid": [
+        -1024.9416402180989,
+        -136.60402425130206
+      ],
+      "vertices": [
+        [
+          -1024.0,
+          -70.76596069335938
+        ],
+        [
+          -1025.4189147949219,
+          -173.62310791015625
+        ],
+        [
+          -1025.406005859375,
+          -165.42300415039062
+        ]
+      ],
+      "positivePaintOverlaps": [],
+      "touchesOrIntersectsPaint": [],
+      "nearestPaint": {
+        "mark": 11329,
+        "kind": "road",
+        "source": "extra-road-markings",
+        "distanceM": 124.99665634882125
+      },
+      "nearestSameOwnerPaint": {
+        "mark": 11329,
+        "distanceM": 124.99665634882125
+      }
+    },
+    {
+      "kind": "road",
+      "chunk": "-2:-1:ground.road:0",
+      "triangle": 1328,
+      "longestEdgeM": 468.30604553222656,
+      "minimumAltitudeM": 0.1044921875,
+      "aspect": 4481.732622663551,
+      "areaM2": 24.467161558568478,
+      "centroid": [
+        -1024.0348307291665,
+        -380.2368221282959
+      ],
+      "vertices": [
+        [
+          -1024.0,
+          -70.76596069335938
+        ],
+        [
+          -1024.0,
+          -539.0720062255859
+        ],
+        [
+          -1024.1044921875,
+          -530.8724994659424
+        ]
+      ],
+      "positivePaintOverlaps": [],
+      "touchesOrIntersectsPaint": [],
+      "nearestPaint": {
+        "mark": 10781,
+        "kind": "road",
+        "source": "extra-road-markings",
+        "distanceM": 123.53767602518201
+      },
+      "nearestSameOwnerPaint": {
+        "mark": 10781,
+        "distanceM": 123.53767602518201
+      }
+    },
+    {
+      "kind": "parking",
+      "chunk": "0:-1:ground.parking:0",
+      "triangle": 2,
+      "longestEdgeM": 51.715512407321505,
+      "minimumAltitudeM": 0.14546840656283944,
+      "aspect": 355.51026940672125,
+      "areaM2": 3.7614865922369063,
+      "centroid": [
+        33.950225830078125,
+        -868.5391235351562
+      ],
+      "vertices": [
+        [
+          50.17999267578125,
+          -867.9599914550781
+        ],
+        [
+          0.0,
+          -869.9050903320312
+        ],
+        [
+          51.670684814453125,
+          -867.7522888183594
+        ]
+      ],
+      "positivePaintOverlaps": [],
+      "touchesOrIntersectsPaint": [],
+      "nearestPaint": {
+        "mark": 5196,
+        "kind": "parking",
+        "source": "compiled",
+        "distanceM": 53.283834217956304
+      },
+      "nearestSameOwnerPaint": {
+        "mark": 5196,
+        "distanceM": 53.283834217956304
+      }
+    },
+    {
+      "kind": "parking",
+      "chunk": "0:-1:ground.parking:0",
+      "triangle": 186,
+      "longestEdgeM": 66.72727583684731,
+      "minimumAltitudeM": 0.19945056176314008,
+      "aspect": 334.55546701387635,
+      "areaM2": 6.6543963252916,
+      "centroid": [
+        327.98686726888025,
+        -383.89419809977215
+      ],
+      "vertices": [
+        [
+          307.4906005859375,
+          -384.7126007080078
+        ],
+        [
+          304.88999938964844,
+          -384.5999984741211
+        ],
+        [
+          371.5800018310547,
+          -382.3699951171875
+        ]
+      ],
+      "positivePaintOverlaps": [],
+      "touchesOrIntersectsPaint": [],
+      "nearestPaint": {
+        "mark": 10787,
+        "kind": "road",
+        "source": "extra-road-markings",
+        "distanceM": 11.54341161412743
+      },
+      "nearestSameOwnerPaint": {
+        "mark": 5592,
+        "distanceM": 16.322437105531527
+      }
+    },
+    {
+      "kind": "parking",
+      "chunk": "0:-1:ground.parking:0",
+      "triangle": 207,
+      "longestEdgeM": 40.73948845367408,
+      "minimumAltitudeM": 0.11616720413146919,
+      "aspect": 350.6969867981692,
+      "areaM2": 2.3662962357047945,
+      "centroid": [
+        328.26843261718744,
+        -546.9934666951498
+      ],
+      "vertices": [
+        [
+          355.2738952636719,
+          -546.2518005371094
+        ],
+        [
+          314.55140686035156,
+          -547.4286003112793
+        ],
+        [
+          314.97999572753906,
+          -547.2999992370605
+        ]
+      ],
+      "positivePaintOverlaps": [],
+      "touchesOrIntersectsPaint": [],
+      "nearestPaint": {
+        "mark": 12609,
+        "kind": "road",
+        "source": "extra-road-markings",
+        "distanceM": 5.926025617390507
+      },
+      "nearestSameOwnerPaint": {
+        "mark": 5556,
+        "distanceM": 45.31585740312654
+      }
+    },
+    {
+      "kind": "parking",
+      "chunk": "0:-1:ground.parking:0",
+      "triangle": 396,
+      "longestEdgeM": 34.10738304998588,
+      "minimumAltitudeM": 0.11805091744961044,
+      "aspect": 288.9209485775024,
+      "areaM2": 2.0132039304280624,
+      "centroid": [
+        558.3043333689373,
+        -541.1771996815999
+      ],
+      "vertices": [
+        [
+          571.939998626709,
+          -540.8799991607666
+        ],
+        [
+          537.8430004119873,
+          -541.7215995788574
+        ],
+        [
+          565.1300010681152,
+          -540.9300003051758
+        ]
+      ],
+      "positivePaintOverlaps": [],
+      "touchesOrIntersectsPaint": [],
+      "nearestPaint": {
+        "mark": 10137,
+        "kind": "road",
+        "source": "extra-road-markings",
+        "distanceM": 5.991845497095701
+      },
+      "nearestSameOwnerPaint": {
+        "mark": 6406,
+        "distanceM": 29.44635675301906
+      }
+    },
+    {
+      "kind": "parking",
+      "chunk": "0:-1:ground.parking:0",
+      "triangle": 446,
+      "longestEdgeM": 37.04564387260295,
+      "minimumAltitudeM": 0.11128035529475673,
+      "aspect": 332.903716693547,
+      "areaM2": 2.061226206133142,
+      "centroid": [
+        583.7909673055013,
+        -320.31906636555993
+      ],
+      "vertices": [
+        [
+          602.0644989013672,
+          -319.7384948730469
+        ],
+        [
+          565.0400009155273,
+          -320.99000549316406
+        ],
+        [
+          584.2684020996094,
+          -320.22869873046875
+        ]
+      ],
+      "positivePaintOverlaps": [],
+      "touchesOrIntersectsPaint": [],
+      "nearestPaint": {
+        "mark": 13323,
+        "kind": "road",
+        "source": "extra-road-markings",
+        "distanceM": 6.068317718853503
+      },
+      "nearestSameOwnerPaint": {
+        "mark": 6452,
+        "distanceM": 24.1594061311474
+      }
+    },
+    {
+      "kind": "parking",
+      "chunk": "0:-1:ground.parking:0",
+      "triangle": 447,
+      "longestEdgeM": 53.83318904766837,
+      "minimumAltitudeM": 0.16430400944146858,
+      "aspect": 327.643794151267,
+      "areaM2": 4.4225044007762335,
+      "centroid": [
+        595.3181660970051,
+        -320.0461680094401
+      ],
+      "vertices": [
+        [
+          565.0400009155273,
+          -320.99000549316406
+        ],
+        [
+          602.0644989013672,
+          -319.7384948730469
+        ],
+        [
+          618.8499984741211,
+          -319.4100036621094
+        ]
+      ],
+      "positivePaintOverlaps": [],
+      "touchesOrIntersectsPaint": [],
+      "nearestPaint": {
+        "mark": 13321,
+        "kind": "road",
+        "source": "extra-road-markings",
+        "distanceM": 6.0267693689086785
+      },
+      "nearestSameOwnerPaint": {
+        "mark": 6452,
+        "distanceM": 24.21608287147077
+      }
+    },
+    {
+      "kind": "parking",
+      "chunk": "0:-1:ground.parking:0",
+      "triangle": 838,
+      "longestEdgeM": 56.2233952215376,
+      "minimumAltitudeM": 0.17124076020219367,
+      "aspect": 328.3295119406819,
+      "areaM2": 4.813868469442241,
+      "centroid": [
+        737.3626658121744,
+        -593.040901184082
+      ],
+      "vertices": [
+        [
+          737.5885925292969,
+          -627.0427017211914
+        ],
+        [
+          737.1900024414062,
+          -581.2600021362305
+        ],
+        [
+          737.3094024658203,
+          -570.8199996948242
+        ]
+      ],
+      "positivePaintOverlaps": [],
+      "touchesOrIntersectsPaint": [],
+      "nearestPaint": {
+        "mark": 6689,
+        "kind": "parking",
+        "source": "compiled",
+        "distanceM": 11.845202349391347
+      },
+      "nearestSameOwnerPaint": {
+        "mark": 6689,
+        "distanceM": 11.845202349391347
+      }
+    },
+    {
+      "kind": "parking",
+      "chunk": "0:-2:ground.parking:0",
+      "triangle": 132,
+      "longestEdgeM": 34.34272558665038,
+      "minimumAltitudeM": 0.020230032866577062,
+      "aspect": 1697.6109635189734,
+      "areaM2": 0.3473772336728871,
+      "centroid": [
+        576.9758326212566,
+        -1041.8391927083333
+      ],
+      "vertices": [
+        [
+          578.3444976806641,
+          -1064.6933898925781
+        ],
+        [
+          576.2814025878906,
+          -1030.4126892089844
+        ],
+        [
+          576.3015975952148,
+          -1030.4114990234375
+        ]
+      ],
+      "positivePaintOverlaps": [],
+      "touchesOrIntersectsPaint": [],
+      "nearestPaint": {
+        "mark": 6490,
+        "kind": "parking",
+        "source": "compiled",
+        "distanceM": 80.80251178373871
+      },
+      "nearestSameOwnerPaint": {
+        "mark": 6490,
+        "distanceM": 80.80251178373871
+      }
+    },
+    {
+      "kind": "road",
+      "chunk": "0:-2:ground.road:0",
+      "triangle": 80,
+      "longestEdgeM": 106.31157429779071,
+      "minimumAltitudeM": 0.1754915918161158,
+      "aspect": 605.7929795815317,
+      "areaM2": 9.328393700998276,
+      "centroid": [
+        131.89116414388022,
+        -1025.1792297363281
+      ],
+      "vertices": [
+        [
+          164.9281005859375,
+          -1025.8276977539062
+        ],
+        [
+          62.223785400390625,
+          -1024.0
+        ],
+        [
+          168.5216064453125,
+          -1025.7099914550781
+        ]
+      ],
+      "positivePaintOverlaps": [],
+      "touchesOrIntersectsPaint": [],
+      "nearestPaint": {
+        "mark": 5211,
+        "kind": "parking",
+        "source": "compiled",
+        "distanceM": 18.581957482989147
+      },
+      "nearestSameOwnerPaint": {
+        "mark": 13277,
+        "distanceM": 374.4592533175078
+      }
+    },
+    {
+      "kind": "road",
+      "chunk": "0:-2:ground.road:0",
+      "triangle": 81,
+      "longestEdgeM": 114.5048719635259,
+      "minimumAltitudeM": 0.35087777026201006,
+      "aspect": 326.33834818894906,
+      "areaM2": 20.088607079349458,
+      "centroid": [
+        135.82156372070312,
+        -1025.0579630533855
+      ],
+      "vertices": [
+        [
+          168.5216064453125,
+          -1025.7099914550781
+        ],
+        [
+          62.223785400390625,
+          -1024.0
+        ],
+        [
+          176.71929931640625,
+          -1025.4638977050781
+        ]
+      ],
+      "positivePaintOverlaps": [],
+      "touchesOrIntersectsPaint": [],
+      "nearestPaint": {
+        "mark": 5211,
+        "kind": "parking",
+        "source": "compiled",
+        "distanceM": 18.32751443455469
+      },
+      "nearestSameOwnerPaint": {
+        "mark": 13277,
+        "distanceM": 374.29483866713207
+      }
+    },
+    {
+      "kind": "parking",
+      "chunk": "0:0:ground.parking:0",
+      "triangle": 196,
+      "longestEdgeM": 41.95549811280247,
+      "minimumAltitudeM": 0.03778400704017336,
+      "aspect": 1110.4036178109386,
+      "areaM2": 0.7926234180340543,
+      "centroid": [
+        583.8029657999674,
+        250.0405985514323
+      ],
+      "vertices": [
+        [
+          585.7799987792969,
+          277.94000244140625
+        ],
+        [
+          582.8333969116211,
+          236.09100341796875
+        ],
+        [
+          582.7955017089844,
+          236.09078979492188
+        ]
+      ],
+      "positivePaintOverlaps": [],
+      "touchesOrIntersectsPaint": [],
+      "nearestPaint": {
+        "mark": 6303,
+        "kind": "parking",
+        "source": "compiled",
+        "distanceM": 0.694836228761958
+      },
+      "nearestSameOwnerPaint": {
+        "mark": 6303,
+        "distanceM": 0.694836228761958
+      }
+    },
+    {
+      "kind": "road",
+      "chunk": "0:0:ground.road:0",
+      "triangle": 91,
+      "longestEdgeM": 37.013129256768835,
+      "minimumAltitudeM": 0.00016689983022812215,
+      "aspect": 221768.52550525978,
+      "areaM2": 0.00308874249458313,
+      "centroid": [
+        109.27163696289062,
+        84.22613525390625
+      ],
+      "vertices": [
+        [
+          100.83731079101562,
+          61.037109375
+        ],
+        [
+          113.48880004882812,
+          95.82089233398438
+        ],
+        [
+          113.48880004882812,
+          95.82040405273438
+        ]
+      ],
+      "positivePaintOverlaps": [],
+      "touchesOrIntersectsPaint": [],
+      "nearestPaint": {
+        "mark": 8695,
+        "kind": "road",
+        "source": "extra-road-markings",
+        "distanceM": 0.7071436989066612
+      },
+      "nearestSameOwnerPaint": {
+        "mark": 8695,
+        "distanceM": 0.7071436989066612
+      }
+    },
+    {
+      "kind": "road",
+      "chunk": "0:0:ground.road:0",
+      "triangle": 1814,
+      "longestEdgeM": 82.76422119140625,
+      "minimumAltitudeM": 0.106414794921875,
+      "aspect": 777.7510754229997,
+      "areaM2": 4.4036688124760985,
+      "centroid": [
+        1023.9645284016927,
+        151.614990234375
+      ],
+      "vertices": [
+        [
+          1023.8935852050781,
+          129.4989013671875
+        ],
+        [
+          1024.0,
+          204.05514526367188
+        ],
+        [
+          1024.0,
+          121.29092407226562
+        ]
+      ],
+      "positivePaintOverlaps": [],
+      "touchesOrIntersectsPaint": [],
+      "nearestPaint": {
+        "mark": 7058,
+        "kind": "parking",
+        "source": "compiled",
+        "distanceM": 30.84273656414794
+      },
+      "nearestSameOwnerPaint": {
+        "mark": 2577,
+        "distanceM": 79.56024376125697
+      }
+    },
+    {
+      "kind": "road",
+      "chunk": "1:-1:ground.road:0",
+      "triangle": 708,
+      "longestEdgeM": 73.53811710076437,
+      "minimumAltitudeM": 0.2105547470888252,
+      "aspect": 349.25888927947733,
+      "areaM2": 7.741899823769927,
+      "centroid": [
+        1322.3765920003257,
+        -1021.3486328124999
+      ],
+      "vertices": [
+        [
+          1348.6911926269531,
+          -1019.977294921875
+        ],
+        [
+          1275.26318359375,
+          -1024.0
+        ],
+        [
+          1343.1753997802734,
+          -1020.068603515625
+        ]
+      ],
+      "positivePaintOverlaps": [],
+      "touchesOrIntersectsPaint": [],
+      "nearestPaint": {
+        "mark": 7698,
+        "kind": "parking",
+        "source": "compiled",
+        "distanceM": 23.99012098653199
+      },
+      "nearestSameOwnerPaint": {
+        "mark": 8624,
+        "distanceM": 736.0217903828666
+      }
+    },
+    {
+      "kind": "road",
+      "chunk": "1:-2:ground.road:0",
+      "triangle": 129,
+      "longestEdgeM": 91.4283720390016,
+      "minimumAltitudeM": 0.3024980074460804,
+      "aspect": 302.24454306628286,
+      "areaM2": 13.82845018291846,
+      "centroid": [
+        1331.9028269449868,
+        -1024.9155680338542
+      ],
+      "vertices": [
+        [
+          1353.763198852539,
+          -1025.4317016601562
+        ],
+        [
+          1275.26318359375,
+          -1024.0
+        ],
+        [
+          1366.6820983886719,
+          -1025.3150024414062
+        ]
+      ],
+      "positivePaintOverlaps": [],
+      "touchesOrIntersectsPaint": [],
+      "nearestPaint": {
+        "mark": 7698,
+        "kind": "parking",
+        "source": "compiled",
+        "distanceM": 23.99012098653199
+      },
+      "nearestSameOwnerPaint": {
+        "mark": 8624,
+        "distanceM": 736.0217903828666
+      }
+    },
+    {
+      "kind": "road",
+      "chunk": "1:-2:ground.road:0",
+      "triangle": 131,
+      "longestEdgeM": 166.11979785628577,
+      "minimumAltitudeM": 0.1671083350364299,
+      "aspect": 994.0844531786602,
+      "areaM2": 13.880001418176107,
+      "centroid": [
+        1381.304328918457,
+        -1024.5599263509116
+      ],
+      "vertices": [
+        [
+          1427.268699645996,
+          -1024.889892578125
+        ],
+        [
+          1275.26318359375,
+          -1024.0
+        ],
+        [
+          1441.381103515625,
+          -1024.7898864746094
+        ]
+      ],
+      "positivePaintOverlaps": [],
+      "touchesOrIntersectsPaint": [],
+      "nearestPaint": {
+        "mark": 7698,
+        "kind": "parking",
+        "source": "compiled",
+        "distanceM": 23.99012098653199
+      },
+      "nearestSameOwnerPaint": {
+        "mark": 8624,
+        "distanceM": 736.0217903828666
+      }
+    },
+    {
+      "kind": "road",
+      "chunk": "1:-2:ground.road:0",
+      "triangle": 132,
+      "longestEdgeM": 169.9472475035473,
+      "minimumAltitudeM": 0.04055028609457352,
+      "aspect": 4191.024623283479,
+      "areaM2": 3.4457047536270693,
+      "centroid": [
+        1387.2843297322593,
+        -1024.5188293457031
+      ],
+      "vertices": [
+        [
+          1441.381103515625,
+          -1024.7898864746094
+        ],
+        [
+          1275.26318359375,
+          -1024.0
+        ],
+        [
+          1445.2087020874023,
+          -1024.7666015625
+        ]
+      ],
+      "positivePaintOverlaps": [],
+      "touchesOrIntersectsPaint": [],
+      "nearestPaint": {
+        "mark": 7698,
+        "kind": "parking",
+        "source": "compiled",
+        "distanceM": 23.99012098653199
+      },
+      "nearestSameOwnerPaint": {
+        "mark": 8624,
+        "distanceM": 736.0217903828666
+      }
+    },
+    {
+      "kind": "road",
+      "chunk": "1:-2:ground.road:0",
+      "triangle": 133,
+      "longestEdgeM": 175.44694670347965,
+      "minimumAltitudeM": 0.057464475992088725,
+      "aspect": 3053.137502335075,
+      "areaM2": 5.040983428363688,
+      "centroid": [
+        1390.393496195475,
+        -1024.4995625813801
+      ],
+      "vertices": [
+        [
+          1275.26318359375,
+          -1024.0
+        ],
+        [
+          1450.7086029052734,
+          -1024.7320861816406
+        ],
+        [
+          1445.2087020874023,
+          -1024.7666015625
+        ]
+      ],
+      "positivePaintOverlaps": [],
+      "touchesOrIntersectsPaint": [],
+      "nearestPaint": {
+        "mark": 7698,
+        "kind": "parking",
+        "source": "compiled",
+        "distanceM": 23.99012098653199
+      },
+      "nearestSameOwnerPaint": {
+        "mark": 8624,
+        "distanceM": 736.0217903828666
+      }
+    },
+    {
+      "kind": "road",
+      "chunk": "1:-2:ground.road:0",
+      "triangle": 134,
+      "longestEdgeM": 243.64008792191436,
+      "minimumAltitudeM": 0.5233381846392151,
+      "aspect": 465.5499924773839,
+      "areaM2": 63.75308065919671,
+      "centroid": [
+        1414.9582951863606,
+        -1024.3406575520833
+      ],
+      "vertices": [
+        [
+          1275.26318359375,
+          -1024.0
+        ],
+        [
+          1518.9030990600586,
+          -1024.2898864746094
+        ],
+        [
+          1450.7086029052734,
+          -1024.7320861816406
+        ]
+      ],
+      "positivePaintOverlaps": [],
+      "touchesOrIntersectsPaint": [],
+      "nearestPaint": {
+        "mark": 7698,
+        "kind": "parking",
+        "source": "compiled",
+        "distanceM": 23.99012098653199
+      },
+      "nearestSameOwnerPaint": {
+        "mark": 8624,
+        "distanceM": 736.0217903828666
+      }
+    },
+    {
+      "kind": "road",
+      "chunk": "1:-2:ground.road:0",
+      "triangle": 135,
+      "longestEdgeM": 271.6730909347534,
+      "minimumAltitudeM": 0.289886474609375,
+      "aspect": 937.1706330929572,
+      "areaM2": 39.37717728865391,
+      "centroid": [
+        1447.0341857274373,
+        -1024.0966288248699
+      ],
+      "vertices": [
+        [
+          1275.26318359375,
+          -1024.0
+        ],
+        [
+          1546.9362745285034,
+          -1024.0
+        ],
+        [
+          1518.9030990600586,
+          -1024.2898864746094
+        ]
+      ],
+      "positivePaintOverlaps": [],
+      "touchesOrIntersectsPaint": [],
+      "nearestPaint": {
+        "mark": 7698,
+        "kind": "parking",
+        "source": "compiled",
+        "distanceM": 23.99012098653199
+      },
+      "nearestSameOwnerPaint": {
+        "mark": 8624,
+        "distanceM": 736.0217903828666
+      }
+    }
+  ],
+  "conclusion": "None of the remaining 38 selected ground triangles touches or overlaps any existing paint rectangle in plan. They therefore do not underlie the present paint footprints.",
+  "limits": [
+    "Minimum altitude describes triangle thinness, not physical road width.",
+    "Some residual needles are tied to very short footprint constraints or cell edges; this audit does not prove that every remaining needle is unavoidable.",
+    "This is a bounded planar-geometry audit, not a GPU rasterization or universal camera-angle guarantee. The separate production-shader native regression establishes the demonstrated rendering correction.",
+    "Only the 20 road and 18 parking triangles matching the stated thresholds are assessed. No new source, baked data or rendering configuration was changed."
+  ]
+}
