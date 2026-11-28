@@ -84,6 +84,10 @@ python scripts/visual/check-paint-depth-gles.py --input qa/depth-reset-baseline 
 
 `--record-only` is intentional for failing historical controls. It is not used for the corrected release gate. The final `npm run build` and complete `npm run check` pass. The built paint gate passes all 84 cases; all 165 generated paint images match the source run byte-for-byte. The additional native gates pass 18 sunset/glass/facade programs, 4 generic depth cases, and 8 UI/map programs with 7 fixtures. The built-app integration gate drives 216.891 m over 10 seconds with 285 repeated key events and checks 390 × 844 / 844 × 390 phone control layouts through adapters. Publication status is recorded separately in `HANDOFF.md`.
 
+## Publication
+
+[Workflow 46116523355](https://github.com/TrentSterling/okc/actions/runs/46116523355) passed its independent rebuild, complete checks and native gates, then published source `ca495eebee13bf8a8127a816a944207faec5da79` as Pages revision `0115c51b4d610de61a7115d9997ee26ad4b32c0e`. All **6,231 public files / 444,290,182 bytes** matched the tested build in 626 seconds, with zero retries or hash mismatches. The independent native run matches all local counts in the table above. See [the complete publication record](../publication-v082.json).
+
 ## Browser limit
 
 The current cloud browser opens the restored app preview but reports WebGL2 unavailable and uses the map fallback. The public domain returns a generic 403 in that browser. These restrictions prevent a full browser 3D sweep here. They do not establish that the public site is down or that Trent's browser is blocked. CI publication and the public asset hash audit verify deployment independently; the physical-GPU visual check remains a separate limit.

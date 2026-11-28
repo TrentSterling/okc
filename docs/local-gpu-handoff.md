@@ -4,6 +4,8 @@
 
 The v0.8.2 investigation reproduced a concrete depth-state mismatch in the actual Three r180 reset path. Reflection and capture resets now restore reversed/ordinary mode and far clear depth explicitly. The shared paint material also removes a measured slope-bias occluder leak. See `HANDOFF.md` for current publication status and `docs/validation/depth-reset-v082/README.md` for controlled evidence.
 
+The active v0.8.2 runtime source is `ca495eebee13bf8a8127a816a944207faec5da79`, published to Pages revision `0115c51b4d610de61a7115d9997ee26ad4b32c0e`. The independent build, complete regression suite and native render gates passed; the final public-file audit is recorded in `HANDOFF.md`.
+
 A full-scene sweep on Trent's local GPU remains unverified. The source/native repair must not be represented as a local-browser visual signoff. The baseline identifiers and initial investigation notes below describe v0.8.1 and are preserved for comparison.
 
 Repository: https://github.com/TrentSterling/okc

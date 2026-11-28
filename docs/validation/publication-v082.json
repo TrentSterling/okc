@@ -1,0 +1,83 @@
+{
+  "workflow": {
+    "id": 46116523355,
+    "url": "https://github.com/TrentSterling/okc/actions/runs/46116523355",
+    "conclusion": "success",
+    "completedUTC": "2026-11-28T06:42:07Z"
+  },
+  "rendererAndPaintFocusedTests": 9,
+  "nativePaintDepth": {
+    "programsIncludingResetControls": 15,
+    "cases": 84,
+    "totals": {
+      "expectedPaintPixels": 684603,
+      "lostPaintPixels": 0,
+      "drawOrderChangedPixels": 166,
+      "groundSampleBoundaryOrderChangedPixels": 166,
+      "surfaceInteriorOrderChangedPixels": 0,
+      "occluderPaintOverlapPixels": 35205,
+      "occluderLeakPixels": 0
+    },
+    "independentCIPassed": true
+  },
+  "focusedUIInputExplorerMapTests": 54,
+  "metroRuntimeCoverageStreamingTests": 30,
+  "manifest": {
+    "assetCount": 6230,
+    "assetBytes": 443479977,
+    "note": "The public audit also verifies release.json itself."
+  },
+  "testedInputHashesMatchIndependentBuild": [
+    {
+      "path": "app/captures.js",
+      "bytes": 1940,
+      "sha256": "2f6a8d92eaa91ce1b7a7ca179779911edacbc926ec42ca926b6c486b587b63ac"
+    },
+    {
+      "path": "app/renderer.js",
+      "bytes": 2945,
+      "sha256": "9677ca067c3c7d5ed6acd3c40abe39b82fb51d8dfdb7712bdef7ff09f260e012"
+    },
+    {
+      "path": "geo/base-city-layout.json",
+      "bytes": 100387,
+      "sha256": "cddff006629e988bc5477be189d693bd25c07c039cf276731f1467eee59cc998"
+    },
+    {
+      "path": "geo/base-city.bin.gz",
+      "bytes": 13776850,
+      "sha256": "a1794afb7d758d0fd28e67f8525e805e60f4b117c02a786e4b2b109f8dcf9eb6"
+    },
+    {
+      "path": "geo/base-surfaces.json.gz",
+      "bytes": 703496,
+      "sha256": "0774decf8ac5d3d08934f5dc3656a369b737845dd7383d04fe33abd0d9fb400b"
+    },
+    {
+      "path": "sky.js",
+      "bytes": 11059,
+      "sha256": "3b55946c0e2274da234a24865cf5d81cce7a3cf74afb9e7f06cb3297b21af309"
+    },
+    {
+      "path": "world/paint-material.js",
+      "bytes": 663,
+      "sha256": "e788d2902e1cd2319c80af1b6c4c925c81dd41c6fb052af894b6310a368f27fc"
+    }
+  ],
+  "audit": {
+    "verifiedFiles": 6231,
+    "verifiedBytes": 444290182,
+    "revision": "0115c51b4d610de61a7115d9997ee26ad4b32c0e",
+    "sourceRevision": "ca495eebee13bf8a8127a816a944207faec5da79",
+    "version": "0.8.2",
+    "site": "https://tront.xyz/okc/",
+    "retries": 0,
+    "pacing": {
+      "spacingMilliseconds": 100,
+      "cooldownUntil": 0,
+      "rateLimitWaves": 0
+    },
+    "elapsedSeconds": 626
+  },
+  "scope": "Complete independent CI rebuild, source/geometry/driving/UI validation, actual shader/depth rendering, GitHub Pages activation and public SHA-256 identity. Native paint uses Mesa with actual MeshStandard programs, unchanged packed Float32 geometry and the Prairie ground. Diagnostic colors isolate depth coverage. This is not a complete PBR browser capture, physical-phone test or FPS measurement. Phone layout checks use synthetic browser/renderer adapters."
+}
