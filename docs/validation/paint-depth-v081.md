@@ -1,5 +1,7 @@
 # Road paint depth repair, v0.8.1
 
+**Follow-up status: the user reports remaining visible surface artifacts after this release.** The measured native defect below was repaired, but the complete user-visible browser issue remains open. The native render gate covers selected downtown road paint, with replacement textures and no shadows; it does not render parking or streamed metro paint. See the [local GPU handoff](../local-gpu-handoff.md) before making further changes or claiming visual resolution.
+
 ## Reproduced defect
 
 The v0.8.0 road bake contains badly conditioned triangles along nearly collinear road boundaries. One failing triangle is approximately 242 m long and only 0.03 m wide at its end; other failing road triangles span a 1,024 m mesh cell with widths of only 0.047–0.07 m. They came from the surface polygon's Earcut triangulation and subsequent cell clipping.

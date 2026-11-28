@@ -1,6 +1,14 @@
 # Prairie Prism handoff
 
-## Completed road paint depth repair (v0.8.1)
+## Open local-browser surface artifact after v0.8.1
+
+Trent reports that coplanar-looking street/crosswalk artifacts remain after v0.8.1. The user-visible issue is OPEN. The previous native fix and successful publication are valid within their recorded scope, but they do not establish resolution of this remaining browser artifact.
+
+The native paint render gate covers a bounded downtown road strip, excludes parking and streamed metro paint, replaces textures with white samples, disables shadows and uses fixed views in Mesa. The cloud browser could not create WebGL2 during earlier checks. The next step is a reproduction and frame capture in the user's actual local browser/GPU, identifying the offending draw calls or shading pass before another correction.
+
+See [the local GPU handoff](docs/local-gpu-handoff.md) for exact baseline revisions, scope gaps, source entry points, capture steps and acceptance criteria.
+
+## Validated native road paint repair (v0.8.1; browser artifact remains open)
 
 - User still sees severe lane/crosswalk clipping after v0.8.0. Current work branch `work/paint-depth-v081-20261127`; pre-change source preserved remotely at `backup/pre-paint-depth-v081-20261127` / `15f967c535092592471fb3f8c89289ec91e0d9ce`. The complete original build is preserved locally at `qa/paint-v080-baseline-dist/`.
 - Actual core buffer audit covers 14,391 paint instances and 67,757 ground triangles. The measured paint/road-or-lot gap is 11.9999945–12.0000020 mm, with no coplanar paint/ground pair or uncovered paint. Microscopic adjoining paint endpoint overlaps are below the existing geometry tolerance. Do not claim a newly discovered zero-height core layer or alter the compiler without contrary evidence.
