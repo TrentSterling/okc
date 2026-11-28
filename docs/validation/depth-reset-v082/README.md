@@ -55,6 +55,10 @@ The actual Devon plaza tops were checked against all 14,391 Float32 paint rectan
 - [Historical already-reversed-camera reset failure](stale-camera-reset-before.json)
 - [Restored depth with original slope bias](restored-state-original-bias.json)
 - [Current source, no diagnostic overrides](current-source.json)
+- [Final built output, no diagnostic overrides](current-build.json)
+- [All 165 generated paint images match](image-parity.json)
+- [Complete local check log](local-check.txt)
+- [Sunset shader gate](sunset.json), [generic depth gate](generic-depth.json), and [UI/map gate](ui-map.json)
 - [Isolated units-only bias control](factor-zero-control.json)
 - [Ground subdivision control](floor-subdivision-control.json)
 
@@ -78,7 +82,7 @@ python scripts/visual/check-paint-depth-gles.py --input qa/depth-reset-baseline 
 python scripts/visual/check-paint-depth-gles.py --input qa/depth-reset-baseline --output qa/depth-reset-baseline/stale-camera --depth-state reset-stale-reversed-camera --record-only
 ```
 
-`--record-only` is intentional for failing historical controls. It is not used for the corrected release gate. Complete `npm run build`, `npm run check`, native gates and publication verification are recorded in the final release handoff.
+`--record-only` is intentional for failing historical controls. It is not used for the corrected release gate. The final `npm run build` and complete `npm run check` pass. The built paint gate passes all 84 cases; all 165 generated paint images match the source run byte-for-byte. The additional native gates pass 18 sunset/glass/facade programs, 4 generic depth cases, and 8 UI/map programs with 7 fixtures. The built-app integration gate drives 216.891 m over 10 seconds with 285 repeated key events and checks 390 × 844 / 844 × 390 phone control layouts through adapters. Publication status is recorded separately in `HANDOFF.md`.
 
 ## Browser limit
 

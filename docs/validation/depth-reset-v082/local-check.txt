@@ -1,0 +1,627 @@
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.
+
+> okc-prairie-prism@0.8.2 check
+> node scripts/check-source.mjs && node scripts/check-build-safety.mjs && node scripts/check-static.mjs && node scripts/check-tower-surfaces.mjs && node scripts/check-world-surfaces.mjs && node scripts/check-depth-offsets.mjs && node --test src/world/paint-material.test.mjs src/app/renderer.test.mjs && node scripts/check-paint-geometry.mjs && python3 scripts/check-ground-triangulation.py && node --test scripts/bake-ground-surfaces.test.mjs && node scripts/check-street-sections.mjs && node scripts/check-building-shells.mjs && node scripts/check-opening-sills.mjs && python3 scripts/check-building-articulation.py && python3 scripts/check-mapped-massing.py && node scripts/check-driving.mjs && node scripts/check-city-art.mjs && node scripts/check-skyline-facades.mjs && node scripts/check-sunset.mjs && node scripts/bake-world-geometry.mjs --check && node src/explorer/planner.test.mjs && node src/explorer/atlas.test.mjs && node src/world/packed-data.test.mjs && node --test src/metro/runtime.test.mjs src/metro/view-coverage.test.mjs src/metro/streaming.test.mjs && python3 scripts/check-metro-compiler.py && python3 scripts/check-metro.py && node src/loading/assets.test.mjs && node src/discovery/discovery.test.mjs && node --test scripts/lib/request-pacing.test.mjs && npm run check:ui && npm run check:startup
+
+{
+  "sourceFilesChecked": 221,
+  "maxSourceBytes": 65536,
+  "checkedGitIndex": true,
+  "largest": [
+    {
+      "file": "public/gallery/shots.json",
+      "bytes": 37176
+    },
+    {
+      "file": "scripts/build-metro.py",
+      "bytes": 34621
+    },
+    {
+      "file": "public/explorer.css",
+      "bytes": 27194
+    },
+    {
+      "file": "scripts/check-app-startup.mjs",
+      "bytes": 26233
+    },
+    {
+      "file": "scripts/visual/check-paint-depth-gles.py",
+      "bytes": 21181
+    }
+  ]
+}
+Build failure preserved every prior output byte and removed temporary staging.
+{
+  "baseURL": "https://tront.xyz/okc/",
+  "javascriptFiles": 123,
+  "reachableModuleContexts": 130,
+  "localReferences": 359,
+  "captures": 29,
+  "currentPresetLinks": 10,
+  "capturePacks": 2,
+  "licensesAndSourcesPresent": true,
+  "privateCaptureBootstrap": false,
+  "scope": "Static files, literal module/asset paths, capture metadata, and download integrity; no browser/GPU test."
+}
+{
+  "meshCount": 65,
+  "campusOverlapInterfaces": 0,
+  "campusOverlapArea": 0,
+  "removedSharedWallArea": 3523.3443692980645,
+  "duplicateInstances": 0,
+  "badValues": 0,
+  "crownScreens": 3,
+  "screenOffset": 0.08,
+  "architecturalHeight": 257.2,
+  "roofArea": 2515.8860734269124,
+  "roofRays": 4437,
+  "roofMisses": 0,
+  "balconyVertices": 5880,
+  "escapedBalconyVertices": 0,
+  "atriumHoleHits": 0,
+  "skybridgeClearance": 5.4
+}
+{
+  "paintPass": {
+    "batches": 2,
+    "instances": 14391,
+    "queue": "transparent",
+    "opacity": 1,
+    "depthTest": true,
+    "depthWrite": false
+  },
+  "invalidVertices": 0,
+  "zeroAreaTriangles": 0,
+  "roadUvTriangles": 16061,
+  "roadUvCollapsed": 0,
+  "routeSamples": 5950,
+  "routeMisses": 0,
+  "layers": [
+    {
+      "y": 0.14,
+      "kinds": [
+        "road"
+      ],
+      "area": 1354476.380226707,
+      "expected": 1354476.367718835,
+      "triangles": 16061,
+      "holesFilled": 0,
+      "downwardVisible": 0,
+      "areaDifference": 0.012507872190326452
+    },
+    {
+      "y": 0.29,
+      "kinds": [
+        "curb",
+        "sidewalk"
+      ],
+      "area": 321098.44278431876,
+      "expected": 321098.40556250553,
+      "triangles": 37601,
+      "holesFilled": 0,
+      "downwardVisible": 0,
+      "areaDifference": 0.03722181322518736
+    },
+    {
+      "y": 0.105,
+      "kinds": [
+        "path"
+      ],
+      "area": 14695.478524214821,
+      "expected": 14695.475972180002,
+      "triangles": 1881,
+      "holesFilled": 0,
+      "downwardVisible": 0,
+      "areaDifference": 0.002552034819018445
+    },
+    {
+      "y": 0.075,
+      "kinds": [
+        "water"
+      ],
+      "area": 33420.420457631815,
+      "expected": 33420.426185205346,
+      "triangles": 763,
+      "holesFilled": 0,
+      "downwardVisible": 0,
+      "areaDifference": -0.0057275735307484865
+    },
+    {
+      "y": 0.04,
+      "kinds": [
+        "parking",
+        "paving"
+      ],
+      "area": 437393.502825296,
+      "expected": 437393.50602688943,
+      "triangles": 3729,
+      "holesFilled": 0,
+      "downwardVisible": 0,
+      "areaDifference": -0.0032015934120863676
+    },
+    {
+      "y": 0.025,
+      "kinds": [
+        "grass"
+      ],
+      "area": 600490.9742116823,
+      "expected": 600490.9366903795,
+      "triangles": 4740,
+      "holesFilled": 0,
+      "downwardVisible": 0,
+      "areaDifference": 0.037521302816458046
+    }
+  ]
+}
+{
+  "passed": true,
+  "uniqueMaterials": 4,
+  "sharedMaterialDeduplicated": true,
+  "arraysCovered": true,
+  "repeatedConfigurationSafe": true,
+  "depthModeRestorationSafe": true,
+  "lateMaterialCovered": true,
+  "roadPaint": {
+    "ordinary": [
+      -1,
+      -2
+    ],
+    "reversed": [
+      1,
+      2
+    ]
+  },
+  "note": "v0.5 already inverted offsets at startup. This is regression coverage and idempotent state binding, not a claimed old sign defect."
+}
+✔ actual r180 reset disables reverse depth; restoring only reversal still leaves the wrong clear value (3.474827ms)
+✔ the first main-camera draw restores the configured projection for the historical startup failure (1.854533ms)
+✔ repeated resets retain valid projection and production paint bias in both depth modes (1.434668ms)
+✔ actual reflection cleanup restores depth and the caller state on success and failure (9.153911ms)
+✔ actual capture setup restores reverse depth before clearing and drawing the photograph (0.853875ms)
+✔ all four production paints retain occlusion and enter the pass after opaque roads (1.805167ms)
+✔ streamed paint remains double-sided without a duplicate transparent back-face pass (0.2542ms)
+✔ depth offsets remain idempotent for shared and late-mounted production paint (0.725181ms)
+✔ sunlight binding preserves paint shader extensions, receiver, uniforms and cache identity (1.389ms)
+ℹ tests 9
+ℹ suites 0
+ℹ pass 9
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 543.689826
+{"scope":"Production addStreets/addRoadMarkings/createBatching Float32 instance transforms and actual packed ground vertices, including chunk origins. No renderer, shader-depth or GPU-performance claim.","paintRectangles":14391,"groundTriangles":65129,"paintToOwnedSurfaceGapM":[0.01199999451637268,0.012000001966953278],"significantPaintOverlapPairs":0,"failures":[],"elapsedSeconds":5.54,"report":null}
+...
+----------------------------------------------------------------------
+Ran 3 tests in 0.023s
+
+OK
+✔ painted ground emits constrained vertices with original elevation and UV scale (1.870927ms)
+✔ missing compiled ground or mismatched cell size fails instead of silently omitting roads (0.600828ms)
+ℹ tests 2
+ℹ suites 0
+ℹ pass 2
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 100.471698
+{"engine":"Independent Shapely/GEOS","layers":8,"roadEnvelopeDifferenceM2":7.0730937663810085,"curbRevealMeters":0.14999999999999997,"verticalEdges":{"walk-edge":7603,"curb":9487},"ramps":59,"paintRectangles":14391,"positivePaintOverlapM2":0.0,"failures":0,"firstFailures":[],"scope":"Built polygon ownership, full paint rectangles, curb risers and ramp joins; no GPU/frame-rate claim."}
+{
+  "chunks": 259,
+  "triangles": 648249,
+  "vertices": 1121982,
+  "facadeTriangles": 103826,
+  "roofArea": 1108637.3434371187,
+  "expectedRoofArea": 1108637.313308048,
+  "copingTriangles": 31699,
+  "recessedDecks": 1198,
+  "hiddenFacadeTriangles": 0,
+  "hiddenRoofTriangles": 0,
+  "openings": 18726,
+  "blockedOpeningCenters": 0,
+  "entrances": 1154,
+  "boxInstances": 69397,
+  "roofAreaDifference": 0.030129070626571774,
+  "scope": "Finished baked buffers, ownership, real facade holes, chunks, collision data; no GPU rendering claim."
+}
+{
+  "directory": "/workspace/scratch/82054be347bc/okc/dist",
+  "openings": 18726,
+  "probes": 37452,
+  "upwardFacesAtOpeningLevels": 18726,
+  "minimumCovers": 0.9999999999998401,
+  "maximumCovers": 1.0000000000000664,
+  "failures": 0,
+  "examples": [],
+  "scope": "Actual baked triangles and transformed box tops; a 2 mm square probe requires exactly one upward surface at every door/window sill. Adjacent triangle-edge coverage is integrated, not counted twice."
+}
+{
+  "buildings": 1330,
+  "frontages": 2868,
+  "physicalOpenings": 18726,
+  "upperFloorOpenings": 4955,
+  "clerestories": 3470,
+  "trimBands": 13649,
+  "roofWells": 1198,
+  "innerRoofRisers": 15485,
+  "copingTriangles": 31005,
+  "roofPartitionErrorM2": 0.0,
+  "roofPartitionOverlapM2": 0.0,
+  "invalidPolygons": 0,
+  "scope": "Independent Shapely check of compiled roof partitions, full bays, unblocked openings and nonoverlapping trim; actual triangle gate is check-building-shells.mjs."
+}
+{
+  "mappedComplexes": 8,
+  "savedParts": 25,
+  "newlyRestoredParts": 23,
+  "legacyMaskAssignments": 3,
+  "scope": "Exact saved part outlines, explicit heights or declared floor-pitch estimates, complete parent coverage and retained source records."
+}
+{
+  "passed": true,
+  "frameRates": [
+    30,
+    60,
+    144
+  ],
+  "fixedStepHz": 120,
+  "tests": [
+    "throttle",
+    "brake then reverse",
+    "forward from reverse",
+    "steering symmetry",
+    "handbrake",
+    "speed limits",
+    "world momentum",
+    "finite tire grip",
+    "yaw inertia and recovery",
+    "handbrake slide and recovery",
+    "reverse steering",
+    "pose interpolation",
+    "angle wrapping",
+    "teleport reset",
+    "saved momentum and validation",
+    "thin-wall collision",
+    "rear collision",
+    "wall sliding",
+    "bounds",
+    "courtyard holes",
+    "corner recovery",
+    "camera boom",
+    "legacy JSON pose round-trip"
+  ],
+  "presentation": {
+    "frameRates": [
+      30,
+      60,
+      144
+    ],
+    "sharedPose": true,
+    "betweenTickFrames": 23,
+    "bodyMotion": true,
+    "teleportAndModeReset": true,
+    "cameraSweep": "immediate contraction, smooth recovery",
+    "legacyAndMovingSetup": true
+  },
+  "city": {
+    "solids": 1293,
+    "laneSpawns": 1360,
+    "intersectionRoute": "Reno to Hudson to Sheridan",
+    "intersectionContacts": 0,
+    "simulationSeconds": 92
+  },
+  "finalPose": {
+    "x": 83.75808918594915,
+    "z": 29.29331726038752,
+    "heading": 0.2818134747392576,
+    "speed": 0,
+    "vx": 0,
+    "vz": 0,
+    "steering": -0.00013418505088441047,
+    "yawRate": 0,
+    "bodyRoll": 0.0000990282938948354,
+    "bodyPitch": 0.0001625455887049971,
+    "bodyRollVelocity": -0.0008277572165690738,
+    "bodyPitchVelocity": -0.0013912892497105476
+  }
+}
+{"independentEngine":"Shapely/GEOS","seeds":[{"seed":1907,"props":54,"renderedParts":262,"mappedTrees":706,"suppressedMappedTrees":13,"gardenTrees":85},{"seed":42,"props":54,"renderedParts":262,"mappedTrees":706,"suppressedMappedTrees":13,"gardenTrees":73}],"roadMarkings":6470,"failureCount":0,"firstFailures":[]}
+{"scope":"Built geometry, independent polygon clearance, actual prop bounds, stable seeded placement and dressed-world collision; no GPU verification.","collisionSummary":[{"seed":1907,"propCenters":54,"laneSpawns":1360},{"seed":42,"propCenters":54,"laneSpawns":1360}],"determinism":true,"roadFixtures":3,"placementFixtures":4}
+{
+  "building": "BOK Park Plaza",
+  "id": 752099946,
+  "height": 132,
+  "occupiedFloors": 27,
+  "lobbyHeight": 10.668,
+  "crownHeight": 12.192,
+  "chunks": 2,
+  "triangles": 22,
+  "vertices": 40,
+  "facadeArea": 27298.727239650496,
+  "expectedArea": 27298.728320246602,
+  "floorPitchApproximation": 4.197692307692307,
+  "scope": "Mapped identity, source anchors, occupied/crown band count, actual baked facade assignment and UVs; no GPU claim."
+}
+{
+  "passed": true,
+  "rayCases": 35,
+  "maxRayDifference": 0.002804888935966865,
+  "horizonDipDegrees": 0.5148278171963,
+  "afterglowSunVisibility": {
+    "street": 0,
+    "roof": 0.7333544378097666
+  },
+  "reflectionElevationsDegrees": [
+    1.1457628381751035,
+    4.320804954984468,
+    9.338394976235987,
+    15.830979484032854
+  ],
+  "materialHooks": "shared uniforms, instancing, chained callbacks and zero facade emission"
+}
+{
+  "sourceTriangles": 638295,
+  "triangles": 648249,
+  "vertices": 1121982,
+  "chunks": 259,
+  "instanceChunks": 56,
+  "boxInstances": 69397,
+  "openings": 18726,
+  "entrances": 1154,
+  "rooftopUnits": 912,
+  "constrainedGroundTriangles": 19298,
+  "constrainedGroundChunks": 27,
+  "curbEdges": 17090,
+  "curbRampTriangles": 354,
+  "curbRampFaceTriangles": 236,
+  "bytes": 60986184,
+  "chunkSize": 1024
+}
+Explorer checks passed: budget reserve, import validation, AM/PM conversion, duplicate stops, reorder bounds, seeded discovery budget/indoor/visited filters, blocked storage, coordinate validity, URL safety, and chain/cuisine categorization.
+Atlas checks passed: spatial equivalence, cached base rendering, catalog search, canonical categories, source allowances, indoors filtering, unique imports, date warnings, and malformed local storage.
+Packed city checks passed: shared storage, exact bounds, aligned ranges, legacy buffers and mounted geometry/instances.
+✔ geometry work uses two workers, queues excess, and releases every pending promise (2.724787ms)
+✔ aborting stale tile work frees a worker for the new neighborhood (0.330424ms)
+✔ worker startup failure yields a usable fallback without swallowing geometry errors (0.580133ms)
+✔ routing graph is lazy and idle disposal allows a clean reopen (26.226325ms)
+✔ one-way routing cannot jump backwards between two points on the same segment (1.416733ms)
+✔ compressed downloads accept both gzip bytes and browser-decoded JSON (13.631162ms)
+✔ pitched roofs stay within the mapped footprint and total height; courtyards remain open (1.418418ms)
+✔ compiled gable and courtyard geometry is finite with upward roofs and closed inner walls (40.993462ms)
+✔ tile unload removes its own collision cells and seasonal toggle preserves street lamps (2.629391ms)
+✔ navigation holds destination tiles while the old car keeps producing frame updates (46.039784ms)
+✔ initial metro loading preserves the deployed app subpath for JSON and gzip tiles (34.834667ms)
+✔ nested park, woodland and parking regions have deterministic depth ownership (0.548475ms)
+✔ surface clipping removes an interior owner even when every triangle corner is outside it (0.585311ms)
+✔ legacy tile road, land and paint obey downtown apron ownership without deleting apron buildings (1.41835ms)
+✔ clipping a holed surface preserves its courtyard and uses optional baked render patches (0.32782ms)
+✔ three simultaneous completions mount one tile per RAF, not one burst (59.206996ms)
+✔ stationary-car camera rotation loads the new view and bounds resident cache (68.548434ms)
+✔ projection-only zoom invalidates streaming selection without moving the camera (27.30648ms)
+✔ view changes abort stale compiler and queued mount work while preserving car jobs (30.870296ms)
+✔ detail upgrades requested after compilation still reach the mounted tile (22.544349ms)
+✔ disposal rejects a collision ensure waiting on RAF and cancels its mount (21.287035ms)
+✔ a collision bubble wholly covered by the static core needs no metro downloads (19.390042ms)
+✔ mounting retains the worker bounds and transferred vertex storage (25.895822ms)
+✔ quality budgets and no-camera coverage preserve the local radius contract (4.859383ms)
+✔ rotating the camera 180 degrees changes visible tiles while the car stays still (2.711767ms)
+✔ zoom and panning change view coverage without losing the stationary car bubble (3.373761ms)
+✔ all quality caps retain every collision tile and deterministic request order (3.63324ms)
+✔ collision-only selection ignores the view and retains exactly the local bubble (1.005579ms)
+✔ fully static core tiles are skipped while partial boundary tiles stay eligible (1.445234ms)
+✔ center-ray target is clipped to the quality range and reversed depth keeps coverage (2.136494ms)
+ℹ tests 30
+ℹ suites 0
+ℹ pass 30
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 455.576644
+....
+----------------------------------------------------------------------
+Ran 4 tests in 0.019s
+
+OK
+{
+  "passed": true,
+  "checks": [
+    "finite source geometry",
+    "tile inventory",
+    "raw and compressed payload identity",
+    "source provenance",
+    "graph source identity",
+    "one-way graph contracts",
+    "map boundary graph clipping",
+    "valid polygon footprints",
+    "road / sidewalk footprint partition",
+    "original downtown and 50 m surface apron ownership",
+    "unique building identities",
+    "POI source and ID coverage",
+    "cross-city graph reachability"
+  ],
+  "counts": {
+    "directedSegments": 455602,
+    "tileBytes": 197890742,
+    "tileGzipBytes": 40882354,
+    "buildings": 272713,
+    "roads": 107092,
+    "surfaces": 16951,
+    "details": 26308,
+    "meshes": 66952,
+    "reachableFromFirstAnchor": 214591
+  },
+  "maxTileBytes": 303286,
+  "roadSidewalkOverlapSquareMeters": 0.0,
+  "newRoadCoreOverlapSquareMeters": 0.0,
+  "newLandCoreOverlapSquareMeters": 0.0,
+  "coreSurfaceBounds": {
+    "minX": -1650,
+    "minZ": -1190,
+    "maxX": 1650,
+    "maxZ": 1170
+  },
+  "routeChecks": [
+    {
+      "from": "Yukon Christmas in the Park",
+      "to": "Cactus Jack\u2019s Family Fun Center",
+      "reachable": true
+    },
+    {
+      "from": "Yukon Christmas in the Park",
+      "to": "Brickopolis",
+      "reachable": true
+    },
+    {
+      "from": "Yukon Christmas in the Park",
+      "to": "AMF Windsor Lanes",
+      "reachable": true
+    },
+    {
+      "from": "Yukon Christmas in the Park",
+      "to": "Subway \u2014 8022 NW 39th Expressway",
+      "reachable": true
+    }
+  ],
+  "failures": [],
+  "limits": [
+    "CPU / geographic contract check only. Browser screenshots and actual runtime behavior require separate verification.",
+    "Source map accuracy, current business operation and facade resemblance are not established by this check."
+  ]
+}
+Asset loading: gzip, HTTP decoding, raw fallback, binary equivalence, cancellation and worker transport failure passed.
+Discovery checks passed: failed/retained/hidden map tile requests, tour pause/resume/cancel, idle and repeated manual interrupts, changed itineraries, arrival, stale routes and bridge cancellation guards.
+✔ all workers share one 100ms request-start schedule (3.784328ms)
+✔ a new cooldown blocks a request that was already sleeping for its turn (1.907389ms)
+✔ overlapping 429s extend a shared cooldown without repeatedly slowing one wave (0.470511ms)
+✔ Retry-After parses seconds and HTTP dates against the supplied clock (0.784965ms)
+✔ HTTP date cooldown is global and can exceed the usual backoff cap (0.175752ms)
+✔ permanent failure cancels both sleeping and queued turns without new starts (0.460731ms)
+✔ transport and 5xx backoff grows with a bounded maximum (0.153893ms)
+ℹ tests 7
+ℹ suites 0
+ℹ pass 7
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 100.768195
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.
+
+> okc-prairie-prism@0.8.2 check:ui
+> node --test src/ui/*.test.mjs src/app/controls.test.mjs src/explorer/controller.test.mjs src/explorer/gpu-view.test.mjs src/explorer/map-camera.test.mjs src/explorer/map-geometry.test.mjs
+
+✔ actual UI router keeps pedal and steering pointers out of the camera, with independent release (2.246051ms)
+✔ manual takeover happens on the first source, never key repeat or an additional held source (0.367652ms)
+✔ cancellation releases every held source and world pinch uses only routed camera fingers (0.502679ms)
+✔ shared settings enforce ranges and route ownership while retaining side effects (2.245725ms)
+✔ setup picker is invoked synchronously and delegates its native file to the existing decoder path (0.520988ms)
+✔ HUD touch targets remain reachable, separate and at least 44px on narrow and short phones (4.323386ms)
+✔ settings/help remain scrollable and closable in short landscape, with a full world-input blocker (5.190166ms)
+✔ GPU controller keeps place filters, brand coverage, favorite order and layer callbacks (27.164304ms)
+✔ planner preserves mapped tour indices around custom allowances and cancels changed routes (2.132739ms)
+✔ text drafts remain editable and journal numbers stay bounded (0.906908ms)
+✔ full backup round trip restores the plan, journal, preferences, categories and corrections (6.604564ms)
+✔ building edits stay local on preview failure and sanitize external data (0.640541ms)
+✔ map, inspect, mission and external method contracts stay available without a DOM (0.804807ms)
+✔ navigation owns its final error or route information message (0.405459ms)
+✔ leaving place details clears the controller selection and map highlight together (0.913895ms)
+✔ GPU explorer virtualizes a large catalog at phone width (146.792559ms)
+✔ every planner operation remains reachable through a scrollable GPU page (12.058893ms)
+✔ details, journal, sources, layers, learning and building corrections remain reachable (16.80937ms)
+✔ portrait, short landscape and keyboard-height layouts stay within the viewport (2.541089ms)
+✔ map zoom keeps the exact world point under an off-center pivot (1.695746ms)
+✔ two-finger pinch combines scale and center movement around the previous midpoint (0.826382ms)
+✔ one-finger panning follows its pointer and survives a pinch finger lifting (0.466362ms)
+✔ canceled gestures clear ownership without generating a tap (0.434418ms)
+✔ a displaced pointerup cannot select when intermediate move events were omitted (0.214401ms)
+✔ fit and focus center content within the unobscured map rectangle (0.45286ms)
+✔ GPU map triangles preserve a closed courtyard hole without filling it (2.332455ms)
+✔ map geometry retains disjoint polygons, multiple holes, and road classes (2.300441ms)
+✔ generic land remains separate from parks, woods, grass and nature areas (0.51982ms)
+✔ footprint colors and transparency follow each feature through hole triangulation (0.933786ms)
+✔ many building colors share one GPU batch and generic land follows the parks layer toggle (10.450209ms)
+✔ the actual map worker transfers land and footprint color buffers with geometry (11.680083ms)
+✔ licensed binary atlas, gzip, metrics and accented name coverage agree (16.211679ms)
+✔ compressed and server-decoded font requests retain the deployed application subpath (34.006473ms)
+✔ a missing gzip transport safely retries the ordinary binary asset (82.215285ms)
+✔ text advances, Unicode fallback and wrapping are independent of browser fonts (1.196965ms)
+✔ draw list clips and retains a rotated line crossing the visible viewport (4.849134ms)
+✔ single-line labels use a fitting ellipsis while multiline paragraphs retain wrapping (0.458042ms)
+✔ center and right text align to their x anchor independently of wrap width (1.679332ms)
+✔ bounded batch growth preserves commands and disposes the previous GPU buffers (2.023033ms)
+✔ UI rendering preserves world settings, batches once, and only uploads dirty commands (1.59651ms)
+✔ shared atlas is released only after its last surface, and disposal is idempotent (2.514365ms)
+✔ graphics-unavailable fallback paints baked glyph masks without browser text APIs (6.540501ms)
+✔ two held fingers are released independently across UI redraws (3.524991ms)
+✔ a touch drag transfers a button to its scroll region without camera or click leakage (0.490907ms)
+✔ hold controls keep their pointer while an independent finger pans the world (1.646303ms)
+✔ cancel and lost-capture cleanup are idempotent and never synthesize taps (0.458891ms)
+✔ a pinch cannot become a world tap when one finger is released first (0.366541ms)
+✔ clipped controls cannot steal taps or wheel events outside their visible region (0.445987ms)
+✔ modal input blocking prevents the world from acquiring or finishing a tap (0.313255ms)
+✔ pointer-up displacement rejects a swipe even if the browser coalesced every move (0.224782ms)
+✔ IME confirmation Enter preserves editing and default composition behavior (4.851227ms)
+✔ switching fields commits the latest prior value once and reuses the native editor (0.907846ms)
+✔ reentering the active field preserves its draft, caret and focus (0.620402ms)
+✔ multiline Enter remains native editing; blur commits once and releases its scroll anchor (1.766408ms)
+ℹ tests 54
+ℹ suites 0
+ℹ pass 54
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 445.219349
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.
+
+> okc-prairie-prism@0.8.2 check:startup
+> node scripts/check-app-startup.mjs
+
+(node:1494) ExperimentalWarning: VM Modules is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+{
+  "passed": true,
+  "baseURL": "https://startup.invalid/okc/",
+  "applicationModules": 110,
+  "packedAssetsRead": 8,
+  "metroTileRequests": 16,
+  "sceneReady": true,
+  "freeDrive": true,
+  "drivingSeconds": 10,
+  "repeatKeyEvents": 285,
+  "distanceUnderThrottleMeters": 216.891,
+  "finalDrivingSpeedMetersPerSecond": 28,
+  "rendererCalls": 1423,
+  "worldRendererCalls": 610,
+  "uiRendererCalls": 813,
+  "gpuControls": true,
+  "phoneLayouts": [
+    {
+      "width": 390,
+      "height": 844,
+      "syntheticSafeInsets": {
+        "top": 47,
+        "right": 0,
+        "bottom": 34,
+        "left": 0
+      },
+      "heldControls": 5,
+      "menuReachable": true
+    },
+    {
+      "width": 844,
+      "height": 390,
+      "syntheticSafeInsets": {
+        "top": 0,
+        "right": 44,
+        "bottom": 21,
+        "left": 44
+      },
+      "heldControls": 5,
+      "menuReachable": true
+    }
+  ],
+  "scope": "Actual built boot/app/import map, packed geometry, scene construction, discovery bridge, tile decoding/compiler/mount, GPU UI target routing/setup export and free driving. Browser DOM/canvas, viewport, RAF and GPU renderer/PMREM adapters; worker fallback path. Phone layout checks are synthetic target/buffer checks. No shader, browser layout, image or FPS verification."
+}

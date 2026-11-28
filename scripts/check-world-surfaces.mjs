@@ -32,7 +32,9 @@ for(const mesh of paintBatches){
  assert.equal(m.depthWrite,false,`${m.name} must not create an opaque depth layer`);
  assert.equal(m.blending,THREE.NormalBlending,`${m.name} must use normal surface blending`);
  assert.ok(!m.transmission,`${m.name} must not enter the transmission pass`);
- assert.ok(m.polygonOffset&&m.polygonOffsetFactor<0&&m.polygonOffsetUnits<0,`${m.name} must keep its small surface bias`);
+ assert.equal(m.polygonOffset,true,`${m.name} must keep its unit surface bias`);
+ assert.equal(m.polygonOffsetFactor,0,`${m.name} must not pull paint through near occluders with a slope bias`);
+ assert.equal(m.polygonOffsetUnits,-2,`${m.name} must keep the authored ordinary-depth unit bias`);
  assert.equal(mesh.castShadow,false,`${m.name} must not cast decal shadows`);
 }
 const paintPass={batches:paintBatches.length,instances:paintBatches.reduce((sum,m)=>sum+m.count,0),queue:'transparent',opacity:1,depthTest:true,depthWrite:false};

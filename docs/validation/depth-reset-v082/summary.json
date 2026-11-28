@@ -1,5 +1,5 @@
 {
-  "scope": "Native Mesa GLES production-shader diagnostic; not browser, complete scene, physical phone or FPS evidence. Current-source data uses the immutable v0.8.1 packed geometry. Final built-output verification follows separately.",
+  "scope": "Native Mesa GLES production-shader diagnostic; not browser, complete scene, physical phone or FPS evidence. Current-source and final built-output checks both pass; all165 produced paint PNGs match byte-for-byte.",
   "reports": [
     {
       "name": "startup-reset-before",
@@ -54,6 +54,21 @@
         "occluderPaintOverlapPixels": 35205,
         "occluderLeakPixels": 0
       }
+    },
+    {
+      "name": "current-build",
+      "passed": true,
+      "cases": 84,
+      "programs": 15,
+      "totals": {
+        "expectedPaintPixels": 684603,
+        "lostPaintPixels": 0,
+        "drawOrderChangedPixels": 166,
+        "groundSampleBoundaryOrderChangedPixels": 166,
+        "surfaceInteriorOrderChangedPixels": 0,
+        "occluderPaintOverlapPixels": 35205,
+        "occluderLeakPixels": 0
+      }
     }
   ],
   "images": [
@@ -73,5 +88,58 @@
       "file": "chase-after.png",
       "sha256": "d8c9203194acaaa315f9ccb00c95f34047c3b6067694c07de4bb64a24ae1812a"
     }
-  ]
+  ],
+  "localValidation": {
+    "fullBuildPassed": true,
+    "fullCheckPassed": true,
+    "fullCheckLogSha256": "5889ba37cd29de53d752df5dae4e01da62e31bdb8ab855be6484c7ead90a4fab",
+    "startup": {
+      "passed": true,
+      "baseURL": "https://startup.invalid/okc/",
+      "applicationModules": 110,
+      "packedAssetsRead": 8,
+      "metroTileRequests": 16,
+      "sceneReady": true,
+      "freeDrive": true,
+      "drivingSeconds": 10,
+      "repeatKeyEvents": 285,
+      "distanceUnderThrottleMeters": 216.891,
+      "finalDrivingSpeedMetersPerSecond": 28,
+      "rendererCalls": 1423,
+      "worldRendererCalls": 610,
+      "uiRendererCalls": 813,
+      "gpuControls": true,
+      "phoneLayouts": [
+        {
+          "width": 390,
+          "height": 844,
+          "syntheticSafeInsets": {
+            "top": 47,
+            "right": 0,
+            "bottom": 34,
+            "left": 0
+          },
+          "heldControls": 5,
+          "menuReachable": true
+        },
+        {
+          "width": 844,
+          "height": 390,
+          "syntheticSafeInsets": {
+            "top": 0,
+            "right": 44,
+            "bottom": 21,
+            "left": 44
+          },
+          "heldControls": 5,
+          "menuReachable": true
+        }
+      ],
+      "scope": "Actual built boot/app/import map, packed geometry, scene construction, discovery bridge, tile decoding/compiler/mount, GPU UI target routing/setup export and free driving. Browser DOM/canvas, viewport, RAF and GPU renderer/PMREM adapters; worker fallback path. Phone layout checks are synthetic target/buffer checks. No shader, browser layout, image or FPS verification."
+    },
+    "sunsetPrograms": 18,
+    "uiPrograms": 8,
+    "uiFixtures": 7,
+    "genericDepthCases": 4
+  }
 }

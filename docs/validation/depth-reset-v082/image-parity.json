@@ -1,0 +1,7 @@
+{
+  "builtReport": "qa/paint-depth-v082-built/captures/report.json",
+  "sourceReport": "qa/paint-depth-v082-source/captures/report.json",
+  "imagesCompared": 165,
+  "differentImages": [],
+  "passed": true
+}
