@@ -1,0 +1,43 @@
+{
+  "scope": "Actual final packed Float32 buffers compared with the preserved v0.8.0 build. No FPS claim.",
+  "baseline": {
+    "roadTriangles": 18483,
+    "parkingTriangles": 3443,
+    "paintedGroundBytes": 830628,
+    "cityBinaryBytes": 45807044,
+    "cityGeometryGzipBytes": 13812341,
+    "layoutBytes": 100302,
+    "roadLongNeedles": 4237,
+    "parkingLongNeedles": 155
+  },
+  "built": {
+    "roadTriangles": 16061,
+    "parkingTriangles": 3237,
+    "paintedGroundBytes": 730444,
+    "cityBinaryBytes": 45706860,
+    "cityGeometryGzipBytes": 13776850,
+    "layoutBytes": 100387,
+    "roadLongNeedles": 20,
+    "parkingLongNeedles": 18
+  },
+  "longNeedleDefinition": "Longest edge > 32 m and longest-edge/minimum-altitude ratio > 256",
+  "changedChunks": {
+    "road": 16,
+    "parking": 11,
+    "other": 0,
+    "allInstanceBuffersUnchanged": true,
+    "totalChunks": 259
+  },
+  "sourceFootprintDifferenceM2": 0,
+  "duplicateTriangleSummedAreaResidualM2": 2.0043e-09,
+  "runtimeSurfaces": {
+    "rawBytes": 2724073,
+    "gzipBytes": 703496,
+    "byteIdentical": true,
+    "buildOnlyTriangulationAbsent": true
+  },
+  "sourceHashes": {
+    "geo/base-city.bin.gz": "a1794afb7d758d0fd28e67f8525e805e60f4b117c02a786e4b2b109f8dcf9eb6",
+    "geo/base-surfaces.json.gz": "0774decf8ac5d3d08934f5dc3656a369b737845dd7383d04fe33abd0d9fb400b"
+  }
+}

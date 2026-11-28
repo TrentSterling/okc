@@ -28,6 +28,8 @@ const [{createBatching}, {addStreets}, {addRoadMarkings}] = await Promise.all([
   load('world/batching.js'), load('world/streets.js'), load('world/road-markings.js'),
 ]);
 const compiled = JSON.parse(gunzipSync(read('geo/base-surfaces.json.gz')));
+if ('groundTriangulation' in compiled)
+  throw Error('Build-only constrained triangles must not be duplicated in runtime surface data');
 const group = new THREE.Group(), unit = new THREE.BoxGeometry(1, 1, 1);
 // Same unit plane supplied by createCityMaterials to the production batching API.
 const paintGeometry = new THREE.PlaneGeometry(1, 1).rotateX(-Math.PI / 2);

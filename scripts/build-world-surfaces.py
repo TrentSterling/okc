@@ -19,6 +19,7 @@ from shapely.ops import unary_union
 from shapely.strtree import STRtree
 from city_shells import compile_buildings
 from street_surfaces import compile_sidewalks, compile_edges, compile_street_paint
+from ground_triangulation import compile_ground_triangulation
 
 ROOT = Path(__file__).resolve().parents[1]
 OUTPUT = Path(os.environ.get('OKC_BUILD_OUTPUT', ROOT / 'dist'))
@@ -142,6 +143,9 @@ def build():
     elevations = {kind: y for kind, y, _ in specs}
     street_edges = compile_edges(street, geometries, elevations, blocked)
     street_paint = compile_street_paint(d, street, geometries, blocked)
+    # Keep build-only triangles outside layers: pack-runtime ships the original
+    # footprint contract, while the mesh baker receives stable internal edges.
+    ground_triangulation, ground_triangulation_stats = compile_ground_triangulation(layers)
 
     remaining = []
     overlap_total = 0.
@@ -164,6 +168,7 @@ def build():
         'remainingGroundLayerOverlapM2': round(overlap_total, 9),
         'ownershipClearanceMeters': .001,
         'collinearityCleanupMeters': .0005,
+        'groundTriangulation': ground_triangulation_stats,
         'streets': street['stats'] | {'verticalEdges': len(street_edges), 'paintRectangles': len(street_paint),
                                     'rampFaces': len(street['rampFaces'])},
         'buildings': building_stats,
@@ -177,7 +182,7 @@ def build():
                'customLandmarkSha256': hashlib.sha256((OUTPUT / 'geo/custom-landmark-volumes.json').read_bytes()).hexdigest(),
                'layers': layers, 'streetEdges': street_edges, 'streetRamps': street['ramps'],
                'streetRampFaces': street['rampFaces'], 'streetCrossings': street['crossings'],
-               'streetPaint': street_paint, **building_payload}
+               'streetPaint': street_paint, 'groundTriangulation': ground_triangulation, **building_payload}
     return payload, stats
 
 

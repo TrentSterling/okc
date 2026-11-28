@@ -9,6 +9,7 @@ import {createHash} from 'node:crypto';
 import * as THREE from '../public/vendor/three.module.js';
 import { skylineFacadeProfile } from '../src/world/skyline-profiles.js';
 import { bakeStreetDetails } from './bake-street-details.mjs';
+import { bakeGroundSurfaces } from './bake-ground-surfaces.mjs';
 import { bakeFacadeBand,bakeSimpleFrame,bakeRoofAssembly,bakeLandmarkFins } from './bake-facade-details.mjs';
 
 const ROOT=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..');
@@ -125,7 +126,7 @@ function facadeMaterial(s){
   if(['glass','parking','banded','deco'].includes(s.kind))return 'building.'+s.kind;
   return 'building.'+(['lowrise','retail'].includes(s.kind)?'lowrise.':'masonry.')+(Math.abs(s.id)%4);
 }
-for(const layer of WORLD_SURFACES.layers)for(const p of layer.polygons)polygon(p,layer.y,'ground.'+layer.kind,false,layer.uvScale);
+bakeGroundSurfaces(WORLD_SURFACES,{triangle,polygon},stats,CELL);
 bakeStreetDetails(WORLD_SURFACES,{quad,triangle},stats);
 for(const shell of WORLD_SURFACES.buildingShells){
   const material=facadeMaterial(shell),lowrise=['lowrise','retail'].includes(shell.kind);

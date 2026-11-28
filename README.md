@@ -2,6 +2,12 @@
 
 An Oklahoma City atlas, date planner and drivable city for Trent. Geographically grounded reconstruction and exploration prototype, **v0.8.1**.
 
+Road and parking surfaces now use constrained triangulation within each mesh
+cell. This removes the long, thin asphalt triangles that caused street paint
+to fail logarithmic depth tests despite its physical clearance. Downtown and
+streamed markings share the same depth-tested decal material contract. See
+[the road paint regression and repair](docs/validation/paint-depth-v081.md).
+
 The v0.8 interface uses batched GPU glyphs and shapes on the game canvas. The
 explorer, loading screen, scene Menu, map labels and driving controls share one
 input router. The atlas keeps cached GPU geometry, and phone layouts retain

@@ -29,8 +29,26 @@ Reports: [original native failure](paint-depth-v081/native-baseline.json), [cont
 
 ## Production integration and verification
 
-Production integration uses the same cell-local constrained triangulation for painted ground surfaces. The complete rebuilt release and public publication remain pending at this documentation checkpoint. Final source, buffer costs, exact built-app/native results, and the public audit will be recorded after they pass.
+The complete v0.8.1 rebuild uses constrained Delaunay triangulation after clipping road and parking footprints to their existing 1,024 m mesh cells. The offline compiler checks footprints, holes, winding, duplicate area and cell coverage. The baker retains the original heights, normals and UV scale. Other ground layers keep their existing bake.
+
+The native gate then ran against the actual rebuilt packed buffers, without a diagnostic geometry substitution: **48/48 cases pass, with zero lost paint pixels, zero occluder leaks, and zero road submission-order differences**. Eight actual production material programs compile and link. The occluder overlaps 51 paint samples, so its visibility check is not vacuous. [Built native report](paint-depth-v081/native-built.json) and [pinned native environment](paint-depth-v081/native-environment.json) record the exact source, shader and geometry hashes.
+
+The independent complete-footprint paint audit also passes against the rebuilt buffers: 14,391 paint instances, 65,129 ground triangles, the same 11.9999945–12.0000020 mm clearance, and no significant paint overlap, uncovered paint or competing ground owner. See [built geometry report](paint-depth-v081/geometry-built.json).
+
+| Actual packed cost | Original v0.8.0 | Built v0.8.1 |
+| --- | ---: | ---: |
+| Road and parking triangles | 21,926 | 19,298 |
+| Road and parking vertex/index bytes | 830,628 | 730,444 |
+| Complete city geometry gzip bytes | 13,812,341 | 13,776,850 |
+| Runtime surface gzip bytes | 703,496 | 703,496 |
+| Long road needles, edge >32 m and aspect >256 | 4,237 | 20 |
+
+The runtime surface payload is byte-identical; build-only triangulation is excluded. Exactly 27 painted-ground chunks change, while every other chunk and all instance buffers remain unchanged. The compiler's double-precision footprint difference is zero. Float32 quantization remains, and a small number of thin triangles remain; the fix does not claim to eliminate every thin face. [Packed comparison](paint-depth-v081/packed-costs.json) records the costs and hashes.
+
+The complete local `npm run build` and `npm run check` pass. This includes the paint material and triangulation regressions, all geometry/ownership checks, 30 metro streaming cases, 54 GPU UI cases, and actual built-app startup/driving integration. Sustained throttle with 285 repeated key events travels 216.891 m in ten seconds and reaches 28 m/s; synthetic portrait and landscape phone control layouts remain reachable. The startup harness uses renderer/browser adapters and does not establish device FPS.
+
+Independent publication is pending at this documentation checkpoint. Final source, CI, Pages revision and full public asset audit will be recorded after they pass.
 
 The shared `src/world/paint-material.js` also gives streamed and downtown white/yellow markings the same after-opaque, depth-tested, non-depth-writing decal contract. Streamed double-sided paint uses one transparent pass. Depth testing remains enabled for physical occluders; no runtime logarithmic-depth override is retained.
 
-The permanent checks are `scripts/check-paint-geometry.mjs`, `src/world/paint-material.test.mjs`, `scripts/visual/prepare-paint-depth-diagnostics.mjs`, and `scripts/visual/check-paint-depth-gles.py`. Native rendering uses Mesa llvmpipe software rendering. These results are not a physical-phone test, an NVIDIA/ANGLE browser capture, or a measured FPS improvement. They reproduce a concrete paint loss; they do not establish the exact magnitude of the user's hardware-specific artifact.
+The permanent checks are `scripts/check-paint-geometry.mjs`, `src/world/paint-material.test.mjs`, `scripts/check-ground-triangulation.py`, `scripts/bake-ground-surfaces.test.mjs`, `scripts/visual/prepare-paint-depth-diagnostics.mjs`, and `scripts/visual/check-paint-depth-gles.py`. The native depth gate is required by CI before publication. Native rendering uses Mesa llvmpipe software rendering. These results are not a physical-phone test, an NVIDIA/ANGLE browser capture, or a measured FPS improvement. They reproduce a concrete paint loss; they do not establish the exact magnitude of the user's hardware-specific artifact.
