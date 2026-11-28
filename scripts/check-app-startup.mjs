@@ -137,7 +137,15 @@ const storage = new Map();
 const localStorage = {getItem: key => storage.get(key) ?? null, setItem: (key, value) => storage.set(key, String(value)), removeItem: key => storage.delete(key)};
 class SmokeURL extends URL { static createObjectURL(blob) { const id = 'blob:startup-' + blobs.size; blobs.set(id, blob); return id; } static revokeObjectURL() {} }
 class Renderer {
-  constructor({canvas}) { this.domElement = canvas; this.capabilities = {reversedDepthBuffer: false}; this.shadowMap = {}; this.debug = {}; this.xr = {enabled: false}; this.info = {render: {calls: 0, triangles: 0}, reset: noop}; this.coordinateSystem = RealThree.WebGLCoordinateSystem; this.clearColor = new RealThree.Color(); this.viewport = new RealThree.Vector4(0, 0, viewport.width, viewport.height); this.scissor = this.viewport.clone(); this.target = null; this.autoClear = true; }
+  constructor({canvas}) { this.domElement = canvas; this.capabilities = {reversedDepthBuffer: false}; this.shadowMap = {}; this.debug = {}; this.xr = {enabled: false}; this.info = {render: {calls: 0, triangles: 0}, reset: noop}; this.coordinateSystem = RealThree.WebGLCoordinateSystem; this.clearColor = new RealThree.Color(); this.viewport = new RealThree.Vector4(0, 0, viewport.width, viewport.height); this.scissor = this.viewport.clone(); this.target = null; this.autoClear = true;
+    let reversed = false;
+    this.depthClear = 1;
+    this.state = {buffers: {depth: {
+      getReversed: () => reversed,
+      setReversed: value => { reversed = value; },
+      setClear: value => { this.depthClear = reversed ? 1 - value : value; },
+    }}};
+  }
   setClearColor(c, a = 1) { this.clearColor.set(c); this.clearAlpha = a; } getClearColor(out) { return out.copy(this.clearColor); } getClearAlpha() { return this.clearAlpha ?? 1; }
   setPixelRatio(v) { this.pixelRatio = v; } getPixelRatio() { return this.pixelRatio; }
   setSize(w, h) { this.width = w; this.height = h; } getSize(out) { return out.set(this.width, this.height); }
@@ -146,7 +154,8 @@ class Renderer {
   setScissorTest(v) { this.scissorTest = v; } getScissorTest() { return !!this.scissorTest; }
   setRenderTarget(target, face = 0, mip = 0) { this.target = target; this.face = face; this.mip = mip; }
   getRenderTarget() { return this.target; } getActiveCubeFace() { return this.face || 0; } getActiveMipmapLevel() { return this.mip || 0; }
-  resetState() {} clear() {} clearDepth() {} compile() {} async compileAsync() {} dispose() {}
+  resetState() { this.state.buffers.depth.setReversed(false); this.state.buffers.depth.setClear(1); }
+  clear() {} clearDepth() {} compile() {} async compileAsync() {} dispose() {}
   render(scene, camera) {
     scene.updateMatrixWorld(true); camera.updateMatrixWorld(true); renders++;
     if (scene.getObjectByName('GPU UI batch')) uiRenders++;

@@ -1,5 +1,6 @@
 import * as THREE from 'three';
 import {SHOT_BY_ID} from '../capture-presets.js';
+import {resetRendererState} from './renderer.js';
 
 // Deterministic photographs use the same presets and render boundary as before.
 export function createCaptureController({renderer,scene,camera,getState,applyCapturePreset,snapshot,updateCamera,invalidateCamera,resize}){
@@ -13,7 +14,7 @@ function captureView(id,width=1600,height=900){
  applyCapturePreset(preset);
  // A sky update can render PMREM and six local-probe faces immediately before
  // this photograph. Establish the complete main-camera render boundary.
- renderer.resetState();renderer.setRenderTarget(null);
+ resetRendererState(renderer);renderer.setRenderTarget(null);
  renderer.setViewport(0,0,width,height);renderer.setScissorTest(false);
  invalidateCamera();updateCamera(0);camera.updateMatrixWorld(true);
  renderer.clear(true,true,true);renderer.render(scene,camera);

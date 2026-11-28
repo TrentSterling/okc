@@ -2,6 +2,18 @@ import * as THREE from 'three';
 
 const authoredOffsets=new WeakMap();
 
+// Three r180 resetState() restores ordinary clip control and clear depth 1,
+// even when this renderer was constructed for reversed depth. Reassert the
+// configured convention before another camera/program can use that state.
+export function resetRendererState(renderer){
+ renderer.resetState();
+ const depth=renderer.state.buffers.depth;
+ depth.setReversed(renderer.capabilities.reversedDepthBuffer===true);
+ // setReversed alone cannot restore this after reset: its cached clear value
+ // is null. Logical far depth 1 becomes native clear 0 in reversed mode.
+ depth.setClear(1);
+}
+
 // Material offsets are authored for the ordinary LESS depth comparison.
 // Three r180 forwards polygonOffset unchanged even with reversed depth, so a
 // negative pull-forward bias becomes a push-behind bias under GREATER.

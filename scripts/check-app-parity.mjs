@@ -56,8 +56,16 @@ async function exercise(root){
  const audioNode=()=>({connect(node){return node;},start(){},gain:{value:0,setTargetAtTime(){}},frequency:{value:0,setTargetAtTime(){}}});
  window.AudioContext=class{constructor(){this.sampleRate=10;this.currentTime=0;this.state='running';this.destination={};}createGain(){return audioNode();}createBuffer(){return {getChannelData:()=>new Float32Array(20)};}createBufferSource(){return audioNode();}createBiquadFilter(){return audioNode();}createOscillator(){return audioNode();}resume(){this.state='running';}};
  class Renderer{
-  constructor({canvas}){this.domElement=canvas;this.shadowMap={};this.debug={};this.info={render:{calls:35,triangles:2000}};this.target=null;}
-  setClearColor(){} setPixelRatio(v){this.ratio=v;} setSize(w,h){this.width=w;this.height=h;} resetState(){} setViewport(){} setScissorTest(){} clear(){} setRenderTarget(x){this.target=x;} getRenderTarget(){return this.target;}
+  constructor({canvas}){this.domElement=canvas;this.capabilities={reversedDepthBuffer:false};this.shadowMap={};this.debug={};this.info={render:{calls:35,triangles:2000}};this.target=null;
+   let reversed=false;
+   this.depthClear=1;
+   this.state={buffers:{depth:{
+    getReversed:()=>reversed,
+    setReversed:value=>{reversed=value;},
+    setClear:value=>{this.depthClear=reversed?1-value:value;},
+   }}};
+  }
+  setClearColor(){} setPixelRatio(v){this.ratio=v;} setSize(w,h){this.width=w;this.height=h;} resetState(){this.state.buffers.depth.setReversed(false);this.state.buffers.depth.setClear(1);} setViewport(){} setScissorTest(){} clear(){} setRenderTarget(x){this.target=x;} getRenderTarget(){return this.target;}
   render(scene,camera){lastRender={position:camera.position.toArray(),quaternion:camera.quaternion.toArray(),fov:camera.fov,aspect:camera.aspect,width:this.width,height:this.height,ratio:this.ratio};}
  }
  const three={...RealThree,WebGLRenderer:Renderer};

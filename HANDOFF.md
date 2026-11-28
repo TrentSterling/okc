@@ -1,10 +1,20 @@
 # Prairie Prism handoff
 
-## Open local-browser surface artifact after v0.8.1
+## Active renderer depth-state repair (v0.8.2)
+
+- Trent authorized implementing and publishing the remaining moving street/crosswalk cutoff. Source is restored at `/workspace/scratch/82054be347bc/okc`, branch `work/surface-depth-v082-20261127`; pristine baseline is `/workspace/scratch/82054be347bc/okc-baseline-v081`. Remote `backup/pre-surface-depth-v082-20261127` preserves source/docs `6f635288c98c31e12d32392340ad1ba3e5289e29`.
+- Found a concrete runtime defect missed by earlier material-only diagnostics: actual Three r180 `resetState()` restores ordinary clip control and native clear depth 1. Reflection cleanup called it before the first main camera, leaving already-inverted paint offsets paired with ordinary depth. Later resets can pair an already-reversed camera projection with ordinary depth as well. Restoring reversal alone does not restore the clear value.
+- `app/renderer.js` now owns `resetRendererState()`, which restores the configured convention and logical far clear depth. Both reflection cleanup and capture setup use it. Five focused tests execute actual Three WebGLState and camera projection-upload code, including the historical failure, repeated resets, ordinary/reversed perspective/orthographic cameras, and real reflection/capture boundaries.
+- The expanded native fixture retains the actual 16 km Prairie ground and adds six close car/orbit views. Historical startup mismatch loses 428,716 of 456,402 expected paint pixels; already-reversed-camera mismatch loses all 456,402. Correct state restores paint with the same geometry. A separate measured near-occluder leak from slope factor 1 disappears with factor 0 and units 2; the shared paint factory is now units-only. All nine focused renderer/material tests pass.
+- No floor subdivision is retained: a 64-by-64 A/B is pixel-identical for the three horizon boundary cases. The complete plaza/paint audit finds zero overlap across all 14,391 paint rectangles. Geometry and map ownership are unchanged.
+- The cloud browser loads the app preview but cannot create WebGL2. Public tront.xyz access also returns a generic 403 in that browser. Native evidence is not a browser capture or a physical-phone/FPS measurement. Publication and final validation are in progress; do not claim deployed status until the workflow and public byte audit complete.
+- Use `PATH=/workspace/scratch/82054be347bc/okc-build-env/bin:$PATH` and `OKC_PYTHON=/workspace/scratch/82054be347bc/okc-build-env/bin/python` for local build/check. Do not run the full build and full startup harness concurrently.
+
+## Original local-browser report after v0.8.1
 
 Trent reports that coplanar-looking street/crosswalk artifacts remain after v0.8.1. The user-visible issue is OPEN. The previous native fix and successful publication are valid within their recorded scope, but they do not establish resolution of this remaining browser artifact.
 
-The native paint render gate covers a bounded downtown road strip, excludes parking and streamed metro paint, replaces textures with white samples, disables shadows and uses fixed views in Mesa. The cloud browser could not create WebGL2 during earlier checks. The next step is a reproduction and frame capture in the user's actual local browser/GPU, identifying the offending draw calls or shading pass before another correction.
+The native paint render gate covers a bounded downtown road strip, excludes parking and streamed metro paint, replaces textures with white samples, disables shadows and uses fixed views in Mesa. The cloud browser could not create WebGL2 during earlier checks. The subsequent v0.8.2 investigation above reproduces a specific renderer state failure. A full-scene local GPU sweep remains a distinct verification step.
 
 See [the local GPU handoff](docs/local-gpu-handoff.md) for exact baseline revisions, scope gaps, source entry points, capture steps and acceptance criteria.
 

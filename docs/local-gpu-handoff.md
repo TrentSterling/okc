@@ -1,13 +1,15 @@
-# Local GPU handoff: remaining surface flicker
+# Local GPU handoff: street depth validation
 
 ## Current status
 
-Trent reports visible coplanar-looking street/crosswalk artifacts after v0.8.1. Treat the user-visible issue as OPEN. The previous release fixed a measured native paint-depth failure; it did not establish that Trent's actual browser artifact was resolved.
+The v0.8.2 investigation reproduced a concrete depth-state mismatch in the actual Three r180 reset path. Reflection and capture resets now restore reversed/ordinary mode and far clear depth explicitly. The shared paint material also removes a measured slope-bias occluder leak. See `HANDOFF.md` for current publication status and `docs/validation/depth-reset-v082/README.md` for controlled evidence.
+
+A full-scene sweep on Trent's local GPU remains unverified. The source/native repair must not be represented as a local-browser visual signoff. The baseline identifiers and initial investigation notes below describe v0.8.1 and are preserved for comparison.
 
 Repository: https://github.com/TrentSterling/okc
 Live application: https://tront.xyz/okc/
-Deployed runtime source: `3d246e8894cda844f030c7e614df6eac3828488a`
-Pages revision: `857f594c18c433b2e955391f253aa15f7d9881aa`
+v0.8.1 runtime source: `3d246e8894cda844f030c7e614df6eac3828488a`
+v0.8.1 Pages revision: `857f594c18c433b2e955391f253aa15f7d9881aa`
 Source/docs head before this handoff: `86785600a136a8bef167a13264d0974061590b32`
 Release backup: `backup/paint-depth-v081-validated-20261127`
 
@@ -27,9 +29,9 @@ The native paint gate passes 48 cases, but its preparation script explicitly:
 
 The separate geometry audit covers more paint, including parking, but geometry separation alone does not validate the complete rendered image. Passing geometry/native checks must not be used to dismiss the reported flicker.
 
-The cloud browser used for the earlier work could not create WebGL2. The prior agent did not observe the remaining artifact in Trent's actual browser. The exact current cause is UNKNOWN.
+The cloud browser used for the earlier work could not create WebGL2. The prior agent did not observe the remaining artifact in Trent's actual browser. The later v0.8.2 work identifies the reset-state defect and reproduces its missing markings in native rendering; any additional local-browser artifact still requires its own evidence.
 
-## First task: reproduce the actual visible failure
+## Remaining local verification: compare the actual visible failure
 
 1. Use the normal hardware-accelerated browser on Trent's local machine. Record the real GPU/backend; do not assume a fresh headless browser reproduces the same rendering path.
 2. Confirm the loaded release once, then reproduce the exact offending spot. Save a short slow camera sweep and a stationary image at the worst angle. Use Menu > Save setup to preserve camera/car/lighting state.

@@ -73,7 +73,8 @@ test('all four production paints retain occlusion and enter the pass after opaqu
     assert.equal(material.depthWrite, false, `${label} must not become a second road depth owner`);
     assert.equal(material.blending, THREE.NormalBlending, label);
     assert.equal(material.polygonOffset, true, `${label} must receive the depth-mode surface offset`);
-    assert.ok(material.polygonOffsetFactor < 0 && material.polygonOffsetUnits < 0, label);
+    assert.equal(material.polygonOffsetFactor, 0, `${label} must not acquire a camera-slope-dependent bias`);
+    assert.equal(material.polygonOffsetUnits, -2, `${label} retains the ordinary-depth two-unit surface offset`);
     const mesh = new THREE.Mesh(city.paintGeometry, material);
     list.push(mesh, mesh.geometry, material, 0, 0, null);
   }

@@ -12,6 +12,10 @@ const args=process.argv.slice(2),option=(key,fallback)=>args.includes(key)?args[
 const data=path.resolve(option('--baseline-dist',option('--data-dir',path.join(root,'dist'))));
 let runtime=path.resolve(option('--runtime-dir',data));
 const output=path.resolve(option('--output',path.join(root,'qa/paint-depth-baseline')));
+const omitPrairieGround=args.includes('--omit-prairie-ground');
+const floorSegments=Number(option('--floor-segments',0));
+if(!Number.isInteger(floorSegments)||floorSegments<0||floorSegments>256)throw Error('--floor-segments must be an integer from 1 to 256, or omitted.');
+if(omitPrairieGround&&floorSegments)throw Error('Choose either floor omission or floor subdivision, not both.');
 const hash=bytes=>createHash('sha256').update(bytes).digest('hex');
 fs.mkdirSync(output,{recursive:true});
 if(runtime===path.join(root,'src')){
@@ -42,7 +46,17 @@ const [{createCityMaterials},{createBatching},{addStreets},{addRoadMarkings},{co
 ]);
 const scene=new THREE.Scene(),group=new THREE.Group();scene.add(group);
 const materials=createCityMaterials({group,dynamicLights:[],seed:1907});
-group.clear();
+// This opaque depth owner was accidentally omitted by the original fixture.
+// Retain the actual material, transform, dimensions and unsegmented geometry.
+const floor=group.children.find(object=>object.isMesh&&object.material.name==='Prairie ground');
+if(!floor)throw Error('The actual Prairie ground depth owner was not created.');
+const originalFloor={...floor.geometry.parameters};
+if(floorSegments){
+  floor.geometry.dispose();
+  floor.geometry=new THREE.PlaneGeometry(originalFloor.width,originalFloor.height,floorSegments,floorSegments);
+}
+floor.updateMatrixWorld(true);
+if(omitPrairieGround)group.remove(floor);
 const batching=createBatching({group,unit:new THREE.BoxGeometry(),chunkSize:1024,paintGeometry:materials.paintGeometry});
 const addPaint=(material,x,y,z,w,d,rot=0)=>{
   if(y<.1||x < -1500||x>1100||z<180||z>420)return;
@@ -68,11 +82,14 @@ scene.updateMatrixWorld(true);
 const objects=group.children.filter(object=>object.isMesh),programs=[],textures=new Map(),materialIds=new Map();
 const control=new THREE.Mesh(new THREE.BoxGeometry(2.8,1.5,3),materials.white);
 control.name='Ground-touching vehicle-size occluder control';control.position.set(-472.1,.89,294);control.updateMatrixWorld(true);objects.push(control);
-const manifest={method:'Actual MeshStandard programs, packed road triangles and Float32 instanced paint transforms. Emissive uniforms identify road/paint coverage; no replacement depth shader. Native GLES, no browser or performance claim.',
+const manifest={method:'Actual MeshStandard programs, Prairie ground, packed road triangles and Float32 instanced paint transforms. Emissive uniforms identify floor/road/paint coverage; no replacement depth shader. Native GLES, no browser or performance claim.',
   threeVersion,
+  prairieGround:{included:!omitPrairieGround,originalGeometry:originalFloor,preparedGeometry:floor.geometry.parameters,modelMatrix:floor.matrixWorld.toArray(),diagnosticOverride:omitPrairieGround?'omitted':floorSegments?'subdivided':null},
   textureScope:'Opaque diagnostic texture samples retain actual map/bump shader variants. Texture appearance and lighting are outside this depth-ID test; alpha-tested/displaced materials are rejected.',
   data,runtime,occluder:{min:[-473.5,.14,292.5],max:[-470.7,1.64,295.5]},paintHeight:.152,sourceHashes:{baseLayout:hash(layoutBytes),'geo/base-city.bin.gz':hash(fs.readFileSync(path.join(data,'geo/base-city.bin.gz')))},programs,materials:[],draws:[],views:[],textures:[]};
 for(const name of ['world/materials.js','world/paint-material.js','world/route.js','world/batching.js','world/streets.js','world/road-markings.js','app/renderer.js','atmosphere/sunlight.js'])if(fs.existsSync(path.join(runtime,name)))manifest.sourceHashes[name]=hash(fs.readFileSync(path.join(runtime,name)));
+for(const name of ['src/renderers/WebGLRenderer.js','src/renderers/webgl/WebGLState.js','src/renderers/webgl/WebGLPrograms.js'])manifest.sourceHashes['three/'+name]=hash(fs.readFileSync(path.join(threeRoot,name)));
+manifest.sourceHashes.diagnosticPreparer=hash(fs.readFileSync(fileURLToPath(import.meta.url)));
 function textureRecord(texture){
   if(!texture)return null;if(textures.has(texture.uuid))return textures.get(texture.uuid);
   const file=`texture-${textures.size}.rgba`,bytes=Buffer.from([255,255,255,255]);fs.writeFileSync(path.join(output,file),bytes);
@@ -89,7 +106,7 @@ for(const object of objects){
   if(material.alphaTest||material.alphaMap||material.displacementMap)throw Error('Depth-relevant texture appeared; this diagnostic needs its actual pixels.');
   if(!materialIds.has(material)){
     const id=manifest.materials.length;materialIds.set(material,id);
-    manifest.materials.push({id,name:material.name,role:object===control?'occluder':object.isInstancedMesh?'paint':'road',paint:object.isInstancedMesh,side:material.side,transparent:material.transparent,opacity:material.opacity,depthTest:material.depthTest,depthWrite:material.depthWrite,states:{},programs:{}});
+    manifest.materials.push({id,name:material.name,role:object===control?'occluder':object===floor?'floor':object.isInstancedMesh?'paint':'road',paint:object.isInstancedMesh,side:material.side,transparent:material.transparent,opacity:material.opacity,depthTest:material.depthTest,depthWrite:material.depthWrite,states:{},programs:{}});
   }
   const id=manifest.draws.length,geometry=object.geometry,index=geometry.index,count=index?.count||geometry.attributes.position.count;
   const values=new Float32Array(count*8);
@@ -102,10 +119,16 @@ for(const object of objects){
   if(object.isInstancedMesh){const bytes=Buffer.from(object.instanceMatrix.array.buffer);draw.instances={count:object.count,file:`instances-${id}.f32`,sha256:hash(bytes)};fs.writeFileSync(path.join(output,draw.instances.file),bytes);}
   manifest.draws.push(draw);
 }
-for(const reversed of [false,true]){
-  const mode=reversed?'reversed':'logarithmic';configureDepthOffsets(scene,reversed);
+// A reversed-capable renderer whose real WebGLState has been reset has neither
+// shader depth define. Its paint offsets remain inverted by initial setup.
+for(const {mode,reversed,logarithmic,offsetReversed} of [
+  {mode:'logarithmic',reversed:false,logarithmic:true,offsetReversed:false},
+  {mode:'reversed',reversed:true,logarithmic:false,offsetReversed:true},
+  {mode:'ordinary-after-reset',reversed:false,logarithmic:false,offsetReversed:true},
+]){
+  configureDepthOffsets(scene,offsetReversed);
   const gl={VERTEX_SHADER:35633,FRAGMENT_SHADER:35632,createProgram:()=>({shaders:[]}),createShader:kind=>({kind}),shaderSource:(shader,source)=>{shader.source=source;},compileShader(){},attachShader:(program,shader)=>program.shaders.push(shader),linkProgram(){},bindAttribLocation(){}};
-  const capabilities={reversedDepthBuffer:reversed,logarithmicDepthBuffer:!reversed,vertexTextures:true,precision:'highp',getMaxPrecision:v=>v};
+  const capabilities={reversedDepthBuffer:!logarithmic,logarithmicDepthBuffer:logarithmic,vertexTextures:true,precision:'highp',getMaxPrecision:v=>v};
   const renderer={getContext:()=>gl,getRenderTarget:()=>null,capabilities,outputColorSpace:THREE.SRGBColorSpace,toneMapping:THREE.ACESFilmicToneMapping,
     state:{buffers:{depth:{getReversed:()=>reversed}}},shadowMap:{enabled:false,type:THREE.PCFSoftShadowMap},debug:{checkShaderErrors:false}};
   const lights={directional:[],point:[],spot:[],spotLightMap:[],rectArea:[],hemi:[],directionalShadowMap:[],pointShadowMap:[],spotShadowMap:[],numSpotLightShadowsWithMaps:0,numLightProbes:0};
@@ -133,6 +156,14 @@ const views=[
   {id:'walker-orbit',eye:[-440,65,365],target:[-325,.14,290],near:.75,fov:44},
   {id:'reno-orbit-far',eye:[-1300,300,700],target:[-300,.14,295],near:.75,fov:44},
   {id:'reno-orbit-high',eye:[-500,800,900],target:[-200,.14,295],near:.75,fov:44},
+  // Production free-chase proportions: 10 m behind, 4.4 m above ground,
+  // looking 28 m ahead and 1.2 m above ground. These cross the visible stripes.
+  {id:'dewey-chase-near',eye:[-489,4.54,295.2],target:[-451,1.34,295.2],near:.5,fov:48},
+  {id:'dewey-chase-crossing',eye:[-479,4.54,295.2],target:[-441,1.34,295.2],near:.5,fov:48},
+  {id:'walker-chase-near',eye:[-348,4.54,295.2],target:[-310,1.34,295.2],near:.5,fov:48},
+  {id:'dewey-chase-reverse',eye:[-447,4.54,286],target:[-485,1.34,286],near:.5,fov:48},
+  {id:'dewey-close-orbit',eye:[-485,5,305],target:[-470,.14,290],near:.75,fov:48},
+  {id:'dewey-driver-near',eye:[-485,1.6,295.2],target:[-305,4.14,295.2],near:.25,fov:48},
 ];
 for(const view of views){
   const record={...view,far:7500,matrices:{}};

@@ -1,0 +1,77 @@
+{
+  "scope": "Native Mesa GLES production-shader diagnostic; not browser, complete scene, physical phone or FPS evidence. Current-source data uses the immutable v0.8.1 packed geometry. Final built-output verification follows separately.",
+  "reports": [
+    {
+      "name": "startup-reset-before",
+      "passed": false,
+      "cases": 56,
+      "programs": 15,
+      "totals": {
+        "expectedPaintPixels": 456402,
+        "lostPaintPixels": 428716,
+        "drawOrderChangedPixels": 2,
+        "occluderPaintOverlapPixels": 23470,
+        "occluderLeakPixels": 0
+      }
+    },
+    {
+      "name": "stale-camera-reset-before",
+      "passed": false,
+      "cases": 56,
+      "programs": 15,
+      "totals": {
+        "expectedPaintPixels": 456402,
+        "lostPaintPixels": 456402,
+        "drawOrderChangedPixels": 76130,
+        "occluderPaintOverlapPixels": 23470,
+        "occluderLeakPixels": 0
+      }
+    },
+    {
+      "name": "restored-state-original-bias",
+      "passed": false,
+      "cases": 84,
+      "programs": 15,
+      "totals": {
+        "expectedPaintPixels": 684603,
+        "lostPaintPixels": 0,
+        "drawOrderChangedPixels": 166,
+        "occluderPaintOverlapPixels": 35205,
+        "occluderLeakPixels": 162
+      }
+    },
+    {
+      "name": "current-source",
+      "passed": true,
+      "cases": 84,
+      "programs": 15,
+      "totals": {
+        "expectedPaintPixels": 684603,
+        "lostPaintPixels": 0,
+        "drawOrderChangedPixels": 166,
+        "groundSampleBoundaryOrderChangedPixels": 166,
+        "surfaceInteriorOrderChangedPixels": 0,
+        "occluderPaintOverlapPixels": 35205,
+        "occluderLeakPixels": 0
+      }
+    }
+  ],
+  "images": [
+    {
+      "file": "driver-before.png",
+      "sha256": "a0efd45609397385a53ff6847a8e364c82cc15706bfbdac9a8797703d4105e14"
+    },
+    {
+      "file": "driver-after.png",
+      "sha256": "2d39d0e929f5fc455e7c53bfb32baefcaeb3f490d2add421c897ca73780e9b18"
+    },
+    {
+      "file": "chase-before.png",
+      "sha256": "58ce1dc59c2099f170e9c37e687731f584dfc3fa6b03381d2f31719399173f5a"
+    },
+    {
+      "file": "chase-after.png",
+      "sha256": "d8c9203194acaaa315f9ccb00c95f34047c3b6067694c07de4bb64a24ae1812a"
+    }
+  ]
+}

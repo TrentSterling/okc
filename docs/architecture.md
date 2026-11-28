@@ -7,7 +7,7 @@ Prairie Prism remains a static Three.js application with native ES modules. The 
 | Location | Responsibility |
 | --- | --- |
 | `src/app.js` | Scene composition, simulation/frame loop, and driving orchestration |
-| `src/app/renderer.js` | WebGL startup, color output, reversed/logarithmic depth selection |
+| `src/app/renderer.js` | WebGL startup, color output, reversed/logarithmic depth selection and restoration after offscreen resets |
 | `src/app/camera.js`, `cockpit.js` | Chase/driver/orbit behavior, camera collision, dashboard geometry |
 | `src/app/controls.js`, `interface.js`, `status.js` | Input bindings, HUD updates, focus handling and feedback |
 | `src/app/setup.js` | Defaults and backward-compatible setup validation/import/export |

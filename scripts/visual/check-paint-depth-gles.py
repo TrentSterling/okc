@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Production MeshStandard road/paint depth, with native visibility controls.
+"""Production MeshStandard floor/road/paint depth, with native visibility controls.
 
 Actual prepared shaders and original Float32 geometry/matrices are retained.
 Emissive uniforms provide diagnostic IDs; no depth/vertex shader substitution.
@@ -21,6 +21,10 @@ parser.add_argument('--output',type=Path,required=True)
 parser.add_argument('--views',default='')
 parser.add_argument('--samples',default='0,4',help='Requested native sample counts; 0 means single sample.')
 parser.add_argument('--width',type=int,default=960)
+parser.add_argument('--depth-state',choices=['correct','reset-ordinary-camera','reset-stale-reversed-camera'],default='correct',
+                    help='Actual depth state, or an explicit negative control for a reversed renderer after resetState().')
+parser.add_argument('--paint-offset-factor',type=float,default=None,
+                    help='Diagnostic-only slope-factor override; production units and all other material state remain intact.')
 parser.add_argument('--record-only',action='store_true',help='Record a failing baseline without a nonzero exit status.')
 args=parser.parse_args();args.output.mkdir(parents=True,exist_ok=True)
 manifest_bytes=(args.input/'manifest.json').read_bytes()
@@ -51,6 +55,10 @@ def checked(file,expected):
 report={'method':__doc__,'sourceMethod':manifest['method'],'renderer':gl.description(),
         'inputManifestSha256':hashlib.sha256(manifest_bytes).hexdigest(),
         'geometryComparison':manifest.get('geometryComparison'),
+        'prairieGround':manifest.get('prairieGround'),'depthState':args.depth_state,
+        'materialStateOverride':None if args.paint_offset_factor is None else {'paintPolygonOffsetFactor':args.paint_offset_factor,'units':'unchanged'},
+        'orderBoundaryMethod':'Only MSAA changed pixels with no coverage in a true single-sample, depth-disabled raster of the identical near/far-clipped opaque ground geometry AND no paint-only coverage are reported separately as sample-boundary ambiguity. All surface-interior or paint changes remain failures. Raw order differences are retained.',
+        'diagnosticRunnerSha256':hashlib.sha256(Path(__file__).read_bytes()).hexdigest(),
         'textureScope':manifest.get('textureScope'),'sourceHashes':manifest['sourceHashes'],'programs':[],'results':[],'failures':[],'passed':False}
 programs={}
 for spec in manifest['programs']:
@@ -58,6 +66,8 @@ for spec in manifest['programs']:
     fragment=checked(spec['fragment'],spec['sha256']['fragment']).decode()
     if spec['mode']=='logarithmic' and '#define USE_LOGARITHMIC_DEPTH_BUFFER' not in fragment:
         raise RuntimeError('Production logarithmic fragment-depth path is absent: '+spec['name'])
+    if spec['mode']=='ordinary-after-reset' and ('#define USE_LOGARITHMIC_DEPTH_BUFFER' in fragment or '#define USE_REVERSED_DEPTH_BUFFER' in fragment):
+        raise RuntimeError('Reset-state control unexpectedly retains a depth shader define: '+spec['name'])
     handle,result=gl.compile_program(vertex,fragment,spec['name'])
     result.update(sha256=spec['sha256'],features=spec['features'])
     report['programs'].append(result)
@@ -137,6 +147,7 @@ def render(view,mode,selection='normal',reverse=False):
         spec=draw['spec'];material=manifest['materials'][spec['material']];role=material['role']
         if selection=='paint-only' and role!='paint':continue
         if selection=='occluder-only' and role!='occluder':continue
+        if selection=='ground-coverage' and role not in ['floor','road']:continue
         if selection in ['normal','paint-only'] and role=='occluder':continue
         program=programs[material['programs'][mode]];handle=program['handle'];gl.glUseProgram(handle)
         if handle not in draw['vaos']:
@@ -149,19 +160,21 @@ def render(view,mode,selection='normal',reverse=False):
                 for col in range(4):gl.glEnableVertexAttribArray(location+col);gl.glVertexAttribPointer(location+col,4,0x1406,0,64,P(col*16));gl.glVertexAttribDivisor(location+col,1)
             draw['vaos'][handle]=vao
         gl.glBindVertexArray(draw['vaos'][handle])
-        uniforms={**program['spec']['uniforms'],**view['matrices'][mode]['draws'][index],
-            'projectionMatrix':view['matrices'][mode]['projectionMatrix'],'viewMatrix':view['matrices'][mode]['viewMatrix'],
+        projection_mode=mode if mode!='ordinary-after-reset' else ('reversed' if args.depth_state=='reset-stale-reversed-camera' else 'logarithmic')
+        uniforms={**program['spec']['uniforms'],**view['matrices'][projection_mode]['draws'][index],
+            'projectionMatrix':view['matrices'][projection_mode]['projectionMatrix'],'viewMatrix':view['matrices'][projection_mode]['viewMatrix'],
             'modelMatrix':spec['modelMatrix'],'cameraPosition':view['eye'],'isOrthographic':False,'toneMappingExposure':1.08,
             'logDepthBufFC':2/math.log2(view['far']+1),'ambientLightColor':[0,0,0],
-            'emissive':{'road':[0,0,.3],'paint':[1,.65,0],'occluder':[0,1,0]}[role]}
+            'emissive':{'floor':[0,.04,0],'road':[0,0,.3],'paint':[1,.65,0],'occluder':[0,1,0]}[role]}
         unit=0
         for name,value in uniforms.items():unit=set_uniform(program,name,value,unit)
         if material['side']==2:gl.glDisable(0x0B44)
         else:gl.glEnable(0x0B44);gl.glCullFace(0x0404 if material['side']==1 else 0x0405)
-        gl.glDisable(0x0B71) if selection=='paint-only' else gl.glEnable(0x0B71)
+        gl.glDisable(0x0B71) if selection in ['paint-only','ground-coverage'] else gl.glEnable(0x0B71)
         gl.glDepthMask(int(material['depthWrite']))
         state=material['states'][mode]
-        if state['polygonOffset']:gl.glEnable(0x8037);gl.glPolygonOffset(state['factor'],state['units'])
+        factor=args.paint_offset_factor if role=='paint' and args.paint_offset_factor is not None else state['factor']
+        if state['polygonOffset']:gl.glEnable(0x8037);gl.glPolygonOffset(factor,state['units'])
         else:gl.glDisable(0x8037)
         if draw['instance']:gl.glDrawArraysInstanced(0x0004,0,spec['vertices'],spec['instances']['count'])
         else:gl.glDrawArrays(0x0004,0,spec['vertices'])
@@ -187,8 +200,26 @@ def behind_occluder(view):
         plane=(manifest['paintHeight']-eye[1])/directions[:,:,1]
     return (far>=near)&(near>0)&(plane>near+.02)
 
+def boundary_rays(view,mask):
+    """Independent camera-space evidence for the native coverage boundary."""
+    yy,xx=np.where(mask)
+    if not len(xx):return None
+    tangent=math.tan(math.radians(view['fov'])/2)
+    matrix=np.asarray(view['matrices']['logarithmic']['viewMatrix']).reshape(4,4).T
+    dy=((xx+.5)/width*2-1)*tangent*(width/height)*matrix[0,1]
+    dy+=(1-(yy+.5)/height*2)*tangent*matrix[1,1]-matrix[2,1]
+    def camera_depth(y):
+        with np.errstate(divide='ignore',invalid='ignore'):depth=(y-view['eye'][1])/dy
+        finite=depth[np.isfinite(depth)]
+        return {'min':float(finite.min()) if len(finite) else None,'max':float(finite.max()) if len(finite) else None,
+                'validNearFarCount':int(((depth>=view['near'])&(depth<=view['far'])).sum())}
+    return {'pixels':len(xx),'verticalDirectionMin':float(dy.min()),'verticalDirectionMax':float(dy.max()),
+            'ordinaryRoadPlaneAtY014':camera_depth(.14),'prairieGroundPlaneAtYMinus0055':camera_depth(-.055),
+            'near':view['near'],'far':view['far'],'note':'Plane-ray depths are supplemental; the gate uses actual native clipped geometry coverage, including elevated roads.'}
+
 maximum=I();gl.glGetIntegerv(0x8D57,C.byref(maximum));samples=[int(s) for s in args.samples.split(',') if int(s)<=maximum.value]
-for mode,depth_bits in [('logarithmic',24),('reversed',24),('reversed',32)]:
+configurations=[('logarithmic',24),('reversed',24),('reversed',32)] if args.depth_state=='correct' else [('ordinary-after-reset',24),('ordinary-after-reset',32)]
+for mode,depth_bits in configurations:
     for sample_count in samples:
         actual_samples=configure_target(mode,sample_count,depth_bits)
         for view in manifest['views']:
@@ -203,22 +234,43 @@ for mode,depth_bits in [('logarithmic',24),('reversed',24),('reversed',32)]:
             # ACES mixes pure green emission into a nonzero red channel. The
             # paint ID remains red-dominant; the occluder ID is green-dominant.
             leak=overlap&(with_control[:,:,0].astype(np.int16)>with_control[:,:,1].astype(np.int16)+5)
-            name=f"{view['id']}-{mode}{depth_bits}-msaa{actual_samples or 1}"
+            state_suffix='' if args.depth_state=='correct' else '-'+args.depth_state
+            name=f"{view['id']}-{mode}{depth_bits}-msaa{actual_samples or 1}{state_suffix}"
+            boundary=np.zeros_like(difference);center_reference=None
+            if difference.any() and actual_samples>1:
+                if configure_target(mode,0,depth_bits)!=0:raise RuntimeError('Pixel-center reference is not single-sample.')
+                center_reference=render(view,mode,'ground-coverage')
+                boundary=difference&~np.any(center_reference>0,axis=2)&~np.any(reference>0,axis=2)
+                if configure_target(mode,sample_count,depth_bits)!=actual_samples:raise RuntimeError('Restored multisample target differs.')
+                Image.fromarray(center_reference).save(args.output/(name+'-ground-center-coverage.png'))
+            interior_difference=difference&~boundary
             Image.fromarray(actual).save(args.output/(name+'.png'))
             if overlap.any():
                 Image.fromarray(with_control).save(args.output/(name+'-occluder.png'))
                 Image.fromarray(control).save(args.output/(name+'-occluder-only.png'))
             if lost.any():
                 marked=actual.copy();marked[lost]=[255,0,150];Image.fromarray(marked).save(args.output/(name+'-missing.png'))
+            if difference.any():
+                marked=actual.copy();marked[difference]=[255,0,150];Image.fromarray(marked).save(args.output/(name+'-order-difference.png'))
+                Image.fromarray(reverse).save(args.output/(name+'-reverse-order.png'))
+            if leak.any():
+                marked=with_control.copy();marked[leak]=[255,0,150];Image.fromarray(marked).save(args.output/(name+'-occluder-leak.png'))
+            def bounds(mask):
+                y,x=np.where(mask)
+                return None if not len(x) else [int(x.min()),int(y.min()),int(x.max()),int(y.max())]
             result={'view':view['id'],'mode':mode,'depthFormat':'DEPTH_COMPONENT24' if depth_bits==24 else 'DEPTH_COMPONENT32F','requestedSamples':sample_count,'samples':actual_samples or 1,
+                'depthState':args.depth_state,'projectionMode':mode if mode!='ordinary-after-reset' else ('reversed' if args.depth_state=='reset-stale-reversed-camera' else 'ordinary'),
                 'expectedPaintPixels':int(expected.sum()),'lostPaintPixels':int(lost.sum()),'lostPaintFraction':float(lost.sum()/max(1,expected.sum())),
                 'drawOrderChangedPixels':int(difference.sum()),'occluderPaintOverlapPixels':int(overlap.sum()),'occluderLeakPixels':int(leak.sum()),'image':name+'.png',
+                'groundSampleBoundaryOrderChangedPixels':int(boundary.sum()),'surfaceInteriorOrderChangedPixels':int(interior_difference.sum()),
+                'sampleBoundaryRayEvidence':boundary_rays(view,boundary),
+                'pixelBounds':{'lost':bounds(lost),'orderDifference':bounds(difference),'surfaceInteriorOrderDifference':bounds(interior_difference),'sampleBoundaryOrderDifference':bounds(boundary),'occluderLeak':bounds(leak)},
                 'imageSha256':hashlib.sha256((args.output/(name+'.png')).read_bytes()).hexdigest()}
             report['results'].append(result)
             if expected.sum()<10:report['failures'].append(name+': paint-only reference has too little visible coverage.')
-            if lost.any():report['failures'].append(name+': paint coverage lost against underlying road.')
+            if lost.any():report['failures'].append(name+': paint coverage lost against underlying ground depth owners.')
             if leak.any():report['failures'].append(name+': paint leaked through the ground-touching occluder.')
-            if difference.any():report['failures'].append(name+': road draw-order changed visible pixels.')
+            if interior_difference.any():report['failures'].append(name+': opaque ground draw-order changed surface-interior or paint pixels.')
             print(json.dumps(result),flush=True)
 if not any(item['occluderPaintOverlapPixels'] for item in report['results']):report['failures'].append('Occluder control did not overlap any paint pixels.')
 report['passed']=not report['failures'];(args.output/'report.json').write_text(json.dumps(report,indent=2)+'\n')
