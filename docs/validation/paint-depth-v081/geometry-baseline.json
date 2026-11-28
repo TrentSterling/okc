@@ -1,0 +1,210 @@
+{
+  "scope": "Production addStreets/addRoadMarkings/createBatching Float32 instance transforms and actual packed ground vertices, including chunk origins. No renderer, shader-depth or GPU-performance claim.",
+  "sourceHashes": {
+    "geo/base-city-layout.json": "075d398ea97106232cfa81d10081b1e97acac6a0e2b54f15b6ed7f48d7386ad1",
+    "geo/base-city.bin.gz": "003562a0fd85f95953980b7aedd14328447af69117fc5734726b64e1e263a539",
+    "geo/base-surfaces.json.gz": "0774decf8ac5d3d08934f5dc3656a369b737845dd7383d04fe33abd0d9fb400b",
+    "city-data.js": "7bed447725073616932b4778e1e4c4804138520018bb1838f6a4f8e3489604ba",
+    "world-surfaces.js": "5c5d310f60790809d410ed49d425b19f7c84d8ad13cbf5f2fab9589e6a797198",
+    "world/batching.js": "301cc04fc174559fc5a4cc5a75cda9725609e3dd41df55533cb72e2aaebbdecb",
+    "world/streets.js": "dfb9cc4ba5b77db5b738152c626a49fddc19cfe20942d182917921eb41e49e39",
+    "world/road-markings.js": "4ae9cd05f7596cd1328827a707ea91db8c2f77270b5e1e5b5b0caf6eeee328b1",
+    "world/route.js": "37d7014083f03a93b82e012fca26bdbf33ac72b68e359425c0caec5d9ffc573d",
+    "world/geometry.js": "be9d11942f144de061d794f6c0d1ec759c432ffcf1a275e2fe38b9bca97fe7f2",
+    "world/textures.js": "086473a462e5f13987adbcdc1c8309d64d8d0a63b98d3c7f748ac283dd7ab732",
+    "vendor/three.module.js": "c8211c69345d2e9949dc7a8ac969380497aa0600a5a8ac6a459c8cd02dd9cb8a",
+    "vendor/three.core.js": "eb077d2417f61d3e6d9264c317cabc4ea35769ed6b0ab533067292a550784c20"
+  },
+  "checkHashes": {
+    "scripts/check-paint-geometry.mjs": "2f90ee0d432ae88cb358bfd6b57ea16d6930e9a4758cb8db1c986cb6874ad121",
+    "scripts/check-paint-geometry.py": "395056e2aa22a7ad24fe4ba5121ec8e172e8093196abb095550067e1e99431f9"
+  },
+  "paintRectangles": 14391,
+  "paintBySource": {
+    "compiled": 7921,
+    "extra-road-markings": 6470
+  },
+  "paintByKind": {
+    "road": 9482,
+    "parking": 4909
+  },
+  "groundTriangles": 67757,
+  "paintGroundIntersectionsMeasured": 19968,
+  "groundHeightRangeM": {
+    "curb": [
+      0.28999999165534973,
+      0.28999999165534973
+    ],
+    "grass": [
+      0.02500000037252903,
+      0.02500000037252903
+    ],
+    "parking": [
+      0.03999999910593033,
+      0.03999999910593033
+    ],
+    "path": [
+      0.10499999672174454,
+      0.10499999672174454
+    ],
+    "paving": [
+      0.03999999910593033,
+      0.03999999910593033
+    ],
+    "road": [
+      0.14000000059604645,
+      0.14000000059604645
+    ],
+    "sidewalk": [
+      0.1420000046491623,
+      0.28999999165534973
+    ],
+    "water": [
+      0.07500000298023224,
+      0.07500000298023224
+    ]
+  },
+  "paintInstanceHeightsM": [
+    0.052000001072883606,
+    0.15199999511241913
+  ],
+  "paintToOwnedSurfaceGapM": [
+    0.01199999451637268,
+    0.012000001966953278
+  ],
+  "paintRoadCoplanarPairs": 0,
+  "paintPaintOverlap": {
+    "positivePairs": 1899,
+    "totalAreaM2": 0.0018648908713692302,
+    "pairsOver0_0001M2": 0,
+    "maxPairAreaM2": 0.0000053220357937523115,
+    "examples": [
+      {
+        "a": 8258,
+        "b": 8260,
+        "areaM2": 0.0000053220357937523115,
+        "colors": [
+          "yellow",
+          "yellow"
+        ],
+        "sources": [
+          "extra-road-markings",
+          "extra-road-markings"
+        ],
+        "center": [
+          -740.5861,
+          591.1399
+        ]
+      },
+      {
+        "a": 8275,
+        "b": 8277,
+        "areaM2": 0.0000053220357937523115,
+        "colors": [
+          "yellow",
+          "yellow"
+        ],
+        "sources": [
+          "extra-road-markings",
+          "extra-road-markings"
+        ],
+        "center": [
+          -740.8141,
+          623.1401
+        ]
+      },
+      {
+        "a": 8154,
+        "b": 8156,
+        "areaM2": 0.0000052791620076901406,
+        "colors": [
+          "yellow",
+          "yellow"
+        ],
+        "sources": [
+          "extra-road-markings",
+          "extra-road-markings"
+        ],
+        "center": [
+          -691.0801,
+          520.8875
+        ]
+      },
+      {
+        "a": 8143,
+        "b": 8145,
+        "areaM2": 0.00000527104721194407,
+        "colors": [
+          "yellow",
+          "yellow"
+        ],
+        "sources": [
+          "extra-road-markings",
+          "extra-road-markings"
+        ],
+        "center": [
+          -715.0798,
+          521.1744
+        ]
+      },
+      {
+        "a": 10757,
+        "b": 10759,
+        "areaM2": 0.000005213361921101748,
+        "colors": [
+          "yellow",
+          "yellow"
+        ],
+        "sources": [
+          "extra-road-markings",
+          "extra-road-markings"
+        ],
+        "center": [
+          -807.6755,
+          -368.7084
+        ]
+      },
+      {
+        "a": 8758,
+        "b": 8760,
+        "areaM2": 0.000005128876426221025,
+        "colors": [
+          "yellow",
+          "yellow"
+        ],
+        "sources": [
+          "extra-road-markings",
+          "extra-road-markings"
+        ],
+        "center": [
+          -538.6401,
+          408.2946
+        ]
+      }
+    ]
+  },
+  "paintOutsideActualSurface": {
+    "count": 0,
+    "totalAreaM2": 0,
+    "examples": []
+  },
+  "duplicateGroundUnderPaint": {
+    "count": 0,
+    "totalAreaM2": 0,
+    "examples": []
+  },
+  "otherGroundUnderPaint": {
+    "count": 0,
+    "examples": []
+  },
+  "thresholds": {
+    "paintPairAreaM2": 0.0001,
+    "coverageAreaM2": 1e-7,
+    "paintGapM": [
+      0.005,
+      0.025
+    ]
+  },
+  "failures": [],
+  "elapsedSeconds": 7.19
+}

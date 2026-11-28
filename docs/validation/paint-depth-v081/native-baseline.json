@@ -1,0 +1,980 @@
+{
+  "method": "Production MeshStandard road/paint depth, with native visibility controls.\n\nActual prepared shaders and original Float32 geometry/matrices are retained.\nEmissive uniforms provide diagnostic IDs; no depth/vertex shader substitution.\nThis is not a browser capture, complete PBR scene or performance measurement.\n",
+  "sourceMethod": "Actual MeshStandard programs, packed road triangles and Float32 instanced paint transforms. Emissive uniforms identify road/paint coverage; no replacement depth shader. Native GLES, no browser or performance claim.",
+  "renderer": {
+    "vendor": "Mesa",
+    "renderer": "llvmpipe (LLVM 19.1.7, 256 bits)",
+    "version": "OpenGL ES 3.2 Mesa 25.0.7-2+deb13u1"
+  },
+  "inputManifestSha256": "827944bb2d28c216d216dd2aa025317078c37e0ebac35e4a0f7172139dd0fbea",
+  "geometryComparison": null,
+  "textureScope": "Opaque diagnostic texture samples retain actual map/bump shader variants. Texture appearance and lighting are outside this depth-ID test; alpha-tested/displaced materials are rejected.",
+  "sourceHashes": {
+    "baseLayout": "075d398ea97106232cfa81d10081b1e97acac6a0e2b54f15b6ed7f48d7386ad1",
+    "geo/base-city.bin.gz": "003562a0fd85f95953980b7aedd14328447af69117fc5734726b64e1e263a539",
+    "world/materials.js": "d1daf5ce884bb86012f0a30d7a1c8b7e3c992712fdc43fd32d5e871ad06d4dd2",
+    "world/route.js": "37d7014083f03a93b82e012fca26bdbf33ac72b68e359425c0caec5d9ffc573d",
+    "world/batching.js": "301cc04fc174559fc5a4cc5a75cda9725609e3dd41df55533cb72e2aaebbdecb",
+    "world/streets.js": "dfb9cc4ba5b77db5b738152c626a49fddc19cfe20942d182917921eb41e49e39",
+    "world/road-markings.js": "4ae9cd05f7596cd1328827a707ea91db8c2f77270b5e1e5b5b0caf6eeee328b1",
+    "app/renderer.js": "148815cbe6a21ee063d4150f9c835a1c26ebf5c439bc92d01849280c9afa1848",
+    "atmosphere/sunlight.js": "71eb3bff687afea7e2004d70b0249386205f92a7b040a535afe989d590acecdb"
+  },
+  "programs": [
+    {
+      "name": "paint-0-logarithmic",
+      "stages": [
+        {
+          "stage": "vertex",
+          "compiled": true,
+          "log": ""
+        },
+        {
+          "stage": "fragment",
+          "compiled": true,
+          "log": ""
+        }
+      ],
+      "linked": true,
+      "linkLog": "",
+      "sha256": {
+        "vertex": "057d0a84f74f309df224b6655001928feb042ce14480d08e3b2f4299c6e03d62",
+        "fragment": "d3ac7597190538f75de90490008fdea933c8664ba034b8c74f8a937cfad14a26"
+      },
+      "features": {
+        "instancing": true,
+        "logarithmicDepthBuffer": true,
+        "reversedDepthBuffer": false,
+        "map": false,
+        "bumpMap": false
+      }
+    },
+    {
+      "name": "paint-1-logarithmic",
+      "stages": [
+        {
+          "stage": "vertex",
+          "compiled": true,
+          "log": ""
+        },
+        {
+          "stage": "fragment",
+          "compiled": true,
+          "log": ""
+        }
+      ],
+      "linked": true,
+      "linkLog": "",
+      "sha256": {
+        "vertex": "5f2cba3d40febb57c21899fa5aba38f73c9fb3073115063d87935a20f096d369",
+        "fragment": "0bcb1d9e61372ed3be6567e88ec9a83f25d9fb5967b67de6232597fef3277a27"
+      },
+      "features": {
+        "instancing": true,
+        "logarithmicDepthBuffer": true,
+        "reversedDepthBuffer": false,
+        "map": false,
+        "bumpMap": false
+      }
+    },
+    {
+      "name": "road-2-logarithmic",
+      "stages": [
+        {
+          "stage": "vertex",
+          "compiled": true,
+          "log": ""
+        },
+        {
+          "stage": "fragment",
+          "compiled": true,
+          "log": ""
+        }
+      ],
+      "linked": true,
+      "linkLog": "",
+      "sha256": {
+        "vertex": "9dcb4ad648509efef785354ccd3d8c32108448496c11ea8167fa315a701e87a2",
+        "fragment": "7d64b198f8e1ce43d6e42eadee9cbf2636ec2bc41c4903475166755f0f783de8"
+      },
+      "features": {
+        "instancing": false,
+        "logarithmicDepthBuffer": true,
+        "reversedDepthBuffer": false,
+        "map": true,
+        "bumpMap": true
+      }
+    },
+    {
+      "name": "occluder-3-logarithmic",
+      "stages": [
+        {
+          "stage": "vertex",
+          "compiled": true,
+          "log": ""
+        },
+        {
+          "stage": "fragment",
+          "compiled": true,
+          "log": ""
+        }
+      ],
+      "linked": true,
+      "linkLog": "",
+      "sha256": {
+        "vertex": "7c0fc7205f54fc15bf827edb2dfe4c6d3d608a87fdf3baebe8c00472679fca6e",
+        "fragment": "37914b33b4e210c3528fa9d377fae35a7801b544abcc296e9ae3840d0ff0bf41"
+      },
+      "features": {
+        "instancing": false,
+        "logarithmicDepthBuffer": true,
+        "reversedDepthBuffer": false,
+        "map": false,
+        "bumpMap": false
+      }
+    },
+    {
+      "name": "paint-0-reversed",
+      "stages": [
+        {
+          "stage": "vertex",
+          "compiled": true,
+          "log": ""
+        },
+        {
+          "stage": "fragment",
+          "compiled": true,
+          "log": ""
+        }
+      ],
+      "linked": true,
+      "linkLog": "",
+      "sha256": {
+        "vertex": "c2f20703aea46498d48c0408a1a42ccf974cb7a76f2a7052991597c54610f8c8",
+        "fragment": "8e18af1f8d53c4388ba9e2c39001d738456d3c1a64105ee1e362bac1a2e46b0e"
+      },
+      "features": {
+        "instancing": true,
+        "logarithmicDepthBuffer": false,
+        "reversedDepthBuffer": true,
+        "map": false,
+        "bumpMap": false
+      }
+    },
+    {
+      "name": "paint-1-reversed",
+      "stages": [
+        {
+          "stage": "vertex",
+          "compiled": true,
+          "log": ""
+        },
+        {
+          "stage": "fragment",
+          "compiled": true,
+          "log": ""
+        }
+      ],
+      "linked": true,
+      "linkLog": "",
+      "sha256": {
+        "vertex": "e2b72f42ffb895e64be3136115e031b14ecdd62dd930fbf56a025d546dd226eb",
+        "fragment": "870de46b8e60fdfcfff10fcca8479aaa50262f5e49f6c7cf662f631da72cb76b"
+      },
+      "features": {
+        "instancing": true,
+        "logarithmicDepthBuffer": false,
+        "reversedDepthBuffer": true,
+        "map": false,
+        "bumpMap": false
+      }
+    },
+    {
+      "name": "road-2-reversed",
+      "stages": [
+        {
+          "stage": "vertex",
+          "compiled": true,
+          "log": ""
+        },
+        {
+          "stage": "fragment",
+          "compiled": true,
+          "log": ""
+        }
+      ],
+      "linked": true,
+      "linkLog": "",
+      "sha256": {
+        "vertex": "1b4e60be3b57cad2c101a189ee2ebb512c2f7030fc1f4827b7ac37927f550706",
+        "fragment": "9150a324a00ecf65ce92487360ca8f7144696aab5ef6ce724d3622be10937538"
+      },
+      "features": {
+        "instancing": false,
+        "logarithmicDepthBuffer": false,
+        "reversedDepthBuffer": true,
+        "map": true,
+        "bumpMap": true
+      }
+    },
+    {
+      "name": "occluder-3-reversed",
+      "stages": [
+        {
+          "stage": "vertex",
+          "compiled": true,
+          "log": ""
+        },
+        {
+          "stage": "fragment",
+          "compiled": true,
+          "log": ""
+        }
+      ],
+      "linked": true,
+      "linkLog": "",
+      "sha256": {
+        "vertex": "b0c6211dea604781b74053d9103388df3c0d77d52b493d4fdd84fbfcf70b5ad6",
+        "fragment": "733782588578cad3c6ae7f881e9a38c8b28898ffe8927eadfee2267dd50a04a2"
+      },
+      "features": {
+        "instancing": false,
+        "logarithmicDepthBuffer": false,
+        "reversedDepthBuffer": true,
+        "map": false,
+        "bumpMap": false
+      }
+    }
+  ],
+  "results": [
+    {
+      "view": "dewey-driver",
+      "mode": "logarithmic",
+      "depthFormat": "DEPTH_COMPONENT24",
+      "requestedSamples": 0,
+      "samples": 1,
+      "expectedPaintPixels": 4255,
+      "lostPaintPixels": 0,
+      "lostPaintFraction": 0.0,
+      "drawOrderChangedPixels": 0,
+      "occluderPaintOverlapPixels": 7,
+      "occluderLeakPixels": 0,
+      "image": "dewey-driver-logarithmic24-msaa1.png",
+      "imageSha256": "651fce9f614c2616f9efb3ebbee9758463517095dc8f705e1c95b4a6d2410b3a"
+    },
+    {
+      "view": "walker-driver",
+      "mode": "logarithmic",
+      "depthFormat": "DEPTH_COMPONENT24",
+      "requestedSamples": 0,
+      "samples": 1,
+      "expectedPaintPixels": 4113,
+      "lostPaintPixels": 0,
+      "lostPaintFraction": 0.0,
+      "drawOrderChangedPixels": 0,
+      "occluderPaintOverlapPixels": 0,
+      "occluderLeakPixels": 0,
+      "image": "walker-driver-logarithmic24-msaa1.png",
+      "imageSha256": "2f9390948208afa8926b28c3a13d43cb2c6d97a5ef85308c1c70e5da27cdcfe1"
+    },
+    {
+      "view": "reno-chase",
+      "mode": "logarithmic",
+      "depthFormat": "DEPTH_COMPONENT24",
+      "requestedSamples": 0,
+      "samples": 1,
+      "expectedPaintPixels": 3220,
+      "lostPaintPixels": 0,
+      "lostPaintFraction": 0.0,
+      "drawOrderChangedPixels": 0,
+      "occluderPaintOverlapPixels": 0,
+      "occluderLeakPixels": 0,
+      "image": "reno-chase-logarithmic24-msaa1.png",
+      "imageSha256": "8eb1d6486e5a80d620d27efa64264027a55ea3214cb7defe44b295a8bd4f9142"
+    },
+    {
+      "view": "reno-distant",
+      "mode": "logarithmic",
+      "depthFormat": "DEPTH_COMPONENT24",
+      "requestedSamples": 0,
+      "samples": 1,
+      "expectedPaintPixels": 3925,
+      "lostPaintPixels": 0,
+      "lostPaintFraction": 0.0,
+      "drawOrderChangedPixels": 0,
+      "occluderPaintOverlapPixels": 0,
+      "occluderLeakPixels": 0,
+      "image": "reno-distant-logarithmic24-msaa1.png",
+      "imageSha256": "ebea674b718007e1be74859ec7c99f80a66e628dc4f4edce9de0c46131376754"
+    },
+    {
+      "view": "reno-grazing",
+      "mode": "logarithmic",
+      "depthFormat": "DEPTH_COMPONENT24",
+      "requestedSamples": 0,
+      "samples": 1,
+      "expectedPaintPixels": 571,
+      "lostPaintPixels": 0,
+      "lostPaintFraction": 0.0,
+      "drawOrderChangedPixels": 0,
+      "occluderPaintOverlapPixels": 0,
+      "occluderLeakPixels": 0,
+      "image": "reno-grazing-logarithmic24-msaa1.png",
+      "imageSha256": "497aed4c8f3a5f8b1cdf1be23b49d6d80b87b73e5d64f1c8a24de7e11e068438"
+    },
+    {
+      "view": "walker-orbit",
+      "mode": "logarithmic",
+      "depthFormat": "DEPTH_COMPONENT24",
+      "requestedSamples": 0,
+      "samples": 1,
+      "expectedPaintPixels": 2005,
+      "lostPaintPixels": 1,
+      "lostPaintFraction": 0.0004987531172069825,
+      "drawOrderChangedPixels": 0,
+      "occluderPaintOverlapPixels": 0,
+      "occluderLeakPixels": 0,
+      "image": "walker-orbit-logarithmic24-msaa1.png",
+      "imageSha256": "ad494950c2c29f3b4d487aea17981cafacc8faafeb345f2014c87d08dca6f427"
+    },
+    {
+      "view": "reno-orbit-far",
+      "mode": "logarithmic",
+      "depthFormat": "DEPTH_COMPONENT24",
+      "requestedSamples": 0,
+      "samples": 1,
+      "expectedPaintPixels": 283,
+      "lostPaintPixels": 4,
+      "lostPaintFraction": 0.014134275618374558,
+      "drawOrderChangedPixels": 0,
+      "occluderPaintOverlapPixels": 0,
+      "occluderLeakPixels": 0,
+      "image": "reno-orbit-far-logarithmic24-msaa1.png",
+      "imageSha256": "51c3dcf9f2389561153dc6459c7641cc4b0fe9de4502a6eff7c044c00b34dee0"
+    },
+    {
+      "view": "reno-orbit-high",
+      "mode": "logarithmic",
+      "depthFormat": "DEPTH_COMPONENT24",
+      "requestedSamples": 0,
+      "samples": 1,
+      "expectedPaintPixels": 514,
+      "lostPaintPixels": 1,
+      "lostPaintFraction": 0.0019455252918287938,
+      "drawOrderChangedPixels": 0,
+      "occluderPaintOverlapPixels": 0,
+      "occluderLeakPixels": 0,
+      "image": "reno-orbit-high-logarithmic24-msaa1.png",
+      "imageSha256": "b46dd1b97f057897f1eb3a381b21fead62ab30805758b4c1d7864fd898a3c2d0"
+    },
+    {
+      "view": "dewey-driver",
+      "mode": "logarithmic",
+      "depthFormat": "DEPTH_COMPONENT24",
+      "requestedSamples": 4,
+      "samples": 4,
+      "expectedPaintPixels": 5693,
+      "lostPaintPixels": 0,
+      "lostPaintFraction": 0.0,
+      "drawOrderChangedPixels": 0,
+      "occluderPaintOverlapPixels": 10,
+      "occluderLeakPixels": 0,
+      "image": "dewey-driver-logarithmic24-msaa4.png",
+      "imageSha256": "9541a6bf42c151d0993310776d2863570c959b1539080e63a197867599441f43"
+    },
+    {
+      "view": "walker-driver",
+      "mode": "logarithmic",
+      "depthFormat": "DEPTH_COMPONENT24",
+      "requestedSamples": 4,
+      "samples": 4,
+      "expectedPaintPixels": 6302,
+      "lostPaintPixels": 0,
+      "lostPaintFraction": 0.0,
+      "drawOrderChangedPixels": 0,
+      "occluderPaintOverlapPixels": 0,
+      "occluderLeakPixels": 0,
+      "image": "walker-driver-logarithmic24-msaa4.png",
+      "imageSha256": "b37fe4ff46bf41c04e16f33f3fb45c886a74d94123b914c946327279ccc50541"
+    },
+    {
+      "view": "reno-chase",
+      "mode": "logarithmic",
+      "depthFormat": "DEPTH_COMPONENT24",
+      "requestedSamples": 4,
+      "samples": 4,
+      "expectedPaintPixels": 4541,
+      "lostPaintPixels": 0,
+      "lostPaintFraction": 0.0,
+      "drawOrderChangedPixels": 0,
+      "occluderPaintOverlapPixels": 0,
+      "occluderLeakPixels": 0,
+      "image": "reno-chase-logarithmic24-msaa4.png",
+      "imageSha256": "88056228c6249471f22b3254f935c606de5f2ed4d7245ab533b8b0faabb0b9bb"
+    },
+    {
+      "view": "reno-distant",
+      "mode": "logarithmic",
+      "depthFormat": "DEPTH_COMPONENT24",
+      "requestedSamples": 4,
+      "samples": 4,
+      "expectedPaintPixels": 5363,
+      "lostPaintPixels": 0,
+      "lostPaintFraction": 0.0,
+      "drawOrderChangedPixels": 0,
+      "occluderPaintOverlapPixels": 0,
+      "occluderLeakPixels": 0,
+      "image": "reno-distant-logarithmic24-msaa4.png",
+      "imageSha256": "1ca932f385a13a61d46098d4b837c27af800523c35dbf26423d961cd87b82277"
+    },
+    {
+      "view": "reno-grazing",
+      "mode": "logarithmic",
+      "depthFormat": "DEPTH_COMPONENT24",
+      "requestedSamples": 4,
+      "samples": 4,
+      "expectedPaintPixels": 1524,
+      "lostPaintPixels": 0,
+      "lostPaintFraction": 0.0,
+      "drawOrderChangedPixels": 0,
+      "occluderPaintOverlapPixels": 0,
+      "occluderLeakPixels": 0,
+      "image": "reno-grazing-logarithmic24-msaa4.png",
+      "imageSha256": "3a31a1153c0db280a036ea7d65acd407817f846f798a3e037554e5fe4e213096"
+    },
+    {
+      "view": "walker-orbit",
+      "mode": "logarithmic",
+      "depthFormat": "DEPTH_COMPONENT24",
+      "requestedSamples": 4,
+      "samples": 4,
+      "expectedPaintPixels": 4761,
+      "lostPaintPixels": 1,
+      "lostPaintFraction": 0.00021003990758244065,
+      "drawOrderChangedPixels": 0,
+      "occluderPaintOverlapPixels": 0,
+      "occluderLeakPixels": 0,
+      "image": "walker-orbit-logarithmic24-msaa4.png",
+      "imageSha256": "359d758e0f216491111b1a5071b3b50b50348c62746898a4d17368ce5bbcdd68"
+    },
+    {
+      "view": "reno-orbit-far",
+      "mode": "logarithmic",
+      "depthFormat": "DEPTH_COMPONENT24",
+      "requestedSamples": 4,
+      "samples": 4,
+      "expectedPaintPixels": 976,
+      "lostPaintPixels": 14,
+      "lostPaintFraction": 0.014344262295081968,
+      "drawOrderChangedPixels": 0,
+      "occluderPaintOverlapPixels": 0,
+      "occluderLeakPixels": 0,
+      "image": "reno-orbit-far-logarithmic24-msaa4.png",
+      "imageSha256": "8d98e663f831906ac86f6635989daff0783a157d0124065ed79d2cfe02dba611"
+    },
+    {
+      "view": "reno-orbit-high",
+      "mode": "logarithmic",
+      "depthFormat": "DEPTH_COMPONENT24",
+      "requestedSamples": 4,
+      "samples": 4,
+      "expectedPaintPixels": 1596,
+      "lostPaintPixels": 1,
+      "lostPaintFraction": 0.0006265664160401002,
+      "drawOrderChangedPixels": 0,
+      "occluderPaintOverlapPixels": 0,
+      "occluderLeakPixels": 0,
+      "image": "reno-orbit-high-logarithmic24-msaa4.png",
+      "imageSha256": "631a715ca2d164ccc9a41f77389c2fc79c51e330d28005a9f6ea7afa25d70743"
+    },
+    {
+      "view": "dewey-driver",
+      "mode": "reversed",
+      "depthFormat": "DEPTH_COMPONENT24",
+      "requestedSamples": 0,
+      "samples": 1,
+      "expectedPaintPixels": 4255,
+      "lostPaintPixels": 0,
+      "lostPaintFraction": 0.0,
+      "drawOrderChangedPixels": 0,
+      "occluderPaintOverlapPixels": 7,
+      "occluderLeakPixels": 0,
+      "image": "dewey-driver-reversed24-msaa1.png",
+      "imageSha256": "651fce9f614c2616f9efb3ebbee9758463517095dc8f705e1c95b4a6d2410b3a"
+    },
+    {
+      "view": "walker-driver",
+      "mode": "reversed",
+      "depthFormat": "DEPTH_COMPONENT24",
+      "requestedSamples": 0,
+      "samples": 1,
+      "expectedPaintPixels": 4113,
+      "lostPaintPixels": 0,
+      "lostPaintFraction": 0.0,
+      "drawOrderChangedPixels": 0,
+      "occluderPaintOverlapPixels": 0,
+      "occluderLeakPixels": 0,
+      "image": "walker-driver-reversed24-msaa1.png",
+      "imageSha256": "2f9390948208afa8926b28c3a13d43cb2c6d97a5ef85308c1c70e5da27cdcfe1"
+    },
+    {
+      "view": "reno-chase",
+      "mode": "reversed",
+      "depthFormat": "DEPTH_COMPONENT24",
+      "requestedSamples": 0,
+      "samples": 1,
+      "expectedPaintPixels": 3220,
+      "lostPaintPixels": 0,
+      "lostPaintFraction": 0.0,
+      "drawOrderChangedPixels": 0,
+      "occluderPaintOverlapPixels": 0,
+      "occluderLeakPixels": 0,
+      "image": "reno-chase-reversed24-msaa1.png",
+      "imageSha256": "8eb1d6486e5a80d620d27efa64264027a55ea3214cb7defe44b295a8bd4f9142"
+    },
+    {
+      "view": "reno-distant",
+      "mode": "reversed",
+      "depthFormat": "DEPTH_COMPONENT24",
+      "requestedSamples": 0,
+      "samples": 1,
+      "expectedPaintPixels": 3925,
+      "lostPaintPixels": 0,
+      "lostPaintFraction": 0.0,
+      "drawOrderChangedPixels": 0,
+      "occluderPaintOverlapPixels": 0,
+      "occluderLeakPixels": 0,
+      "image": "reno-distant-reversed24-msaa1.png",
+      "imageSha256": "ebea674b718007e1be74859ec7c99f80a66e628dc4f4edce9de0c46131376754"
+    },
+    {
+      "view": "reno-grazing",
+      "mode": "reversed",
+      "depthFormat": "DEPTH_COMPONENT24",
+      "requestedSamples": 0,
+      "samples": 1,
+      "expectedPaintPixels": 571,
+      "lostPaintPixels": 0,
+      "lostPaintFraction": 0.0,
+      "drawOrderChangedPixels": 0,
+      "occluderPaintOverlapPixels": 0,
+      "occluderLeakPixels": 0,
+      "image": "reno-grazing-reversed24-msaa1.png",
+      "imageSha256": "497aed4c8f3a5f8b1cdf1be23b49d6d80b87b73e5d64f1c8a24de7e11e068438"
+    },
+    {
+      "view": "walker-orbit",
+      "mode": "reversed",
+      "depthFormat": "DEPTH_COMPONENT24",
+      "requestedSamples": 0,
+      "samples": 1,
+      "expectedPaintPixels": 2005,
+      "lostPaintPixels": 0,
+      "lostPaintFraction": 0.0,
+      "drawOrderChangedPixels": 0,
+      "occluderPaintOverlapPixels": 0,
+      "occluderLeakPixels": 0,
+      "image": "walker-orbit-reversed24-msaa1.png",
+      "imageSha256": "14a728d9fd20ee5bcd37d744c97d8c16f777ce5186c384947b35bd35953b13de"
+    },
+    {
+      "view": "reno-orbit-far",
+      "mode": "reversed",
+      "depthFormat": "DEPTH_COMPONENT24",
+      "requestedSamples": 0,
+      "samples": 1,
+      "expectedPaintPixels": 283,
+      "lostPaintPixels": 0,
+      "lostPaintFraction": 0.0,
+      "drawOrderChangedPixels": 0,
+      "occluderPaintOverlapPixels": 0,
+      "occluderLeakPixels": 0,
+      "image": "reno-orbit-far-reversed24-msaa1.png",
+      "imageSha256": "86839705b959e29908d8676f15a24cef557ad2721e8fff12cdd2ffc66772669c"
+    },
+    {
+      "view": "reno-orbit-high",
+      "mode": "reversed",
+      "depthFormat": "DEPTH_COMPONENT24",
+      "requestedSamples": 0,
+      "samples": 1,
+      "expectedPaintPixels": 514,
+      "lostPaintPixels": 0,
+      "lostPaintFraction": 0.0,
+      "drawOrderChangedPixels": 0,
+      "occluderPaintOverlapPixels": 0,
+      "occluderLeakPixels": 0,
+      "image": "reno-orbit-high-reversed24-msaa1.png",
+      "imageSha256": "ff0f8246be23ab064371dea5d907f6b824b0b217db288707fd7a7ed9f35326c7"
+    },
+    {
+      "view": "dewey-driver",
+      "mode": "reversed",
+      "depthFormat": "DEPTH_COMPONENT24",
+      "requestedSamples": 4,
+      "samples": 4,
+      "expectedPaintPixels": 5693,
+      "lostPaintPixels": 0,
+      "lostPaintFraction": 0.0,
+      "drawOrderChangedPixels": 0,
+      "occluderPaintOverlapPixels": 10,
+      "occluderLeakPixels": 0,
+      "image": "dewey-driver-reversed24-msaa4.png",
+      "imageSha256": "9541a6bf42c151d0993310776d2863570c959b1539080e63a197867599441f43"
+    },
+    {
+      "view": "walker-driver",
+      "mode": "reversed",
+      "depthFormat": "DEPTH_COMPONENT24",
+      "requestedSamples": 4,
+      "samples": 4,
+      "expectedPaintPixels": 6302,
+      "lostPaintPixels": 0,
+      "lostPaintFraction": 0.0,
+      "drawOrderChangedPixels": 0,
+      "occluderPaintOverlapPixels": 0,
+      "occluderLeakPixels": 0,
+      "image": "walker-driver-reversed24-msaa4.png",
+      "imageSha256": "b37fe4ff46bf41c04e16f33f3fb45c886a74d94123b914c946327279ccc50541"
+    },
+    {
+      "view": "reno-chase",
+      "mode": "reversed",
+      "depthFormat": "DEPTH_COMPONENT24",
+      "requestedSamples": 4,
+      "samples": 4,
+      "expectedPaintPixels": 4541,
+      "lostPaintPixels": 0,
+      "lostPaintFraction": 0.0,
+      "drawOrderChangedPixels": 0,
+      "occluderPaintOverlapPixels": 0,
+      "occluderLeakPixels": 0,
+      "image": "reno-chase-reversed24-msaa4.png",
+      "imageSha256": "88056228c6249471f22b3254f935c606de5f2ed4d7245ab533b8b0faabb0b9bb"
+    },
+    {
+      "view": "reno-distant",
+      "mode": "reversed",
+      "depthFormat": "DEPTH_COMPONENT24",
+      "requestedSamples": 4,
+      "samples": 4,
+      "expectedPaintPixels": 5363,
+      "lostPaintPixels": 0,
+      "lostPaintFraction": 0.0,
+      "drawOrderChangedPixels": 0,
+      "occluderPaintOverlapPixels": 0,
+      "occluderLeakPixels": 0,
+      "image": "reno-distant-reversed24-msaa4.png",
+      "imageSha256": "1ca932f385a13a61d46098d4b837c27af800523c35dbf26423d961cd87b82277"
+    },
+    {
+      "view": "reno-grazing",
+      "mode": "reversed",
+      "depthFormat": "DEPTH_COMPONENT24",
+      "requestedSamples": 4,
+      "samples": 4,
+      "expectedPaintPixels": 1524,
+      "lostPaintPixels": 0,
+      "lostPaintFraction": 0.0,
+      "drawOrderChangedPixels": 0,
+      "occluderPaintOverlapPixels": 0,
+      "occluderLeakPixels": 0,
+      "image": "reno-grazing-reversed24-msaa4.png",
+      "imageSha256": "3a31a1153c0db280a036ea7d65acd407817f846f798a3e037554e5fe4e213096"
+    },
+    {
+      "view": "walker-orbit",
+      "mode": "reversed",
+      "depthFormat": "DEPTH_COMPONENT24",
+      "requestedSamples": 4,
+      "samples": 4,
+      "expectedPaintPixels": 4761,
+      "lostPaintPixels": 0,
+      "lostPaintFraction": 0.0,
+      "drawOrderChangedPixels": 0,
+      "occluderPaintOverlapPixels": 0,
+      "occluderLeakPixels": 0,
+      "image": "walker-orbit-reversed24-msaa4.png",
+      "imageSha256": "c27fadf08bab05e8a9916928d2c766a37773c99520ec9952b491fd7b93823aa4"
+    },
+    {
+      "view": "reno-orbit-far",
+      "mode": "reversed",
+      "depthFormat": "DEPTH_COMPONENT24",
+      "requestedSamples": 4,
+      "samples": 4,
+      "expectedPaintPixels": 976,
+      "lostPaintPixels": 0,
+      "lostPaintFraction": 0.0,
+      "drawOrderChangedPixels": 0,
+      "occluderPaintOverlapPixels": 0,
+      "occluderLeakPixels": 0,
+      "image": "reno-orbit-far-reversed24-msaa4.png",
+      "imageSha256": "a5ed7fbb397010d4f1ba9f8dc2d5c96919ac3da950e3894e26c7e020d5b296b1"
+    },
+    {
+      "view": "reno-orbit-high",
+      "mode": "reversed",
+      "depthFormat": "DEPTH_COMPONENT24",
+      "requestedSamples": 4,
+      "samples": 4,
+      "expectedPaintPixels": 1596,
+      "lostPaintPixels": 0,
+      "lostPaintFraction": 0.0,
+      "drawOrderChangedPixels": 0,
+      "occluderPaintOverlapPixels": 0,
+      "occluderLeakPixels": 0,
+      "image": "reno-orbit-high-reversed24-msaa4.png",
+      "imageSha256": "e45f43fac772507780a20f59107a2c92c8bd0488449b4c8cb6bc6ab7e1d42566"
+    },
+    {
+      "view": "dewey-driver",
+      "mode": "reversed",
+      "depthFormat": "DEPTH_COMPONENT32F",
+      "requestedSamples": 0,
+      "samples": 1,
+      "expectedPaintPixels": 4255,
+      "lostPaintPixels": 0,
+      "lostPaintFraction": 0.0,
+      "drawOrderChangedPixels": 0,
+      "occluderPaintOverlapPixels": 7,
+      "occluderLeakPixels": 0,
+      "image": "dewey-driver-reversed32-msaa1.png",
+      "imageSha256": "651fce9f614c2616f9efb3ebbee9758463517095dc8f705e1c95b4a6d2410b3a"
+    },
+    {
+      "view": "walker-driver",
+      "mode": "reversed",
+      "depthFormat": "DEPTH_COMPONENT32F",
+      "requestedSamples": 0,
+      "samples": 1,
+      "expectedPaintPixels": 4113,
+      "lostPaintPixels": 0,
+      "lostPaintFraction": 0.0,
+      "drawOrderChangedPixels": 0,
+      "occluderPaintOverlapPixels": 0,
+      "occluderLeakPixels": 0,
+      "image": "walker-driver-reversed32-msaa1.png",
+      "imageSha256": "2f9390948208afa8926b28c3a13d43cb2c6d97a5ef85308c1c70e5da27cdcfe1"
+    },
+    {
+      "view": "reno-chase",
+      "mode": "reversed",
+      "depthFormat": "DEPTH_COMPONENT32F",
+      "requestedSamples": 0,
+      "samples": 1,
+      "expectedPaintPixels": 3220,
+      "lostPaintPixels": 0,
+      "lostPaintFraction": 0.0,
+      "drawOrderChangedPixels": 0,
+      "occluderPaintOverlapPixels": 0,
+      "occluderLeakPixels": 0,
+      "image": "reno-chase-reversed32-msaa1.png",
+      "imageSha256": "8eb1d6486e5a80d620d27efa64264027a55ea3214cb7defe44b295a8bd4f9142"
+    },
+    {
+      "view": "reno-distant",
+      "mode": "reversed",
+      "depthFormat": "DEPTH_COMPONENT32F",
+      "requestedSamples": 0,
+      "samples": 1,
+      "expectedPaintPixels": 3925,
+      "lostPaintPixels": 0,
+      "lostPaintFraction": 0.0,
+      "drawOrderChangedPixels": 0,
+      "occluderPaintOverlapPixels": 0,
+      "occluderLeakPixels": 0,
+      "image": "reno-distant-reversed32-msaa1.png",
+      "imageSha256": "ebea674b718007e1be74859ec7c99f80a66e628dc4f4edce9de0c46131376754"
+    },
+    {
+      "view": "reno-grazing",
+      "mode": "reversed",
+      "depthFormat": "DEPTH_COMPONENT32F",
+      "requestedSamples": 0,
+      "samples": 1,
+      "expectedPaintPixels": 571,
+      "lostPaintPixels": 0,
+      "lostPaintFraction": 0.0,
+      "drawOrderChangedPixels": 0,
+      "occluderPaintOverlapPixels": 0,
+      "occluderLeakPixels": 0,
+      "image": "reno-grazing-reversed32-msaa1.png",
+      "imageSha256": "497aed4c8f3a5f8b1cdf1be23b49d6d80b87b73e5d64f1c8a24de7e11e068438"
+    },
+    {
+      "view": "walker-orbit",
+      "mode": "reversed",
+      "depthFormat": "DEPTH_COMPONENT32F",
+      "requestedSamples": 0,
+      "samples": 1,
+      "expectedPaintPixels": 2005,
+      "lostPaintPixels": 0,
+      "lostPaintFraction": 0.0,
+      "drawOrderChangedPixels": 0,
+      "occluderPaintOverlapPixels": 0,
+      "occluderLeakPixels": 0,
+      "image": "walker-orbit-reversed32-msaa1.png",
+      "imageSha256": "14a728d9fd20ee5bcd37d744c97d8c16f777ce5186c384947b35bd35953b13de"
+    },
+    {
+      "view": "reno-orbit-far",
+      "mode": "reversed",
+      "depthFormat": "DEPTH_COMPONENT32F",
+      "requestedSamples": 0,
+      "samples": 1,
+      "expectedPaintPixels": 283,
+      "lostPaintPixels": 0,
+      "lostPaintFraction": 0.0,
+      "drawOrderChangedPixels": 0,
+      "occluderPaintOverlapPixels": 0,
+      "occluderLeakPixels": 0,
+      "image": "reno-orbit-far-reversed32-msaa1.png",
+      "imageSha256": "86839705b959e29908d8676f15a24cef557ad2721e8fff12cdd2ffc66772669c"
+    },
+    {
+      "view": "reno-orbit-high",
+      "mode": "reversed",
+      "depthFormat": "DEPTH_COMPONENT32F",
+      "requestedSamples": 0,
+      "samples": 1,
+      "expectedPaintPixels": 514,
+      "lostPaintPixels": 0,
+      "lostPaintFraction": 0.0,
+      "drawOrderChangedPixels": 0,
+      "occluderPaintOverlapPixels": 0,
+      "occluderLeakPixels": 0,
+      "image": "reno-orbit-high-reversed32-msaa1.png",
+      "imageSha256": "ff0f8246be23ab064371dea5d907f6b824b0b217db288707fd7a7ed9f35326c7"
+    },
+    {
+      "view": "dewey-driver",
+      "mode": "reversed",
+      "depthFormat": "DEPTH_COMPONENT32F",
+      "requestedSamples": 4,
+      "samples": 4,
+      "expectedPaintPixels": 5693,
+      "lostPaintPixels": 0,
+      "lostPaintFraction": 0.0,
+      "drawOrderChangedPixels": 0,
+      "occluderPaintOverlapPixels": 10,
+      "occluderLeakPixels": 0,
+      "image": "dewey-driver-reversed32-msaa4.png",
+      "imageSha256": "9541a6bf42c151d0993310776d2863570c959b1539080e63a197867599441f43"
+    },
+    {
+      "view": "walker-driver",
+      "mode": "reversed",
+      "depthFormat": "DEPTH_COMPONENT32F",
+      "requestedSamples": 4,
+      "samples": 4,
+      "expectedPaintPixels": 6302,
+      "lostPaintPixels": 0,
+      "lostPaintFraction": 0.0,
+      "drawOrderChangedPixels": 0,
+      "occluderPaintOverlapPixels": 0,
+      "occluderLeakPixels": 0,
+      "image": "walker-driver-reversed32-msaa4.png",
+      "imageSha256": "b37fe4ff46bf41c04e16f33f3fb45c886a74d94123b914c946327279ccc50541"
+    },
+    {
+      "view": "reno-chase",
+      "mode": "reversed",
+      "depthFormat": "DEPTH_COMPONENT32F",
+      "requestedSamples": 4,
+      "samples": 4,
+      "expectedPaintPixels": 4541,
+      "lostPaintPixels": 0,
+      "lostPaintFraction": 0.0,
+      "drawOrderChangedPixels": 0,
+      "occluderPaintOverlapPixels": 0,
+      "occluderLeakPixels": 0,
+      "image": "reno-chase-reversed32-msaa4.png",
+      "imageSha256": "88056228c6249471f22b3254f935c606de5f2ed4d7245ab533b8b0faabb0b9bb"
+    },
+    {
+      "view": "reno-distant",
+      "mode": "reversed",
+      "depthFormat": "DEPTH_COMPONENT32F",
+      "requestedSamples": 4,
+      "samples": 4,
+      "expectedPaintPixels": 5363,
+      "lostPaintPixels": 0,
+      "lostPaintFraction": 0.0,
+      "drawOrderChangedPixels": 0,
+      "occluderPaintOverlapPixels": 0,
+      "occluderLeakPixels": 0,
+      "image": "reno-distant-reversed32-msaa4.png",
+      "imageSha256": "1ca932f385a13a61d46098d4b837c27af800523c35dbf26423d961cd87b82277"
+    },
+    {
+      "view": "reno-grazing",
+      "mode": "reversed",
+      "depthFormat": "DEPTH_COMPONENT32F",
+      "requestedSamples": 4,
+      "samples": 4,
+      "expectedPaintPixels": 1524,
+      "lostPaintPixels": 0,
+      "lostPaintFraction": 0.0,
+      "drawOrderChangedPixels": 0,
+      "occluderPaintOverlapPixels": 0,
+      "occluderLeakPixels": 0,
+      "image": "reno-grazing-reversed32-msaa4.png",
+      "imageSha256": "3a31a1153c0db280a036ea7d65acd407817f846f798a3e037554e5fe4e213096"
+    },
+    {
+      "view": "walker-orbit",
+      "mode": "reversed",
+      "depthFormat": "DEPTH_COMPONENT32F",
+      "requestedSamples": 4,
+      "samples": 4,
+      "expectedPaintPixels": 4761,
+      "lostPaintPixels": 0,
+      "lostPaintFraction": 0.0,
+      "drawOrderChangedPixels": 0,
+      "occluderPaintOverlapPixels": 0,
+      "occluderLeakPixels": 0,
+      "image": "walker-orbit-reversed32-msaa4.png",
+      "imageSha256": "c27fadf08bab05e8a9916928d2c766a37773c99520ec9952b491fd7b93823aa4"
+    },
+    {
+      "view": "reno-orbit-far",
+      "mode": "reversed",
+      "depthFormat": "DEPTH_COMPONENT32F",
+      "requestedSamples": 4,
+      "samples": 4,
+      "expectedPaintPixels": 976,
+      "lostPaintPixels": 0,
+      "lostPaintFraction": 0.0,
+      "drawOrderChangedPixels": 0,
+      "occluderPaintOverlapPixels": 0,
+      "occluderLeakPixels": 0,
+      "image": "reno-orbit-far-reversed32-msaa4.png",
+      "imageSha256": "a5ed7fbb397010d4f1ba9f8dc2d5c96919ac3da950e3894e26c7e020d5b296b1"
+    },
+    {
+      "view": "reno-orbit-high",
+      "mode": "reversed",
+      "depthFormat": "DEPTH_COMPONENT32F",
+      "requestedSamples": 4,
+      "samples": 4,
+      "expectedPaintPixels": 1596,
+      "lostPaintPixels": 0,
+      "lostPaintFraction": 0.0,
+      "drawOrderChangedPixels": 0,
+      "occluderPaintOverlapPixels": 0,
+      "occluderLeakPixels": 0,
+      "image": "reno-orbit-high-reversed32-msaa4.png",
+      "imageSha256": "e45f43fac772507780a20f59107a2c92c8bd0488449b4c8cb6bc6ab7e1d42566"
+    }
+  ],
+  "failures": [
+    "walker-orbit-logarithmic24-msaa1: paint coverage lost against underlying road.",
+    "reno-orbit-far-logarithmic24-msaa1: paint coverage lost against underlying road.",
+    "reno-orbit-high-logarithmic24-msaa1: paint coverage lost against underlying road.",
+    "walker-orbit-logarithmic24-msaa4: paint coverage lost against underlying road.",
+    "reno-orbit-far-logarithmic24-msaa4: paint coverage lost against underlying road.",
+    "reno-orbit-high-logarithmic24-msaa4: paint coverage lost against underlying road."
+  ],
+  "passed": false
+}

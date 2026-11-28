@@ -1,6 +1,6 @@
 # Prairie Prism
 
-An Oklahoma City atlas, date planner and drivable city for Trent. Geographically grounded reconstruction and exploration prototype, **v0.8.0**.
+An Oklahoma City atlas, date planner and drivable city for Trent. Geographically grounded reconstruction and exploration prototype, **v0.8.1**.
 
 The v0.8 interface uses batched GPU glyphs and shapes on the game canvas. The
 explorer, loading screen, scene Menu, map labels and driving controls share one

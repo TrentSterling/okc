@@ -1,0 +1,445 @@
+{
+  "scope": "Paint from 36 source tiles in four 3-by-3 neighborhoods, plus ground from two adjacent coverage tiles; actual compileTile Float32 roads/paint, unrelated buildings/details omitted. No browser or GPU claim.",
+  "sourceHashes": {
+    "metro/mesh-builder.js": "cf61566dd2937431f737c1d22ea50931be57da1d0b69fc9d3d5a907c8109d3c2",
+    "metro/surface-ownership.js": "941e1b2470b79c2cf3f0685585dd0ec9d31d942229fd12c3bb9cf1a6206ef68f",
+    "metro/mesh-bounds.js": "a912eea4f68770db850a6ae53c75c5d5417abd0ca998d2acf18df10b8695adff",
+    "metro/roof-shapes.js": "26c45a1688bdc98995d44fe44746d70a5ed373d9179d4330dd4dbcb3f129754e",
+    "geo/metro/manifest.json": "56b198915c6b64cac521b8d2309e304e4aaec7fe25da583ca0a142e4afe7770c"
+  },
+  "tiles": [
+    {
+      "id": "-42_-5",
+      "area": "yukon-christmas-lights",
+      "sha256": "00ded4c5ba7d47341f5de8fc4189dd4e1a7482ffb0777b26ba1021a62fd3dec7",
+      "roads": 41,
+      "triangles": {
+        "asphalt": 232,
+        "concrete": 456
+      }
+    },
+    {
+      "id": "-42_-4",
+      "area": "yukon-christmas-lights",
+      "sha256": "7fbd25a89c3f449584daaa43e9049a8b653c1f9270de4274d74025bf9324049c",
+      "roads": 64,
+      "triangles": {
+        "asphalt": 368,
+        "concrete": 469,
+        "paint": 176
+      }
+    },
+    {
+      "id": "-42_-3",
+      "area": "yukon-christmas-lights",
+      "sha256": "42d7e5b0e5770a1e1ccd13c137e645ddbcc46acb81cff9ecfffc0a143dda2a8b",
+      "roads": 62,
+      "triangles": {
+        "asphalt": 586,
+        "concrete": 48,
+        "paint": 22
+      }
+    },
+    {
+      "id": "-41_-5",
+      "area": "yukon-christmas-lights",
+      "sha256": "809b825ff648897123454c3c07702ed314ea8f8cb28761793e1109b71fa81ba4",
+      "roads": 47,
+      "triangles": {
+        "asphalt": 152,
+        "concrete": 690
+      }
+    },
+    {
+      "id": "-41_-4",
+      "area": "yukon-christmas-lights",
+      "sha256": "413944d76bb62f416589a45454d7b42e5165bd74982544785d102ee16e081bc3",
+      "roads": 38,
+      "triangles": {
+        "asphalt": 169,
+        "concrete": 388
+      }
+    },
+    {
+      "id": "-41_-3",
+      "area": "yukon-christmas-lights",
+      "sha256": "5db6896a365d8549713f316de25bfe408aa8be2f85446c73b7cfee50b7baca97",
+      "roads": 88,
+      "triangles": {
+        "asphalt": 665,
+        "concrete": 93,
+        "paint": 190
+      }
+    },
+    {
+      "id": "-40_-5",
+      "area": "yukon-christmas-lights",
+      "sha256": "c2c7d58ebe41df0bfa95c50ac2e83ed4d2ab2bdade44e63df3e4b26f40e415f8",
+      "roads": 20,
+      "triangles": {
+        "asphalt": 137,
+        "concrete": 180
+      }
+    },
+    {
+      "id": "-40_-4",
+      "area": "yukon-christmas-lights",
+      "sha256": "0f704ed26706f2f53e74f7a759d54eb51de7e5f9e97334b210c62f31668d4765",
+      "roads": 25,
+      "triangles": {
+        "asphalt": 134,
+        "concrete": 210
+      }
+    },
+    {
+      "id": "-40_-3",
+      "area": "yukon-christmas-lights",
+      "sha256": "e34e7f20e65ae9870c8254c93280c0d3fa7609c06aec1c90545c01995f8eaf1f",
+      "roads": 110,
+      "triangles": {
+        "asphalt": 667,
+        "concrete": 138,
+        "yellow": 36,
+        "paint": 86
+      }
+    },
+    {
+      "id": "-21_-11",
+      "area": "birrieria-diaz-bethany",
+      "sha256": "04557c5477af1759173f0a27b864a7aba6e3c1e9d91144ae2a8323199be91554",
+      "roads": 54,
+      "triangles": {
+        "asphalt": 507,
+        "concrete": 434,
+        "paint": 16
+      }
+    },
+    {
+      "id": "-21_-10",
+      "area": "birrieria-diaz-bethany",
+      "sha256": "91e6ee6e1f73979fb142c5c8af049fae1e6e9b0a78b6218244a84056ad6bddb4",
+      "roads": 77,
+      "triangles": {
+        "asphalt": 638,
+        "concrete": 316,
+        "paint": 152
+      }
+    },
+    {
+      "id": "-21_-9",
+      "area": "birrieria-diaz-bethany",
+      "sha256": "fed8605a8cde37b63199062df988646e9a063998705fcd79b005e052fddcead9",
+      "roads": 43,
+      "triangles": {
+        "asphalt": 334,
+        "concrete": 210,
+        "yellow": 78
+      }
+    },
+    {
+      "id": "-20_-11",
+      "area": "birrieria-diaz-bethany",
+      "sha256": "5a9d376cfbf4b920c9048b531eb3c8e530d1ec4144f53dffad78acc2a7c79693",
+      "roads": 24,
+      "triangles": {
+        "asphalt": 332,
+        "concrete": 355
+      }
+    },
+    {
+      "id": "-20_-10",
+      "area": "birrieria-diaz-bethany",
+      "sha256": "11042ce7a890bcd79160e3ddeccef7946b66d65cb13ec87d829f8ce7c6727fc2",
+      "roads": 70,
+      "triangles": {
+        "asphalt": 537,
+        "concrete": 403,
+        "paint": 162
+      }
+    },
+    {
+      "id": "-20_-9",
+      "area": "birrieria-diaz-bethany",
+      "sha256": "36647f5fa6535cfa22fc6c544b5a8084dd4767878b7334c53a9459a1269d5baa",
+      "roads": 30,
+      "triangles": {
+        "asphalt": 199,
+        "concrete": 232,
+        "yellow": 80
+      }
+    },
+    {
+      "id": "-19_-11",
+      "area": "birrieria-diaz-bethany",
+      "sha256": "ae36019e8910757949f5ef12081e015a227637da6943d2970c181ab28ff13ff5",
+      "roads": 36,
+      "triangles": {
+        "asphalt": 224,
+        "concrete": 196
+      }
+    },
+    {
+      "id": "-19_-10",
+      "area": "birrieria-diaz-bethany",
+      "sha256": "c37d8c9abd4c71db9baba6f608505b1f45da287286b20e7a848e0c795a711baa",
+      "roads": 92,
+      "triangles": {
+        "asphalt": 720,
+        "concrete": 325,
+        "paint": 156
+      }
+    },
+    {
+      "id": "-19_-9",
+      "area": "birrieria-diaz-bethany",
+      "sha256": "0baa33a4d9749c4e9eeffe3112aeca8e58b922da59a5a8daaf826b6300e1b766",
+      "roads": 50,
+      "triangles": {
+        "asphalt": 399,
+        "concrete": 174,
+        "yellow": 78
+      }
+    },
+    {
+      "id": "-25_0",
+      "area": "okc-outlets",
+      "sha256": "ff0665fd5152fe4dd6b5b1286d58de73fc8c7090df6451d3adb80c9588119f9b",
+      "roads": 154,
+      "triangles": {
+        "asphalt": 910,
+        "concrete": 576,
+        "paint": 76
+      }
+    },
+    {
+      "id": "-25_1",
+      "area": "okc-outlets",
+      "sha256": "7addfab5e4123aecc490b63a150131b58665fedff75565527ccc12c4b3f7845c",
+      "roads": 82,
+      "triangles": {
+        "asphalt": 576,
+        "concrete": 273,
+        "paint": 186
+      }
+    },
+    {
+      "id": "-25_2",
+      "area": "okc-outlets",
+      "sha256": "1a81087b9ae3a244b2bf994b668ac7a7f71e5384f368e84c8a7a8f466d5ae8ab",
+      "roads": 37,
+      "triangles": {
+        "asphalt": 251,
+        "concrete": 197,
+        "yellow": 54
+      }
+    },
+    {
+      "id": "-24_0",
+      "area": "okc-outlets",
+      "sha256": "c0b9d570e04c999b62f373c42239aa9a4acbc3739933e8eb42dd99552a807940",
+      "roads": 133,
+      "triangles": {
+        "asphalt": 771,
+        "concrete": 376,
+        "paint": 30,
+        "yellow": 16
+      }
+    },
+    {
+      "id": "-24_1",
+      "area": "okc-outlets",
+      "sha256": "693b7da51e1d6acf40e3dfea43a8e5ccdfd275cce19cf5fe24c2a2f258ef7599",
+      "roads": 53,
+      "triangles": {
+        "asphalt": 404,
+        "concrete": 111,
+        "paint": 156
+      }
+    },
+    {
+      "id": "-24_2",
+      "area": "okc-outlets",
+      "sha256": "1f5fcc8e78ef7ae7617cefed9bcfc47988f41468006904e09153f908820f40bb",
+      "roads": 4,
+      "triangles": {
+        "asphalt": 6,
+        "concrete": 125
+      }
+    },
+    {
+      "id": "-23_0",
+      "area": "okc-outlets",
+      "sha256": "64afb9e8de9d3511c9a918b5ce1bb1ae4379d58e727a6e9a82ece9c4910860d8",
+      "roads": 76,
+      "triangles": {
+        "asphalt": 512,
+        "concrete": 293,
+        "paint": 10
+      }
+    },
+    {
+      "id": "-23_1",
+      "area": "okc-outlets",
+      "sha256": "a018f9157e2cf9fde200de7955cc14ec97825d9a0302982d4550e9c1e392f2da",
+      "roads": 27,
+      "triangles": {
+        "asphalt": 220,
+        "concrete": 182,
+        "paint": 156
+      }
+    },
+    {
+      "id": "-23_2",
+      "area": "okc-outlets",
+      "sha256": "3631c4abc00dc179434fbd19912d534856e3f43c7af66312cb2603ff6daac77e",
+      "roads": 4,
+      "triangles": {
+        "concrete": 92,
+        "asphalt": 92
+      }
+    },
+    {
+      "id": "-13_-19",
+      "area": "stars-stripes",
+      "sha256": "507e8b8208a589d1197fcf4a57a5620822ee019686c3623ae4fae85e33ef07bd",
+      "roads": 6,
+      "triangles": {
+        "asphalt": 108,
+        "concrete": 174
+      }
+    },
+    {
+      "id": "-13_-18",
+      "area": "stars-stripes",
+      "sha256": "7605f4d55fa69e10cb182d0ba0352db80c17d3750da790252d5e8dfa709f3f0a",
+      "roads": 12,
+      "triangles": {
+        "asphalt": 105,
+        "concrete": 293
+      }
+    },
+    {
+      "id": "-13_-17",
+      "area": "stars-stripes",
+      "sha256": "5cff72594b5358760e10812515d244bca18fa96d8870ddae0c4eb96a5ff32449",
+      "roads": 20,
+      "triangles": {
+        "asphalt": 170,
+        "concrete": 268
+      }
+    },
+    {
+      "id": "-12_-19",
+      "area": "stars-stripes",
+      "sha256": "2e2caeb5115adc7922f618004592533912b71343638cc93d13086d8f95fb6a62",
+      "roads": 40,
+      "triangles": {
+        "asphalt": 130,
+        "concrete": 815
+      }
+    },
+    {
+      "id": "-12_-18",
+      "area": "stars-stripes",
+      "sha256": "6eb64dd9c41f191904211a5d49eafaa36da082efc41e80d121d0433443c20258",
+      "roads": 27,
+      "triangles": {
+        "asphalt": 83,
+        "concrete": 429
+      }
+    },
+    {
+      "id": "-12_-17",
+      "area": "stars-stripes",
+      "sha256": "9a06e3159d2cf45988db124e34a45e3b18b8618ab85fc51bfd4a9412ce0a215b",
+      "roads": 29,
+      "triangles": {
+        "asphalt": 234,
+        "concrete": 510
+      }
+    },
+    {
+      "id": "-11_-19",
+      "area": "stars-stripes",
+      "sha256": "6ea5bc1d4eb86b67f8f6781222fcede4678c5cce24a27cfa2336cde8c43d86a1",
+      "roads": 11,
+      "triangles": {
+        "asphalt": 98,
+        "concrete": 192,
+        "paint": 168
+      }
+    },
+    {
+      "id": "-11_-18",
+      "area": "stars-stripes",
+      "sha256": "58b13364b9e2fcdb72514f21358480f32b86b63c951c1435f5182d6a286317fd",
+      "roads": 29,
+      "triangles": {
+        "asphalt": 120,
+        "concrete": 450,
+        "paint": 166,
+        "yellow": 14
+      }
+    },
+    {
+      "id": "-11_-17",
+      "area": "stars-stripes",
+      "sha256": "4c49d3508c13c8564306a090554a7bf0d551d9b936df6285261a14ac16e35a52",
+      "roads": 55,
+      "triangles": {
+        "asphalt": 338,
+        "concrete": 601,
+        "yellow": 6,
+        "paint": 164
+      }
+    },
+    {
+      "id": "-40_-2",
+      "area": "coverage-neighbor",
+      "sha256": "29f725b5859d093a1da71fb0133adb1591ab1889ba3669c5bb61ffa31bfe7e32",
+      "roads": 30,
+      "triangles": {
+        "asphalt": 218,
+        "concrete": 150
+      }
+    },
+    {
+      "id": "-22_-11",
+      "area": "coverage-neighbor",
+      "sha256": "68bda1f8cbe9b9be848b16ec8a0e7871eae2780e1dacd674823aa82fd267d4fa",
+      "roads": 93,
+      "triangles": {
+        "asphalt": 648,
+        "concrete": 383
+      }
+    }
+  ],
+  "paintTriangles": 2434,
+  "groundTriangles": 24801,
+  "sourceRoads": 1750,
+  "positivePaintPairs": 0,
+  "paintOverlapAreaM2": 0.0,
+  "pairsOver0_0001M2": 0,
+  "crossTilePairs": 0,
+  "examples": [],
+  "ownedRoadGapM": [
+    0.015000000596046448,
+    0.015000343322753906
+  ],
+  "paintGroundCoplanarPairs": 0,
+  "missingSampleRoadCoverage": {
+    "count": 1,
+    "totalAreaM2": 2.2986399773252008e-05,
+    "examples": [
+      {
+        "paint": 2373,
+        "missingAreaM2": 2.2986399773252008e-05,
+        "tile": "-11_-17",
+        "center": [
+          -5219.149576822917,
+          -8639.714518229166
+        ]
+      }
+    ]
+  }
+}

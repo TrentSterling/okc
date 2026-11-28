@@ -58,6 +58,19 @@ jobs:
           python scripts/visual/check-depth-offsets-gles.py --state "$RUNNER_TEMP/okc-depth-offsets.json" --output "$RUNNER_TEMP/sunset-shader-validation/depth-offsets-v06.json"
           node scripts/visual/prepare-ui-diagnostics.mjs --output "$RUNNER_TEMP/okc-ui-shaders"
           python scripts/visual/render-ui-diagnostics.py --input "$RUNNER_TEMP/okc-ui-shaders" --output "$RUNNER_TEMP/ui-native-validation"
+          node scripts/visual/prepare-paint-depth-diagnostics.mjs --output "$RUNNER_TEMP/okc-paint-depth"
+          python scripts/visual/check-paint-depth-gles.py --input "$RUNNER_TEMP/okc-paint-depth" --output "$RUNNER_TEMP/paint-depth-validation"
+
+      - name: Preserve road paint depth evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: road-paint-depth-${{ github.sha }}
+          path: |
+            ${{ runner.temp }}/paint-depth-validation/report.json
+            ${{ runner.temp }}/paint-depth-validation/*.png
+          if-no-files-found: ignore
+          retention-days: 14
 
       - name: Preserve GPU UI and phone layout evidence
         if: always()
