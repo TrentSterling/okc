@@ -28,6 +28,30 @@
   "remainingGroundLayerOverlapM2": 0.0,
   "ownershipClearanceMeters": 0.001,
   "collinearityCleanupMeters": 0.0005,
+  "groundTriangulation": {
+    "method": "GEOS constrained Delaunay after mesh-cell clipping",
+    "cellSize": 1024,
+    "layers": {
+      "road": {
+        "sourceAreaM2": 1354476.3677188267,
+        "triangles": 16061,
+        "chunks": 16,
+        "maxEdgeM": 468.3060379012507,
+        "longNeedlesOver32mAspect256": 20
+      },
+      "parking": {
+        "sourceAreaM2": 423536.06082696037,
+        "triangles": 3237,
+        "chunks": 11,
+        "maxEdgeM": 156.80839837202595,
+        "longNeedlesOver32mAspect256": 18
+      }
+    },
+    "triangles": 19298,
+    "chunks": 27,
+    "footprintDifferenceM2": 0.0,
+    "duplicateTriangleAreaM2": 2.0042989490320906e-09
+  },
   "streets": {
     "curbRevealMeters": 0.14999999999999997,
     "curbCapWidthMeters": 0.18,

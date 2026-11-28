@@ -1,9 +1,9 @@
 {
-  "binaryBytes": 45807044,
-  "packedGeometryBytes": 13812341,
+  "binaryBytes": 45706860,
+  "packedGeometryBytes": 13776850,
   "runtimeSurfaceBytes": 2724073,
   "packedSurfaceBytes": 703496,
-  "sourceGeometryJSBytes": 61119692,
-  "sourceSurfaceJSBytes": 15972890,
+  "sourceGeometryJSBytes": 60986184,
+  "sourceSurfaceJSBytes": 17088842,
   "verifiedEquivalent": true
 }

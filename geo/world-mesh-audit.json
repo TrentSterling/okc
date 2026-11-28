@@ -1,17 +1,19 @@
 {
-  "sourceTriangles": 637929,
-  "triangles": 650877,
-  "vertices": 1124620,
+  "sourceTriangles": 638295,
+  "triangles": 648249,
+  "vertices": 1121982,
   "chunks": 259,
   "instanceChunks": 56,
   "boxInstances": 69397,
   "openings": 18726,
   "entrances": 1154,
   "rooftopUnits": 912,
+  "constrainedGroundTriangles": 19298,
+  "constrainedGroundChunks": 27,
   "curbEdges": 17090,
   "curbRampTriangles": 354,
   "curbRampFaceTriangles": 236,
   "chunkSize": 1024,
-  "bytes": 61119692,
-  "worldSurfacesSha256": "5c5d310f60790809d410ed49d425b19f7c84d8ad13cbf5f2fab9589e6a797198"
+  "bytes": 60986184,
+  "worldSurfacesSha256": "2b1525ad645f2b925cd84ddd8f184c1b71a8167a979bb3ebf048e36869f47c52"
 }
