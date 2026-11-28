@@ -3,6 +3,7 @@ import * as THREE from 'three';
 import {skyGLSL} from './atmosphere/radiance.js';
 import {apparentSolarAltitude, solarDiscVisibility} from './atmosphere/solar.js';
 import {createSunlightBinding} from './atmosphere/sunlight.js';
+import {resetRendererState} from './app/renderer.js';
 export {createGlassMaterial} from './atmosphere/glass.js';
 
 export function createAtmosphere(renderer, scene) {
@@ -141,7 +142,7 @@ export function createAtmosphere(renderer, scene) {
       // boundary between a six-view offscreen pass and a user photograph.
       // Explicitly rebind the caller's complete raster state, including when
       // first-use material / shadow setup took place during a cube face.
-      renderer.resetState();
+      resetRendererState(renderer);
       renderer.setClearColor(saved.clearColor,saved.clearAlpha);
       renderer.autoClear=saved.autoClear;renderer.autoClearColor=saved.autoClearColor;renderer.autoClearDepth=saved.autoClearDepth;renderer.autoClearStencil=saved.autoClearStencil;
       renderer.toneMapping=saved.toneMapping;renderer.xr.enabled=saved.xrEnabled;
